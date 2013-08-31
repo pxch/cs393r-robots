@@ -1,0 +1,3 @@
+[project core]
+# Add your project dependencies here:
+depends = lua yaml-cpp luaswig pythonswig

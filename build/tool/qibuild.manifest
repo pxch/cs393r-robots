@@ -1,0 +1,4 @@
+[project tool]
+# Add your project dependencies here:
+depends = luaswig pythonswig
+

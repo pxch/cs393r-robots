@@ -1,0 +1,3 @@
+[project pythonswig]
+# Add your project dependencies here:
+depends = globals

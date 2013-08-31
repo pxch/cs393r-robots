@@ -1,0 +1,4 @@
+[project vision]
+# Add your project dependencies here:
+depends = core yaml-cpp
+

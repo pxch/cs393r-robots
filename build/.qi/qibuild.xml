@@ -1,0 +1,4 @@
+<qibuild version="1">
+  <defaults/>
+  <build build_dir="build" config="atom"/>
+</qibuild>

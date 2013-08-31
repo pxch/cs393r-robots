@@ -1,0 +1,264 @@
+#!/usr/bin/env python
+
+import sys, subprocess, os
+
+#baseIP = '192.168.23.%s'
+#baseIP = '192.168.1.%s'
+#baseIP = '10.0.1.%s'
+baseIP = '11.0.1.%s'
+#baseIP = '139.140.218.%s'
+validInterfaces = ['nao','motion','vision','lua','python','memory_test','scripts','color_table','motion_file','config_file','autoload','simple_config','wireless','time']
+allInterfaces = list(validInterfaces)
+allInterfaces.remove('memory_test')
+allInterfaces.remove('scripts')
+allInterfaces.remove('color_table')
+#allInterfaces.remove('motion_file')
+allInterfaces.remove('autoload')
+allInterfaces.remove('simple_config')
+allInterfaces.remove('wireless')
+allInterfaces.remove('time')
+everyInterface = list(validInterfaces)
+everyInterface.remove('simple_config')
+everyInterface.remove('wireless')
+everyInterface.remove('time')
+
+basePath = os.path.join(os.getenv('NAO_HOME'),'build2')
+
+def verifyChecksums(ip,sourcePath,destPath):
+  sourceSplit = sourcePath.rpartition('/');
+  newDestPath = destPath + sourceSplit[2];
+  dest_md5_file = destPath.replace('/','_') + '.dest.md5sum'
+  source_md5_file = destPath.replace('/','_') + '.src.md5sum'
+
+  cmd = 'md5sum %s > %s && ssh nao@%s "md5sum %s > %s" && scp nao@%s:%s %s > /dev/null' % (sourcePath,source_md5_file,ip,newDestPath,dest_md5_file,ip,dest_md5_file,dest_md5_file)
+  p = subprocess.Popen(cmd,shell=True)
+  retcode = p.wait()
+
+  if retcode != 0:
+    print 'Unable to copy/generate md5 files: %s' % cmd
+    if retcode <= 127:
+      sys.exit(retcode)
+    else:
+      sys.exit(2)
+  
+  cmd = 'awk \'{print $1;}\' %s > %s.awk && awk \'{print $1;}\' %s > %s.awk && diff %s.awk %s.awk' % (source_md5_file,source_md5_file,dest_md5_file,dest_md5_file,source_md5_file,dest_md5_file)
+  p = subprocess.Popen(cmd,shell=True)
+  retcode = p.wait()
+
+  if retcode != 0:
+    sys.stderr.write('  FILES ARE NOT SAME!!! PLEASE RE-COPY THIS INTERFACE\n')
+  else:
+    print '  Files are ok'
+
+  cmd = 'ssh nao@%s "rm %s" && rm %s %s %s.awk %s.awk' % (ip,dest_md5_file,dest_md5_file,source_md5_file,dest_md5_file,source_md5_file)
+  p = subprocess.Popen(cmd,shell=True)
+  retcode = p.wait()
+  
+  if retcode != 0:
+    print 'Removing md5 files failed: %s' % cmd
+
+def copyFiles(ip,sourcePath,destPath):
+  cmd = 'rsync -avz --progress --copy-links --exclude=.svn %s nao@%s:%s' % (os.path.join(basePath,sourcePath),ip,destPath)
+  p = subprocess.Popen(cmd,shell=True)
+  retcode = p.wait()
+  
+  if retcode != 0:
+    print 'Copy failed: %s' % cmd
+    if retcode <= 127:
+      sys.exit(retcode)
+    else:
+      sys.exit(2)
+
+def createSimpleConfig(filename, id, team, role):
+  FILE = open(filename,"w")
+  FILE.write(str(id) + '\n');
+  FILE.write(str(team) + '\n');
+  FILE.write(str(role) + '\n');
+  FILE.close();
+
+def removeFile(filename):
+  os.remove(filename)
+
+def doFileOperations(ip,sourcePath,destPath,options):
+  if options.verify:
+    verifyChecksums(ip,sourcePath,destPath)
+  else:
+    copyFiles(ip,sourcePath,destPath)
+
+def makeUnique(seq, idfun=None): 
+  # order preserving
+  if idfun is None:
+    def idfun(x): return x
+  seen = {}
+  result = []
+  for item in seq:
+    marker = idfun(item)
+    # in old Python versions:
+    # if seen.has_key(marker)
+    # but in new ones:
+    if marker in seen: continue
+    seen[marker] = 1
+    result.append(item)
+  return result
+
+def getIP(args):
+  ip = None
+  for ind in range(len(args)):
+    if '.' in args[ind]:
+      ip = args[ind]
+      del args[ind]
+      break
+    try:
+      ip = int(args[ind])
+      ip = str(ip)
+      del args[ind]
+      break
+    except:
+      pass
+  return ip,args
+
+def main(ip,interfaces,options,robotID):
+  base = 'build/build-'
+  if options.atom:
+    base += 'atom'
+  else:
+    base += 'geode'
+  if not(options.debug):
+    base += '-release'
+  for interface in interfaces:
+    if options.verify:
+      print 'Verifying %s' % interface
+    else: 
+      print 'Copying %s' % interface
+    if interface == 'nao':
+      doFileOperations(ip,'%s/nao/sdk/lib/libnaointerface.so' % base,'bin/',options)
+    elif interface in ['motion','vision','memory_test']:
+      doFileOperations(ip,'%s/%s/sdk/bin/%s' % (base,interface,interface),'bin/',options)
+    elif interface == 'lua':
+      doFileOperations(ip,'../core/lua/*.lua','lua/',options)
+    elif interface == 'python':
+      doFileOperations(ip,'../core/python/*.py','python/',options)
+      doFileOperations(ip,'../build/pythonswig/pythonswig_module.py','python/',options)
+      doFileOperations(ip,'%s/pythonswig/lib_pythonswig_module.so' % base,'bin/',options)
+      subprocess.check_call('ssh nao@%s "ln -sf ~/bin/lib_pythonswig_module.so ~/bin/_pythonswig_module.so"' % ip,shell=True)
+    elif interface == 'scripts':
+      #print ' Part 1'
+      doFileOperations(ip,'../data/scripts/villa-st*','bin/',options)
+      doFileOperations(ip,'../data/scripts/restart_processes.sh','bin/',options)
+      #print ' Part 2'
+      #doFileOperations(ip,'../data/scripts/wireless-monitor.py','bin/',options)
+    elif interface == 'color_table':
+      doFileOperations(ip,'../data/current/def*.col','data/',options)
+      for suffix in ['top','bottom']:
+        path = '../data/current/%s%s.col' % (robotID,suffix)
+        if os.path.exists(path):
+          doFileOperations(ip,path,'data/',options)
+        else:
+          print '  **No specific %s table for %s' % (suffix,robotID)
+    elif interface == 'motion_file':
+      doFileOperations(ip,'../data/mof/test/*.mof','data/mof/test/',options)
+    elif interface == 'config_file':
+      print ' data/config/*.cfg'
+      doFileOperations(ip,'../data/config/*.cfg','data/config/',options)
+      print ' data/config/Kicks/*.cfg'
+      doFileOperations(ip,'../data/config/Kicks/*.cfg','data/config/Kicks/',options)
+      print ' data/*.cal'
+      path = '../data/%s_calibration.cal' % (robotID)
+      if os.path.exists(path):
+        doFileOperations(ip,path,'data/',options)
+      else:
+        print '  **No calibration for %s' % (robotID)
+    elif interface == 'autoload':
+      doFileOperations(ip,'../data/scripts/autoload.ini','data/',options)
+    elif interface == 'simple_config':
+      if options.robot_team and options.robot_role:
+        createSimpleConfig('config.txt',robot_id,options.robot_team,options.robot_role)
+        doFileOperations(ip,'config.txt','data/',options)
+        removeFile('config.txt')
+      else:
+        sys.stderr.write('You need to set the --team and --role flag to use simple_config\n')
+
+    elif interface == 'wireless':
+      from setup_wireless import main as setupWireless
+      setupWireless(ip,robotID,options.atom,None)
+
+    elif interface == 'time':
+      cmd = 'ssh nao@%s "date +%%s > time.txt"' % (ip)
+      p = subprocess.Popen(cmd,shell=True)
+      p.wait()
+    else:
+      print >>sys.stderr,'Invalid interface: %s' % interface
+
+if __name__ == '__main__':
+  buildDir = os.path.join(os.getenv('NAO_HOME'),'build2')
+  os.chdir(buildDir)
+  from optparse import OptionParser
+  usage  = 'copy_robot [ip] interface [interface]'
+  usage += '\n  Interfaces: %s' % (' '.join(validInterfaces))
+  usage += '\n  all: %s' % (' '.join(allInterfaces))
+  usage += '\n  everything: copies every interface'
+  parser = OptionParser(usage)
+  parser.add_option('--geode',dest='atom',action='store_false',default=True,help='Copy for geode (old robots)')
+  parser.add_option('--atom',dest='atom',action='store_true',default=True,help='Copy for atom (new robots)')
+  parser.add_option('--debug',dest='debug',action='store_true',default=False,help='Copy debug version')
+  parser.add_option('--fast',dest='configure',action='store_false',default=True,help='NOT USED')
+  parser.add_option('--id',dest='robotID',action='store',type='int',default=None,help='robot id to use')
+  parser.add_option('--verify',dest='verify',action='store_true',default=False,help='verify checksums, do not copy')
+  parser.add_option('--copy-verify',dest='copy_verify',action='store_true',default=False,help='copy and then verify checksums')
+  parser.add_option('--team',dest='robot_team',action='store',type='int',default=23,help='robot team id when copying simple config')
+  parser.add_option('--role',dest='robot_role',action='store',type='int',default=None,help='robot role id when copying simple config')
+  options,args = parser.parse_args()
+  if len(args) < 1:
+    parser.parse_args(['--help'])
+    sys.exit(1)
+  
+  # defaults to atom now
+  #if options.atom is None:
+    #print 'ERROR: You must specify either --geode or --atom'
+    #print 'This will be defaulted to atom later, but for now you must specify'
+    #sys.exit(1)
+
+  
+  ip,args = getIP(args)
+  if ip is None:
+    ip = os.getenv('CURRENT_ROBOT')
+    if ip is None:
+      print >>sys.stderr,'Could not figure out what robot you wanted'
+      print >>sys.stderr,'Either specify the ip on the command line or set $CURRENT_ROBOT'
+      sys.exit(1)
+    print 'Using robot from $CURRENT_ROBOT: %s' % ip
+  if '.' not in ip:
+    ip = baseIP % ip
+  print 'Using robot IP: %s ' % ip
+  ipSplit = ip.rpartition('.')
+  robot_id = ipSplit[2]
+  interfaces = []
+  # get interfaces
+  for arg in args:
+    arg = arg.lower()
+    if arg == 'all':
+      interfaces.extend(allInterfaces)
+    elif arg == 'everything':
+      interfaces.extend(everyInterface)
+    else:
+      interfaces.append(arg)
+  # make interfaces unique
+  interfaces = makeUnique(interfaces)
+  if len(interfaces) == 0:
+    print >>sys.stderr,'No interfaces specified'
+    print >>sys.stderr,'validInterfaces: %s' % (' '.join(validInterfaces))
+    sys.exit(1)
+  # check interfaces
+  for interface in interfaces:
+    if interface not in validInterfaces:
+      print >>sys.stderr,'Interface not in list of validInterfaces: %s' % interface
+      print >>sys.stderr,'validInterfaces: %s' % (' '.join(validInterfaces))
+      sys.exit(1)
+  robotID = options.robotID
+  if robotID is None:
+    robotID = ip.split('.')[-1]
+  if options.copy_verify:
+    options.verify = False
+    main(ip,interfaces,options,robotID)
+    options.verify = True
+  main(ip,interfaces,options,robotID)

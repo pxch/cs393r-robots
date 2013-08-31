@@ -1,0 +1,1 @@
+../install/setup_wireless.py

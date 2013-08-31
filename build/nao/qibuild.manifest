@@ -1,0 +1,4 @@
+[project nao]
+# Add your project dependencies here:
+depends = core
+

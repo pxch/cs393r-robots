@@ -1,0 +1,4 @@
+[project motion]
+# Add your project dependencies here:
+depends = core
+

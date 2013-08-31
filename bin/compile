@@ -1,0 +1,202 @@
+#!/usr/bin/env python
+
+import sys, subprocess, os, shutil, glob
+from common import onLabMachine
+
+validInterfaces = ['nao','motion','vision','memory_test','tool','sim','core','luaswig','pythonswig','behaviorsim']
+allInterfaces = list(validInterfaces)
+allInterfaces.remove('memory_test')
+allInterfaces.remove('behaviorsim')
+allInterfaces.remove('sim')
+validInterfaces.remove('sim')
+validInterfaces.remove('behaviorsim')
+robotInterfaces = ['nao','motion','vision']
+
+def getNumProcs():
+  try:
+    import multiprocessing
+    return multiprocessing.cpu_count()
+  except:
+    print 'Getting number of processors via multiprocessing failed, using /proc/cpuinfo'
+    p = subprocess.Popen('grep -c ^processor /proc/cpuinfo',shell=True,stdout=subprocess.PIPE)
+    p.wait()
+    out, err = p.communicate()
+    numProcs = int(out)
+    return numProcs
+
+def makeUnique(seq, idfun=None): 
+  # order preserving
+  if idfun is None:
+    def idfun(x): return x
+  seen = {}
+  result = []
+  for item in seq:
+    marker = idfun(item)
+    # in old Python versions:
+    # if seen.has_key(marker)
+    # but in new ones:
+    if marker in seen: continue
+    seen[marker] = 1
+    result.append(item)
+  return result
+
+def sysCall(cmd,failureMessage):
+  retcode = subprocess.call(cmd,shell=True)
+  if retcode != 0:
+    print >>sys.stderr,failureMessage
+    if retcode <= 127:
+      sys.exit(retcode)
+    else:
+      sys.exit(2)
+
+def compileInterfaces(interfaces,flags):
+  if len(interfaces) == 0:
+    return
+  interfaceStr = ' '.join(interfaces)
+  cmd = 'qibuild make %s %s' % (interfaceStr,flags)
+  print '-----------------------------------------'
+  print 'COMPILING interfaces: %s' % interfaceStr
+  print cmd
+  sysCall(cmd,'Compile failed')
+
+def configureInterfaces(interfaces,flags):
+  if len(interfaces) == 0:
+    return
+  interfaceStr = ' '.join(interfaces)
+  flags += ' -DFORCE_NO_CCACHE=1 '
+  cmd = 'qibuild configure %s %s' % (interfaceStr,flags)
+  print '-----------------------------------------'
+  print 'Removing old qiproject.xml files since they may be outdated'
+  sysCall('rm -f */qiproject.xml','Removing old qiproject.xml files failed')
+  print 'CONFIGURING interfaces: %s' % interfaceStr
+  print cmd
+  sysCall(cmd,'Configure failed')
+
+def parseArgs(args):
+  from optparse import OptionParser
+  parser = OptionParser('''compile [options] interface [interface ...]
+  all: %s
+  everything: %s
+  robot: %s''' % (' '.join(allInterfaces),' '.join(validInterfaces),' '.join(robotInterfaces))
+  )
+  parser.add_option('--geode',dest='atom',action='store_false',default=True,help='Cross compile for geode (old robots)')
+  parser.add_option('--atom',dest='atom',action='store_true',default=True,help='Cross compile for atom (new robots)')
+  parser.add_option('--linux',dest='linux',action='store_true',default=onLabMachine(),help='Compile for linux')
+  parser.add_option('--debug',dest='debug',action='store_true',default=False,help='Compile debug version')
+  parser.add_option('--fast',dest='configure',action='store_false',default=True,help='Does NOT run configure before compiling, good if you\'re not add files, bad if you are')
+  parser.add_option('--clean',dest='clean',action='store_true',default=False,help='Removes all build files for the specified interfaces (Need to specify debug or geode like normal)')
+
+  options,args = parser.parse_args(args)
+  if len(args) == 0:
+    parser.parse_args(['--help'])
+    sys.exit(1)
+
+  # defaults to atom now
+  #if options.atom is None:
+    #print 'ERROR: You must specify either --geode or --atom'
+    #print 'This will be defaulted to atom later, but for now you must specify'
+    #sys.exit(1)
+
+  return options,args
+  
+def handleCustomInterfaces(interfaces,options):
+  for interface in interfaces:
+    if interface in ['tool','behaviorsim']:
+      os.chdir(interface)
+      if options.configure:
+        print '-----------------------------------------'
+        print 'CONFIGURING TOOL'
+        sysCall('./configure %s "%s"' % (options.archStr,options.releaseStr),'Failed to configure %s' % interface)
+      print '-----------------------------------------'
+      print 'MAKING %s' % interface
+      sysCall('make -j %i' % getNumProcs(),'Failed to make %s' % interface)
+      os.chdir('../')
+
+def cleanInterfaces(interfaces,options):
+  for interface in interfaces:
+    base = 'build/build-%s%s' % (options.archStr,options.releaseStr)
+    path = os.path.join(base,interface)
+    print 'REMOVING %s' % path
+    if os.path.exists(path):
+      shutil.rmtree(path)
+    else:
+      print '  Already removed'
+    # tool is special
+    if interface in ['tool','behaviorsim']:
+      print 'Special %s Clean' %interface
+      if os.path.exists('%s/Makefile' % interface):
+        os.chdir(interface)
+        print 'Making distclean'
+        sysCall('make distclean','Failed to clean %s, why?'% interface)
+        os.chdir('../')
+      else:
+        print '  Already distcleaned (at least no Makefile for %s)' % interface
+      if interface == 'tool':
+        for d in ['tool/build/moc/*', 'tool/build/ui/*', 'tool/build/obj/*']:
+          files = glob.glob(d)
+          [os.remove(f) for f in files]
+        if os.path.exists('tool/UTNaoTool.pro'):
+          os.remove('tool/UTNaoTool.pro')
+      elif interface == 'behaviorsim':
+        if os.path.exists('behaviorsim/behaviorSim.pro'):
+          os.remove('behaviorsim/behaviorSim.pro')
+
+def main(args):
+  buildDir = os.path.join(os.getenv('NAO_HOME'),'build2')
+  os.chdir(buildDir)
+  options,args = parseArgs(args)
+  if options.debug:
+    options.releaseStr = ''
+  else:
+    options.releaseStr = '-release'
+  if options.linux:
+    options.archStr = 'linux64'
+  elif options.atom:
+    options.archStr = 'atom'
+  else:
+    options.archStr = 'geode'
+
+  flags = ''
+  if options.debug:
+    flags += '--debug '
+  else:
+    flags += '--release '
+  flags += '-c %s ' % options.archStr
+  flags += '-j %i ' % getNumProcs()
+
+  # get interfaces
+  interfaces = []
+  for arg in args:
+    arg = arg.lower()
+    if arg == 'all':
+      interfaces.extend(allInterfaces)
+    elif arg == 'everything':
+      interfaces.extend(validInterfaces)
+    elif arg == 'robot':
+      interfaces.extend(robotInterfaces)
+    else:
+      interfaces.append(arg.replace('/',''))
+  # make interfaces unique
+  interfaces = makeUnique(interfaces)
+  # check interfaces
+  for interface in interfaces:
+    if interface not in validInterfaces:
+      print >>sys.stderr,'Interface not in list of validInterfaces: %s' % interface
+      print >>sys.stderr,validInterfaces
+      sys.exit(1)
+  # do it
+  origInterfaces = list(interfaces)
+  if options.clean:
+    response = raw_input('Clean %s (y/n): ' % ' '.join(interfaces))
+    if response.lower() in ['y','yes']:
+      cleanInterfaces(interfaces,options)
+    else:
+      print 'Aborting'
+  else:
+    if options.configure:  
+      configureInterfaces(interfaces,flags)
+    compileInterfaces(interfaces,flags)
+    handleCustomInterfaces(origInterfaces,options)
+
+if __name__ == '__main__':
+  main(sys.argv[1:])
