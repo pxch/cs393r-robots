@@ -18,9 +18,10 @@ def createStateTask(state):
   if state == core.PLAYING: return Playing()
   if state == core.FINISHED: return Finished()
   if state == core.TESTING: return Testing()
+  if state == core.PENALISED: return Penalised()
   return None
 
-Initial = Finished = pose.Sit
+Penalised = Initial = Finished = pose.Sit
 
 class Ready(HeadBodyTask):
   def __init__(self):
