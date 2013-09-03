@@ -1,0 +1,19 @@
+#!/usr/bin/python
+
+import os, sys
+
+def sysCall(cmd):
+  ret = os.system(cmd)
+  if ret != 0:
+    print '--------------------'
+    print 'Call: %s' % cmd
+    print 'Failed with ret: %i' % ret
+    if ret > 127:
+      ret = 1
+    sys.exit(ret)
+
+def copyHeaders():
+  print 'Copying headers to appropriate folder: $NAO_HOME/naoqi/crosstoolchain/staging/geode-linux/usr/include/alproxies'
+  sysCall('cp $NAO_HOME/almotion/*.h $NAO_HOME/naoqi/crosstoolchain/staging/geode-linux/usr/include/alproxies')
+
+copyHeaders()

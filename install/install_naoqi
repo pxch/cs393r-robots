@@ -1,0 +1,152 @@
+#!/usr/bin/python
+
+import os, sys
+
+if 'NAO_HOME' not in os.environ:
+  print "NAO_HOME not set, exiting"
+  sys.exit(1)
+
+VERSION = '1.14.1'
+USE_GEODE = False
+
+FULL_VERSION = '%s' % VERSION
+CROSS_SUFFIX = ''
+BASE_URL = 'http://www.cs.utexas.edu/~sbarrett/share/'
+SDK = 'naoqi-sdk-%s-linux64.tar.gz' % VERSION
+#ATOM_CROSS = 'nao-atom-cross-toolchain-%s.tar.gz' % FULL_VERSION
+ATOM_CROSS = 'linux64-nao-atom-cross-toolchain-%s.zip' % FULL_VERSION
+GEODE_CROSS = 'nao-geode-cross-toolchain-%s.tar.gz' % FULL_VERSION
+QI_BUILD = 'qibuild-%s.zip' % VERSION
+
+CROSS_PATH = os.path.join(os.environ['NAO_HOME'],'naoqi','crosstoolchain')
+ATOM_CROSS_PATH  = os.path.join(CROSS_PATH,'atom')
+GEODE_CROSS_PATH = os.path.join(CROSS_PATH,'geode')
+QIBUILD_PATH = os.path.join(CROSS_PATH,'qibuild')
+
+def createDir(path):
+  try:
+    os.mkdir(path)
+  except:
+    pass 
+
+def sysCall(cmd,exitOnError=True):
+  ret = os.system(cmd)
+  if ret != 0:
+    print '--------------------'
+    print 'Call: %s' % cmd
+    print 'Failed with ret: %i' % ret
+    if ret > 127:
+      ret = 1
+    if exitOnError:
+      sys.exit(ret)
+    else:
+      return False
+  return True
+
+def downloadSDK():
+  print 'Downloading naoqi-sdk'
+  sysCall('wget %s%s' % (BASE_URL,SDK))
+
+def downloadCross():
+  print 'Downloading atom cross compiler'
+  sysCall('wget %s%s' % (BASE_URL,ATOM_CROSS))
+  if USE_GEODE:
+    print 'Downloading geode cross compiler'
+    sysCall('wget %s%s' % (BASE_URL,GEODE_CROSS))
+
+def downloadQiBuild():
+  print 'Downloading qi build'
+  sysCall('wget %s%s' % (BASE_URL,QI_BUILD))
+
+def downloadAll():
+  downloadSDK()
+  downloadCross()
+  downloadQiBuild()
+
+def removeExts(filename,num=2):
+  for i in range(num):
+    filename,ext = os.path.splitext(filename)
+  return filename
+  
+def installSDK():
+  print 'Untar and mv naoqi-sdk'
+  sysCall('tar xzvf %s' % SDK)
+  sysCall('mv %s $NAO_HOME/naoqi' % (removeExts(SDK)))
+
+def installCross():
+  createDir(CROSS_PATH)
+  print 'Untar and copy nao atom toolchain'
+  sysCall('unzip %s' % ATOM_CROSS)
+  extractedDir = '%s%s' % (removeExts(ATOM_CROSS,1),CROSS_SUFFIX)
+  sysCall('mv %s %s' % (extractedDir,ATOM_CROSS_PATH))
+  if USE_GEODE:
+    print 'Untar and copy nao geode toolchain'
+    sysCall('tar xzvf %s' % GEODE_CROSS)
+    extractedDir = '%s%s' % (removeExts(GEODE_CROSS),CROSS_SUFFIX)
+    sysCall('mv %s %s' % (extractedDir,GEODE_CROSS_PATH))
+
+def installQiBuild():
+  print 'Untar and mv qibuild'
+  sysCall('unzip %s' % QI_BUILD)
+  sysCall('mv %s %s' % (removeExts(QI_BUILD,1),QIBUILD_PATH))
+  print 'install qibuild, will run through sudo'
+  origPath = os.path.abspath(os.getcwd())
+  os.chdir(QIBUILD_PATH)
+  sysCall('sudo ./install-qibuild.sh')
+  os.chdir(origPath)
+  
+  # according to Jake there's a problem where qibuild doesn't create the files in .config that it needs during the install, therefore, we'll make a dummy project before setting up the toolchains
+  tmp = 'tmp-qibuild'
+  createDir(tmp)
+  os.chdir(tmp)
+  sysCall('qibuild init')
+  os.chdir(origPath)
+  
+  # now the toolchains
+  print 'Adding atom tool chain'
+  toolchainSuccess = sysCall('qitoolchain create atom %s/toolchain.xml' % ATOM_CROSS_PATH,exitOnError=False)
+  if USE_GEODE:
+    print 'Adding geode tool chain'
+    toolchainSuccess = toolchainSuccess and sysCall('qitoolchain create geode %s/toolchain.xml' % GEODE_CROSS_PATH,exitOnError=False)
+  else:
+    sysCall('qitoolchain remove geode')
+  if not(toolchainSuccess):
+    print 'WARNING: problem with toolchains, hopefully we can recover'
+  sysCall('qitoolchain update')
+
+def installAll():
+  installSDK()
+  installCross()
+  installQiBuild()
+
+def main():
+  path = os.path.join(os.environ['NAO_HOME'],'naoqi')
+  if os.path.exists(path):
+    response = 'n'
+    while True:
+      response = raw_input('Remove previous Naoqi at %s? (y/n): ' % path)
+      if response.lower() in ['y','yes']:
+        break
+      elif response.lower() in ['n','no']:
+        print 'Aborting install'
+        return
+      print 'Invalid response'
+    # remove previous install
+    sysCall('rm -rf $NAO_HOME/naoqi')
+  
+  # make sure intermediate files are gone
+  sysCall('rm -rf temp')
+  #create temp dir for downloads
+  createDir('temp')
+  os.chdir('temp')
+
+  # download and install all
+  downloadAll()
+  installAll()
+  
+  #delete temp
+  os.chdir('../')
+  sysCall('rm -rf temp')
+
+if __name__ == '__main__':
+  main()

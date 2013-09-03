@@ -1,0 +1,67 @@
+#!/usr/bin/python
+
+import os, sys
+
+def createDir(path):
+  try:
+    os.mkdir(path)
+  except:
+    pass 
+
+def sysCall(cmd):
+  ret = os.system(cmd)
+  if ret != 0:
+    print '--------------------'
+    print 'Call: %s' % cmd
+    print 'Failed with ret: %i' % ret
+    if ret > 127:
+      ret = 1
+    sys.exit(ret)
+
+def downloadSim():
+  print 'Downloading Simulator'
+  base = 'wget http://www.cs.utexas.edu/~sbarrett/share/%s'
+  sysCall(base % 'simspark_spl_ut.tar.gz')
+  sysCall(base % 'materials.rb')
+  sysCall(base % 'soccer.rsg')
+  sysCall(base % 'naoneckhead.rsg')
+  
+def installSim():
+  print 'Untar and copy naoqi-sdk'
+  sysCall('tar xvzf simspark_spl_ut.tar.gz')
+  os.chdir('simspark_spl_ut')
+  os.chdir('spark')
+  sysCall('mkdir build')
+  os.chdir('build')
+  sysCall('cmake ..')
+  sysCall('make')
+  sysCall('sudo make install')
+  os.chdir('../../')
+  os.chdir('rcssserver3d')
+  sysCall('mkdir build')
+  os.chdir('build')
+  sysCall('cmake ..')
+  sysCall('make')
+  sysCall('sudo make install')
+  os.chdir('../../../')
+  # make the ball orange
+  sysCall('sudo cp materials.rb /usr/local/share/simspark/scripts/materials.rb')
+  sysCall('sudo cp soccer.rsg /usr/local/share/rcssserver3d/rsg/agent/nao/soccer.rsg')
+  # add truth data
+  sysCall('sudo cp naoneckhead.rsg /usr/local/share/rcssserver3d/rsg/agent/nao/naoneckhead.rsg')
+  
+#clean previous install
+sysCall('sudo apt-get install g++ subversion cmake libfreetype6-dev libode-dev libsdl-dev ruby1.8 ruby1.8-dev libdevil-dev libboost-dev libboost-thread-dev libboost-regex-dev libnotify-bin latex2html imagemagick')
+sysCall('sudo rm -rf temp')
+
+#create temp dir for downloads
+createDir('temp')
+os.chdir('temp')
+
+#download and install
+downloadSim()
+installSim()
+
+#delete temp
+os.chdir('../')
+sysCall('rm -rf temp')

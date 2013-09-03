@@ -1,0 +1,49 @@
+#!/usr/bin/python
+
+import os, sys
+
+def createDir(path):
+  try:
+    os.mkdir(path)
+  except:
+    pass 
+
+def sysCall(cmd):
+  ret = os.system(cmd)
+  if ret != 0:
+    print '--------------------'
+    print 'Call: %s' % cmd
+    print 'Failed with ret: %i' % ret
+    if ret > 127:
+      ret = 1
+    sys.exit(ret)
+
+def downloadSim():
+  base = 'wget http://www.cs.utexas.edu/~sbarrett/share/%s'
+  sysCall(base % 'simspark_spl_ut.tar.gz')
+  sysCall(base % 'materials.rb')
+  sysCall(base % 'soccer.rsg')
+  sysCall(base % 'naoneckhead.rsg')
+  
+def installSim():
+  print 'Update rsg files ..',
+  sysCall('sudo cp naoneckhead.rsg /usr/local/share/rcssserver3d/rsg/agent/nao/naoneckhead.rsg')
+  sysCall('sudo cp nao.rsg /usr/local/share/rcssserver3d/rsg/agent/nao/nao.rsg')
+  sysCall('sudo cp naoarm.rsg /usr/local/share/rcssserver3d/rsg/agent/nao/naoarm.rsg')
+  sysCall('sudo cp naoleg.rsg /usr/local/share/rcssserver3d/rsg/agent/nao/naoleg.rsg')
+  print 'Done!'
+  
+#clean previous install
+sysCall('sudo rm -rf temp')
+
+#create temp dir for downloads
+createDir('temp')
+os.chdir('temp')
+
+#download and install
+downloadSim()
+installSim()
+
+#delete temp
+os.chdir('../')
+sysCall('rm -rf temp')

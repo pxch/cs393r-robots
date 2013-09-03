@@ -1,0 +1,32 @@
+#!/bin/bash
+if [ -z "$NAO_HOME" ] ; then
+  echo "NAO_HOME not set, exiting"
+  exit 1
+fi
+version=2.4.0
+extension=tar.bz2 # tar.bz2 for some earlier ones
+file=OpenCV-${version}.$extension
+if [ $extension == "tar.gz" ]; then
+  unzipcmd="tar -zxvf"
+else
+  unzipcmd="tar jxf"
+fi
+set -e
+sudo apt-get install libeigen3-dev -y
+sudo cp $NAO_HOME/naoqi/crosstoolchain/atom/sysroot/usr/include/png*.h /usr/include/
+wget http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/$version/$file --trust-server-name -N
+$unzipcmd $file 
+cd OpenCV-$version
+mkdir -p build
+cd build
+cmake -D BUILD_opencv_python=OFF -D WITH_OPENEXR=OFF -D WITH_GTK=OFF -D WITH_FFMPEG=OFF -D WITH_1394=OFF -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_DOCS=OFF -D WITH_EIGEN=OFF -D CMAKE_C_FLAGS=-m32 -D CMAKE_CXX_FLAGS=-m32 -D PNG_LIBRARY=$NAO_HOME/naoqi/crosstoolchain/atom/sysroot/usr/lib/libpng.so -D CMAKE_INSTALL_PREFIX=../install  ..
+make
+sudo make install
+cd ../install
+sudo cp -r include/opencv /usr/include/
+sudo chmod a+rx /usr/include/opencv
+sudo cp -r include/opencv2 /usr/include/
+sudo chmod a+rx /usr/include/opencv2
+sudo cp -d lib/*.so* /usr/lib32/
+rm -rf OpenCV-$version/
+#rm OpenCV-2.4.3.tar.bz2

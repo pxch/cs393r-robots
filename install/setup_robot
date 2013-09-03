@@ -1,0 +1,173 @@
+#!/usr/bin/env python
+
+import os, shutil, subprocess
+
+def runRemoteCommand(ip,command):
+  subprocess.check_call('ssh nao@%s "%s"' % (ip,command),shell=True)
+
+def setupPasswordlessSSH(ip):
+  subprocess.check_call('ssh-copy-id nao@%s' % ip, shell=True)
+
+def ask(prompt):
+  while True:
+    response = raw_input('%s (y/n): ' % prompt)
+    if response.lower() in ['y','yes']:
+      return True
+    elif response.lower() in ['n','no']:
+      return False
+    print 'Invalid response, try again'
+
+def copyFile(ip,filename,dest=''):
+  subprocess.check_call('scp %s nao@%s:%s' % (filename,ip,dest),shell=True)
+
+def copyFileAndMove(ip,filename,dest):
+  tmpDest = os.path.basename(filename) + '.tmp'
+  copyFile(ip,filename,tmpDest)
+  return 'mv %s %s\n' % (tmpDest,dest)
+
+def removeTempDir(d):
+  shutil.rmtree(d)
+
+def makeTempDir():
+  import tempfile
+  d = tempfile.mkdtemp(dir=os.path.expandvars('$NAO_HOME/install'))
+  print 'temp dir: %s' % d
+  return d
+
+def filloutID(name,robotID,d):
+  with open('../data/scripts/%s' % name,'r') as f:
+    contents = f.read()
+  contents = contents.replace('${ID}',robotID)
+  with open(os.path.join(d,name),'w') as f:
+    f.write(contents)
+
+def setupNetworking(ip,robotID,d):
+  filloutID('utwired',robotID,d)
+  filloutID('utwireless',robotID,d)
+
+  script = '#!/bin/bash\n\n'
+  script += copyFileAndMove(ip,'../data/scripts/wpa_supplicant.conf','/etc/wpa_supplicant/wpa_supplicant.conf')
+  script += copyFileAndMove(ip,os.path.join(d,'utwired'),'/etc/init.d/utwired')
+  script += copyFileAndMove(ip,os.path.join(d,'utwireless'),'/etc/init.d/utwireless')
+  script += 'chmod +x /etc/init.d/utwired\n'
+  script += 'chmod +x /etc/init.d/utwireless\n'
+  script += 'rc-config delete connman boot\n'
+  script += 'rc-config delete naopathe default\n'
+  script += 'rc-config delete lighttpd default\n'
+  script += 'rc-config add utwired boot\n'
+  script += 'rc-config add utwireless boot\n'
+  pattern = r's/\(.*\)connman\(.*\)/\1utwired utwireless\2/g'
+  script += 'sed \'%s\' /etc/init.d/bootprogress_75 > /home/nao/bootprogress_75\n' % pattern
+  script += 'mv /home/nao/bootprogress_75 /etc/init.d/bootprogress_75\n'
+  script += 'chmod +x /etc/init.d/bootprogress_75\n'
+  script += 'rm /etc/naoqi/autoload.ini\n'
+  script += 'ln -s /home/nao/data/autoload.ini /etc/naoqi/autoload.ini\n'
+  script += copyFileAndMove(ip,'../data/scripts/naoqi','/etc/init.d/naoqi')
+  
+  # remove the original startup sound
+  jingle = '/usr/share/naoqi/wav/start_jingle.wav'
+  script += 'if [ -f %s ]; then\n' % jingle
+  script += '  mv %s %s.bak\n' % (jingle,jingle)
+  script += 'fi\n'
+  
+  #if ask('Restart wireless on robot after copying'):
+    #script += '/etc/init.d/connman stop; /etc/init.d/utnet restart' # restart in case it's already running
+
+  scriptName = 'setupScript.sh'
+  scriptPath = os.path.join(d,scriptName)
+  
+
+  with open(scriptPath,'w') as f:
+    f.write(script)
+  copyFile(ip,scriptPath)
+  print 'Moving a bunch of stuff around, removing connman, etc.'
+  print 'You need to put in the password "root" after it prompts for the password'
+  subprocess.check_call('ssh -t nao@%s "su -c \'bash %s\'"' % (ip,scriptName),shell=True)
+  runRemoteCommand(ip,'rm %s' % scriptName)
+
+def setupPassword(ip,d):
+  oldPass = 'nao'
+  newPass = 'thetimeisnao'
+  print 'changing password from %s to %s' %(oldPass,newPass)
+  contents = '%s\n%s\n%s\n' % (oldPass,newPass,newPass)
+  passfile = 'pass.txt'
+  passpath = os.path.join(d,passfile)
+  with open(passpath,'w') as f:
+    f.write(contents)
+  copyFile(ip,passpath,passfile)
+
+  try:
+    runRemoteCommand(ip,'cat %s | passwd' % passfile,passfile)
+    runRemoteCommand(ip,'rm %s' % passfile,passfile)
+  except:
+    print 'Failed at changing pass, hopefully it is already set, so we\'re continuing'
+
+def compile():
+  origDir = os.getcwd()
+  os.chdir('../build2/')
+  cmd = './compile robot memory_test'
+  if atom:
+    cmd += ' --atom'
+  else:
+    cmd += ' --geode'
+  subprocess.check_call(cmd,shell=True)
+  os.chdir(origDir)
+
+def copyRobot(ip,robotID):
+  os.chdir('../build2/')
+  origDir = os.getcwd()
+  cmd = './copy_robot %s everything --id %s' % (ip,robotID)
+  if atom:
+    cmd += ' --atom'
+  else:
+    cmd += ' --geode'
+  subprocess.check_call(cmd,shell=True)
+  os.chdir(origDir)
+
+def main(ip,robotID,atom):
+  if ask('Compile all binaries (probably yes)'):
+    print 'compiling lib and bins for robot'
+    compile()
+  if ask('Setup passwordless ssh'):
+    setupPasswordlessSSH(ip)
+    # change the pass anytime we're setting up passwordless ssh
+  d = makeTempDir()
+  try:
+    setupPassword(ip,d)
+    print 'making dirs'
+    runRemoteCommand(ip,'mkdir -p lua logs data bin data/mof')
+    print 'setting up networking'
+    setupNetworking(ip,robotID,d)
+    print 'copying lib and bins to robot'
+    copyRobot(ip,robotID)
+    print 'You should now manually reboot the robot'
+
+  finally:
+    removeTempDir(d)
+
+if __name__ == '__main__':
+  import sys
+  usage = 'setup_robotv4 currentIP robotID [--geode]'
+  helpStrings = ['-h','--help']
+  args = sys.argv[1:]
+  for s in helpStrings:
+    if s in args:
+      print usage
+      sys.exit(0)
+  atom = True
+  if '--geode' in args:
+    args.remove('--geode')
+    atom = False
+  elif '--atom' in args:
+    args.remove('--atom')
+    atom = True
+  else:
+    print 'Assuming you want atom, because you should'
+    #print 'Must specify --geode or --atom'
+    #sys.exit(1)
+  if len(args) != 2:
+    print usage
+    sys.exit(1)
+  currentIP = args[0]
+  robotID = args[1]
+  main(currentIP,robotID,atom)

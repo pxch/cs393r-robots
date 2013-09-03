@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+if [ -z "$NAO_HOME" ] ; then
+  echo "NAO_HOME not set, exiting"
+  exit 1
+fi
+version=2.7.5
+extension=tar.bz2
+name=Python-$version
+filename=$name.$extension
+file=http://www.python.org/ftp/python/$version/$filename
+unzipcmd="tar jxf"
+set -e
+wget $file --trust-server-name -N
+$unzipcmd $filename
+cd $name
+OPT=-m32 LDFLAGS=-m32 ./configure --prefix=/opt/pym32 CFLAGS=-m32 CC='gcc -m32' BASECFLAGS='-m32'
+make
+target=$NAO_HOME/naoqi/crosstoolchain/atom/sysroot/lib/python2.7
+mkdir -p $target
+cp -r build/lib.linux*/* $target
+
