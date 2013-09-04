@@ -189,8 +189,9 @@ bool IntrinsicCalibrator::runCalibration(vector<Mat>& rvecs, vector<Mat>& tvecs,
 
     objectPoints_.resize(imagePoints_.size(),corners);
     
-    double rms = calibrateCamera(objectPoints_, imagePoints_, settings_.imageSize, cameraMatrix_,
-                    distortionCoeffs_, rvecs, tvecs, settings_.flags|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
+    double rms = 0;
+    //calibrateCamera(objectPoints_, imagePoints_, settings_.imageSize, cameraMatrix_,
+                    //distortionCoeffs_, rvecs, tvecs, settings_.flags|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
                     ///*|CV_CALIB_FIX_K3*/|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
     printf("RMS error reported by calibrateCamera: %g\n", rms);
     
