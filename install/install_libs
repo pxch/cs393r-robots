@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-sudo apt-get install build-essential cmake ccache libqt4-dev libqt4-core subversion swig2.0 lua5.1 cmake-curses-gui libmpfr-dev libboost1.48-all-dev libqwt5-qt4-dev libdevil-dev libode-dev ruby1.8-dev libqglviewer-qt4-dev libnotify-bin libopencv-dev git fping
+sudo apt-get install build-essential cmake ccache libqt4-dev libqt4-core subversion swig2.0 lua5.1 cmake-curses-gui libmpfr-dev libboost1.48-all-dev libqwt5-qt4-dev libdevil-dev libode-dev ruby1.8-dev libqglviewer-qt4-dev libnotify-bin git fping
