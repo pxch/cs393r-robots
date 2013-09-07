@@ -38,7 +38,8 @@ class Playing(Task):
   def run(self):
     import percepts
     while True:
-      print "%f" % percepts.sensors[core.gyroX]
+      print "gyroX: %f" % percepts.sensors[core.gyroX]
+      print "HeadPitch: %f" % percepts.joint_angles[core.HeadPitch]
     self.finish()
       
 class Testing(Task):
