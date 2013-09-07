@@ -25,8 +25,8 @@ Penalised = Initial = Finished = pose.Sit
 
 class Ready(HeadBodyTask):
   def __init__(self):
-    HeadBodyTask.__init__(self, 
-      head.Scan(period = 3.0, maxPan = 105.0 * core.DEG_T_RAD, numSweeps = 4),
+    HeadBodyTask.__init__(self,
+      head.Scan(period=3.0, maxPan=105.0 * core.DEG_T_RAD, numSweeps=4),
       pose.Stand()
     )
 
