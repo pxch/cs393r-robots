@@ -9,6 +9,3 @@ BlobDetector::BlobDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier) :
 		verticalBlob.push_back(std::vector<Blob>());
 }
 
-void BallDetector::detectBall() {
-}
-
