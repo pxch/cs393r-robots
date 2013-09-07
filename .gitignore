@@ -4,3 +4,6 @@ naoqi-*
 core.txt
 *.swp
 tags
+*~
+.*project
+
