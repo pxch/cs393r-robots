@@ -34,10 +34,11 @@ class Ready(HeadBodyTask):
     commands.setStiffness()
     HeadBodyTask.run(self)
 
-class Playing(MachineTask):
-  def __init__(self):
-    super(Playing, self).__init__(testFSM.TestMachine())
-
+class Playing(Task):
+  def run(self):
+    core.speech.say('Hello, World!')
+    self.finish()
+      
 class Testing(Task):
   def run(self):
     commands.setStiffness()
