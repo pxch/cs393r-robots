@@ -36,7 +36,9 @@ class Ready(HeadBodyTask):
 
 class Playing(Task):
   def run(self):
-    core.speech.say('Hello, World!')
+    import percepts
+    while True:
+      print "%f" % percepts.sensors[core.gyroX]
     self.finish()
       
 class Testing(Task):
