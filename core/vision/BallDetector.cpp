@@ -1,3 +1,5 @@
+#include <cstdlib>
+
 #include "BallDetector.h"
 
 using namespace Eigen;
@@ -26,7 +28,11 @@ void BallDetector::detectBall() {
 	ball->visionElevation = cmatrix_.elevation(p);
 	ball->visionDistance = cmatrix_.groundDistance(p);
 
-	ball->seen = true;
+	if (rand() % 2 == 0) {
+		ball->seen = true;
+	} else {
+		ball->seen = false;
+	}
 }
 
 void BallDetector::findBall(int& imageX, int& imageY) {
@@ -36,5 +42,5 @@ void BallDetector::findBall(int& imageX, int& imageY) {
 		for (int y = 0; y < iparams_.height; y++)
 			if (getSegPixelValueAt(x,y) == c_ORANGE)
 				imageX += x, imageY += y, total++;
-	imageX /= total, imageY /= total;
+	//imageX /= total, imageY /= total;
 }
