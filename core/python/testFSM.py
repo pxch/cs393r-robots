@@ -9,12 +9,12 @@ class TestMachine(StateMachine):
     finish = Node()
     sit = SitNode()
     stand = StandNode()
-    turnHead = TurnHeadNode()
+    walk = walkNode()
     
     self._adt(start, N, stand)
-    self._adt(stand, C, turnHead)
-    self._adt(turnHead, C, sit)
-    self._adt(sit, S, finish)
+    self._adt(stand, C, walk)
+    self._adt(walk, S, sit)
+    self._adt(sit, C, finish)
 
 class FoundBall(object):
   Yes = 1
@@ -63,6 +63,8 @@ class StandNode(Node):
       self.postCompleted()
       
 class TurnHeadNode(Node):
+  # XXX: complete this
+  
   def __init__(self):
     super(TurnHeadNode, self).__init__()
     
@@ -71,7 +73,12 @@ class TurnHeadNode(Node):
     if self.getTime() > 3.0:
       self.postCompleted()
 
-
+class WalkNode(Node):
+  def run(self):
+    commands.setWalkVelocity(.5, 0, 0)
+    if self.getTime() > 2.0:
+      commands.stand()
+      self.postSuccess()
 
 
 
