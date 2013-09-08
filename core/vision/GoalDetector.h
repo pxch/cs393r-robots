@@ -21,7 +21,6 @@ public:
 	int YellowPostCounter;
 
 	void detectGoal();
-	void findGoal(float &visionRatio, int &goalX, int &goalY);
 
 private:
 	TextLogger* textlogger;
@@ -29,6 +28,7 @@ private:
 	BlobDetector* blob_detector_;
 	LineDetector* line_detector_;
 
+	void findGoal(float &visionRatio, int &goalX, int &goalY);
 };
 
 #endif
