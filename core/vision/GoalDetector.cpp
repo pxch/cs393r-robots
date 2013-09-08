@@ -35,7 +35,8 @@ void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
 				goalX += x, goalY += y, total++;
 	if (total) {
 		goalX /= total, goalY /= total;
-		visionRatio = total / iparams_.width / iparams_.height;
+		visionRatio = float(total) / float(iparams_.width)
+				/ float(iparams_.height);
 	} else {
 		seen = false;
 	}
