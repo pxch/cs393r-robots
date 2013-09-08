@@ -14,8 +14,8 @@ BallDetector::BallDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 }
 
 void BallDetector::detectBall() {
-	int imageX, imageY;
-	findBall(imageX, imageY); // function defined elsewhere that fills in imageX, imageY by reference
+	int imageX, imageY, seen;
+	findBall(imageX, imageY, seen); // function defined elsewhere that fills in imageX, imageY by reference
 	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 
 	ball->imageCenterX = imageX;
@@ -26,15 +26,19 @@ void BallDetector::detectBall() {
 	ball->visionElevation = cmatrix_.elevation(p);
 	ball->visionDistance = cmatrix_.groundDistance(p);
 
-	ball->seen = true;
+	ball->seen = seen;
 }
 
-void BallDetector::findBall(int& imageX, int& imageY) {
+void BallDetector::findBall(int& imageX, int& imageY, int& seen) {
 	imageX = imageY = 0;
-	int total = 1;
+	int total = 0;
 	for (int x = 0; x < iparams_.width; x++)
 		for (int y = 0; y < iparams_.height; y++)
 			if (getSegPixelValueAt(x,y) == c_ORANGE)
 				imageX += x, imageY += y, total++;
-	imageX /= total, imageY /= total;
+	if (total > 0) {
+		imageX /= total, imageY /= total;
+		seen = 1;
+	} else
+		seen = 0;
 }

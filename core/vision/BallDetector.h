@@ -17,7 +17,7 @@ public:
 	}
 
 	void detectBall();
-	void findBall(int& imageX, int& imageY);
+	void findBall(int& imageX, int& imageY, int& seen);
 
 	BallCandidate candidates[MAX_BALL_CANDS];
 
