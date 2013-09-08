@@ -93,9 +93,9 @@ class TrackBallNode(Node):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
     print ball.imageCenterX, ball.imageCenterY
     if ball.imageCenterX < 160:
-      commands.setHeadPan(pi / 90, 0.05)
+      commands.setHeadPan(pi / 18, 0.1)
     else:
-      comamnds.setHeadPan(-pi / 90, 0.05)
+      comamnds.setHeadPan(-pi / 18, 0.1)
     if self.getTime() > 30.0:
       self.postSuccess()
       
