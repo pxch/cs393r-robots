@@ -11,11 +11,11 @@ class TestMachine(StateMachine):
     stand = StandNode()
     walk = WalkNode()
     turnHead = TurnHeadNode()
+    trackBall = TrackBallNode()
     
     self._adt(start, N, stand)
-    self._adt(stand, C, walk)
-    self._adt(walk, S, turnHead)
-    self._adt(turnHead, S, sit)
+    self._adt(stand, C, trackBall)
+    self._adt(trackBall, S, sit)
     self._adt(sit, C, finish)
 
 class FoundBall(object):
@@ -86,6 +86,19 @@ class WalkNode(Node):
       self.postSuccess()
 
 
+class TrackBallNode(Node):
+  def __init__(self):
+    super(TrackBallNode, self).__init__()
 
+  def run(self):
+    ball = core.world_objects.getObjPtr(core.WO_BALL)
+    print ball.imageCenterX, ball.imageCenterY
+    if ball.imageCenterX < 160:
+      commands.setHeadPan(pi / 90, 0.05)
+    else:
+      comamnds.setHeadPan(-pi / 90, 0.05)
+    if self.getTime() > 30.0:
+      self.postSuccess()
+      
 
 
