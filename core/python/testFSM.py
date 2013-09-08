@@ -8,10 +8,19 @@ class TestMachine(StateMachine):
     finish = Node()
     sit = SitNode()
     findBall = FindBallNode()
+    sayYes = SpeakNode("Yes")
+    sayNo = SpeakNode("No")
     
     self._adt(start, N, sit)
     self._adt(sit, N, findBall)
-    self._adt(findBall, N, findBall)
+    self._adt(findBall, S(FoundBall.Yes), sayYes)
+    self._adt(findBall, S(FoundBall.No), sayNo)
+    self._adt(sayYes, S, findBall)
+    self._adt(sayNo, S, findBall)
+
+class FoundBall(object):
+  Yes = 1
+  No = 0
     
 class FindBallNode(Node):
   def __init__(self):
@@ -20,9 +29,9 @@ class FindBallNode(Node):
   def run(self):
     ball = core.world_objects.getObjPtr(core.WO_BALL)    
     if ball.seen:
-      core.speech.say("YES")
+      self.postSignal(FindBall.Yes)
     else:
-      core.speech.say("NO")
+      self.postSignal(FindBall.No)
 
 class SpeakNode(Node):
   def __init__(self, phrase):
