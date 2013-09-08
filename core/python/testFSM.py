@@ -78,7 +78,7 @@ class TurnHeadNode(Node):
 
 class WalkNode(Node):
   def run(self):
-    commands.setWalkVelocity(0, 0, pi / 4)
+    commands.setWalkVelocity(0.5, 0, pi / 4)
     core.speech.say("I am walking")
     if self.getTime() > 10.0:
       commands.stand()
