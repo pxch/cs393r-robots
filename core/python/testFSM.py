@@ -95,7 +95,7 @@ class TrackBallNode(Node):
     if ball.imageCenterX < 160:
       commands.setHeadPan(pi / 90, 0.05)
     else:
-      comamnds.setHeadPan(-pi / 90, 0.05)
+      commands.setHeadPan(-pi / 90, 0.05)
     if self.getTime() > 30.0:
       self.postSuccess()
       
