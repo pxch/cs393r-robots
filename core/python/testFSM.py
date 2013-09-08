@@ -18,11 +18,6 @@ class TestMachine(StateMachine):
     self._adt(locateBall, S(BallLocation.Left), BallLeftNode(), S, locateBall)
     self._adt(locateBall, S(BallLocation.Right), BallRightNode(), S, locateBall)
     self._adt(locateBall, S(BallLocation.Middle), locateBall)
-<<<<<<< HEAD
-=======
-    self._adt(locateBall, T(30.0), sit)
-    self._adt(sit, C, finish)
->>>>>>> 9d7268f3fe9c8679e3c2fd1d5a7ca0c9c7125244
 
 class BallLocation:
   Left = 0
