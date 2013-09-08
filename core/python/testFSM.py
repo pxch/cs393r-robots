@@ -153,5 +153,3 @@ class BallRightNode(Node):
     commands.setHeadPan(-pi / 18, 0.2, True)
     if self.getTime() > 0.2:
       self.postSuccess()
- 
-class BlueWallNearNode
