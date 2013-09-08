@@ -9,7 +9,7 @@ class TestMachine(StateMachine):
     finish = Node()
     sit = SitNode()
     stand = StandNode()
-    walk = walkNode()
+    walk = WalkNode()
     
     self._adt(start, N, stand)
     self._adt(stand, C, walk)
