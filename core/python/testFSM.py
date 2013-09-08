@@ -62,13 +62,9 @@ class StandNode(Node):
       self.postCompleted()
       
 class TurnHeadNode(Node):
-  def __init__(self):
-    super(TurnHeadNode, self).__init__()
-
   def run(self):
     commands.setWalkVelocity(1, 0, 0)
     if self.getTime() > 3.0:
-      core.speech.say("you are an idiot you can't control me")
       commands.stand()
       self.postSuccess()
 
