@@ -105,6 +105,7 @@ class WalkNode(Node):
 
 
 class TrackBallNode(Node):
+  # XXX not used now
   def __init__(self):
     super(TrackBallNode, self).__init__()
 
