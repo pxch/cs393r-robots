@@ -12,17 +12,22 @@ class TestMachine(StateMachine):
     walk = WalkNode()
     turnHead = TurnHeadNode()
     locateBall = LocateBallNode()
+    locateBlueWall = LocateBlueWallNode()
 
     self._adt(start, N, stand)
-    self._adt(stand, C, locateBall)
-    self._adt(locateBall, S(BallLocation.Left), BallLeftNode(), S, locateBall)
-    self._adt(locateBall, S(BallLocation.Right), BallRightNode(), S, locateBall)
-    self._adt(locateBall, S(BallLocation.Middle), locateBall)
+    self._adt(stand, C, locateBlueWall)
+    self._adt(locateBlueWall, S(BlueWallLocation.Far), walk, S, locateBlueWall)
+    self._adt(locateBlueWall, S(BlueWallLocation.Near), sit)
+    self._adt(sit, C, finish)
 
 class BallLocation:
   Left = 0
   Right = 1
   Middle = 2
+  
+class BlueWallLocation:
+  Far = 0
+  Near = 1
 
 class LocateBallNode(Node):
   def run(self):
@@ -37,6 +42,16 @@ class LocateBallNode(Node):
         choice = 2
       self.postSignal(choice)  
 
+class LocateBlueWallNode(Node):
+  def run(self):
+    goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
+    print goal.imageCenterX, goal.imageCenterY, goal.radius
+    if radius < 0.5:
+      choice = 0
+    else:
+      choice = 1
+    self.postSignal(choice)
+    
 class FoundBall(object):
   Yes = 1
   No = 0
@@ -97,9 +112,9 @@ class TurnHeadNode(Node):
 
 class WalkNode(Node):
   def run(self):
-    commands.setWalkVelocity(1, 0, pi / 6)
-    core.speech.say("I am walking")
-    if self.getTime() > 10.0:
+    commands.setWalkVelocity(1, 0, 0)
+    core.speech.say("I am walking toward the goal")
+    if self.getTime() > 0.5:
       commands.stand()
       self.postSuccess()
 
@@ -138,4 +153,4 @@ class BallRightNode(Node):
     if self.getTime() > 0.2:
       self.postSuccess()
  
-
+class BlueWallNearNode
