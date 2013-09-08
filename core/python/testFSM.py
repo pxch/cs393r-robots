@@ -115,7 +115,7 @@ class WalkNode(Node):
   def run(self):
     commands.setWalkVelocity(1, 0, 0)
     core.speech.say("I am walking toward the goal")
-    if self.getTime() > 0.5:
+    if self.getTime() > 10.0:
       commands.stand()
       self.postSuccess()
 
