@@ -11,7 +11,7 @@ class TestMachine(StateMachine):
     turnHead = TurnHeadNode()
     
     self._adt(start, N, stand)
-    self._adt(stand, S, turnHead)
+    self._adt(stand, C, turnHead)
     self._adt(turnHead, S, finish)
 
 class FoundBall(object):
@@ -66,7 +66,7 @@ class TurnHeadNode(Node):
 
   def run(self):
     commands.setWalkVelocity(.5, 0, 0)
-    if self.getTime() > 3:
+    if self.getTime() > 3.0:
       core.speech.say("you are an idiot you can't control me")
       commands.stand()
       self.postSuccess()
