@@ -14,4 +14,14 @@ BallDetector::BallDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 }
 
 void BallDetector::detectBall() {
+	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+	ball->seen = false;
+
+	for (int i = 0; i != iparams_.width; ++i) {
+		for (int j = 0; j != iparams_.height; ++j) {
+			if (getSegPixelValueAt(i,j) == c_ORANGE) {
+				ball->seen = true;
+			}
+		}
+	}
 }
