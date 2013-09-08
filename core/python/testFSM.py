@@ -10,10 +10,12 @@ class TestMachine(StateMachine):
     sit = SitNode()
     stand = StandNode()
     walk = WalkNode()
+    turnHead = TurnHeadNode()
     
     self._adt(start, N, stand)
     self._adt(stand, C, walk)
-    self._adt(walk, S, sit)
+    self._adt(walk, S, turnHead)
+    self._adt(turnHead, C, sit)
     self._adt(sit, C, finish)
 
 class FoundBall(object):
