@@ -11,12 +11,32 @@ class TestMachine(StateMachine):
     stand = StandNode()
     walk = WalkNode()
     turnHead = TurnHeadNode()
-    trackBall = TrackBallNode()
-    
+    locateBall = LocateBallNode()
+
     self._adt(start, N, stand)
-    self._adt(stand, C, trackBall)
-    self._adt(trackBall, S, sit)
+    self._adt(stand, C, locateBall)
+    self._adt(locateBall, S(BallLocation.Left), BallLeftNode(), S, locateBall)
+    self._adt(locateBall, S(BallLocation.Right), BallRightNode(), S, locateBall)
+    self._adt(locateBall, S(BallLocation.Middle), locateBall)
+    self._adt(locateBall, T(30.0), SitNode())
     self._adt(sit, C, finish)
+
+class BallLocation:
+  Left = 0
+  Right = 1
+  Middle = 2
+
+class LocateBallNode(Node):
+  def run(self):
+    ball = core.world_objects.getObjPtr(core.WO_BALL)  
+    if self.getTime() > 0.2:
+      if ball.imageCenterX < 150:
+        choice = 0
+      elif ball.imageCenterX > 170:
+        choice = 1
+      else:
+        choice = 2
+      self.postSignal(choice)  
 
 class FoundBall(object):
   Yes = 1
@@ -100,5 +120,22 @@ class TrackBallNode(Node):
     if self.getTime() > 30.0:
       self.postSuccess()
       
+class BallLeftNode(Node):
+  def __init__(self):
+    super(BallLeftNode, self).__init__()
 
+  def run(self):
+    commands.setHeadPan(pi / 18, 0.2)
+    if self.getTime() > 0.2:
+      self.postSuccess()
+ 
+class BallRightNode(Node):
+  def __init__(self):
+    super(BallRightNode, self).__init__()
+
+  def run(self):
+    commands.setHeadPan(-pi / 18, 0.2)
+    if self.getTime() > 0.2:
+      self.postSuccess()
+ 
 
