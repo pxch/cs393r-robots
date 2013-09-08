@@ -18,6 +18,8 @@ void GoalDetector::detectGoal() {
 	goal->imageCenterX = goalX;
 	goal->imageCenterY = goalY;
 
+	goal->radius = visionRatio;
+
 	goal->seen = true;
 }
 
