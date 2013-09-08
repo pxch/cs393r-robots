@@ -27,6 +27,7 @@ void GoalDetector::detectGoal() {
 void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
 		bool &seen) {
 	goalX = goalY = 0;
+	visionRatio = 0;
 	int total = 0;
 	for (int x = 0; x < iparams_.width; x++)
 		for (int y = 0; y < iparams_.height; y++)
