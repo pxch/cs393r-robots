@@ -7,16 +7,13 @@ class TestMachine(StateMachine):
     start = Node()
     finish = Node()
     sit = SitNode()
-    findBall = FindBallNode()
-    sayYes = SpeakNode("Yes")
-    sayNo = SpeakNode("No")
+    stand = StandNode()
+    turnHead = TurnHeadNode()
     
-    self._adt(start, N, sit)
-    self._adt(sit, N, findBall)
-    self._adt(findBall, S(FoundBall.Yes), sayYes)
-    self._adt(findBall, S(FoundBall.No), sayNo)
-    self._adt(sayYes, S, findBall)
-    self._adt(sayNo, S, findBall)
+    self._adt(start, N, stand)
+    self._adt(stand, T(10), sit)
+    self._adt(sit, C, turnHead)
+    self._adt(turnHead, C, finish)
 
 class FoundBall(object):
   Yes = 1
@@ -53,5 +50,29 @@ class SitNode(Node):
     self.task.processFrame() 
     if self.task.finished():
       self.postCompleted()
+
+class StandNode(Node):
+  def __init__(self):
+    super(StandNode, self).__init__()
+    self.task = pose.Stand()
+
+  def run(self):
+    self.task.processFrame()
+    if self.task.finished():
+      self.postCompleted()
+      
+class TurnHeadNode(Node):
+  def __init__(self):
+    super(TurnHeadNode, self).__init__()
+
+  def run(self):
+    while self.getTime() < 60:
+      core.speech.say("ouch")
+    self.postCompleted()
+
+
+
+
+
 
 
