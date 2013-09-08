@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <vision/GoalDetector.h>
 
 GoalDetector::GoalDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
@@ -29,10 +31,14 @@ void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
 	goalX = goalY = 0;
 	visionRatio = 0;
 	int total = 0;
-	for (int x = 0; x < iparams_.width; x++)
-		for (int y = 0; y < iparams_.height; y++)
-			if (getSegPixelValueAt(x,y) == c_BLUE)
+	for (int x = 0; x < iparams_.width; x++) {
+		for (int y = 0; y < iparams_.height; y++) {
+			if (getSegPixelValueAt(x,y) == c_BLUE) {
 				goalX += x, goalY += y, total++;
+			}
+		}
+	}
+	std::cout << total << std::endl;
 	if (total) {
 		goalX /= total, goalY /= total;
 		visionRatio = float(total) / float(iparams_.width)
