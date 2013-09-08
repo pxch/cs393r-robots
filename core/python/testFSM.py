@@ -11,8 +11,7 @@ class TestMachine(StateMachine):
     turnHead = TurnHeadNode()
     
     self._adt(start, N, stand)
-    self._adt(stand, T(10), sit)
-    self._adt(sit, C, turnHead)
+    self._adt(stand, C, turnHead)
     self._adt(turnHead, C, finish)
 
 class FoundBall(object):
