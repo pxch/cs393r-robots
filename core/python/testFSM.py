@@ -26,7 +26,8 @@ class BallLocation:
 
 class LocateBallNode(Node):
   def run(self):
-    ball = core.world_objects.getObjPtr(core.WO_BALL)  
+    ball = core.world_objects.getObjPtr(core.WO_BALL)
+    print ball.imageCenterX, ball.imageCenterY
     if self.getTime() > 0.2:
       if ball.imageCenterX < 150:
         choice = 0
@@ -123,7 +124,7 @@ class BallLeftNode(Node):
     super(BallLeftNode, self).__init__()
 
   def run(self):
-    commands.setHeadPan(pi / 18, 0.2)
+    commands.setHeadPan(pi / 18, 0.2, True)
     if self.getTime() > 0.2:
       self.postSuccess()
  
@@ -132,7 +133,7 @@ class BallRightNode(Node):
     super(BallRightNode, self).__init__()
 
   def run(self):
-    commands.setHeadPan(-pi / 18, 0.2)
+    commands.setHeadPan(-pi / 18, 0.2, True)
     if self.getTime() > 0.2:
       self.postSuccess()
  
