@@ -66,9 +66,10 @@ class TurnHeadNode(Node):
     super(TurnHeadNode, self).__init__()
 
   def run(self):
+    commands.setStiffness()
     commands.setWalkVelocity(.5, 0, 0)
     if self.getTime() < 10:
-      core.speech.say("you are an idoit, you can't control me")
+      core.speech.say("you are an idoit you can't control me")
       commands.stand()
       self.postCompleted()
 
