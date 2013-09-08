@@ -31,7 +31,7 @@ void BallDetector::detectBall() {
 
 void BallDetector::findBall(int& imageX, int& imageY) {
 	imageX = imageY = 0;
-	int total = 0;
+	int total = 1;
 	for (int x = 0; x < iparams_.width; x++)
 		for (int y = 0; y < iparams_.height; y++)
 			if (getSegPixelValueAt(x,y) == c_ORANGE)
