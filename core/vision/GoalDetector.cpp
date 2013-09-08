@@ -8,8 +8,17 @@ GoalDetector::GoalDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 
 void GoalDetector::detectGoal() {
 	// XXX: decide whose goal this is
-	WorldObject* ball = &vblocks_.world_object->objects_[WO_OPP_GOAL];
-	ball->seen = true;
+	WorldObject* goal = &vblocks_.world_object->objects_[WO_OPP_GOAL];
+
+	int goalX, goalY;
+	float visionRatio;
+
+	findGoal(visionRatio, goalX, goalY);
+
+	goal->imageCenterX = goalX;
+	goal->imageCenterY = goalY;
+
+	goal->seen = true;
 }
 
 void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY) {
