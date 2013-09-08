@@ -13,8 +13,8 @@ class TestMachine(StateMachine):
     
     self._adt(start, N, stand)
     self._adt(stand, C, turnHead)
-    self._adt(turnHead, C, sit)
-    self._adt(sit, S, finish)
+    self._adt(turnHead, S, sit)
+    self._adt(sit, C, finish)
 
 class FoundBall(object):
   Yes = 1
@@ -69,7 +69,7 @@ class TurnHeadNode(Node):
   def run(self):
     commands.setHeadPan(pi / 3, 2)
     if self.getTime() > 3.0:
-      self.postCompleted()
+      self.postSuccess()
 
 
 
