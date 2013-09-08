@@ -28,7 +28,7 @@ void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY) {
 	int total = 0;
 	for (int x = 0; x < iparams_.width; x++)
 		for (int y = 0; y < iparams_.height; y++)
-			if (getSegPixelValueAt(x,y) == c_ORANGE)
+			if (getSegPixelValueAt(x,y) == c_BLUE)
 				goalX += x, goalY += y, total++;
 	goalX /= total, goalY /= total;
 	visionRatio = total / iparams_.width / iparams_.height;
