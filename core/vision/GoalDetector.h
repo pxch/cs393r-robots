@@ -28,7 +28,7 @@ private:
 	BlobDetector* blob_detector_;
 	LineDetector* line_detector_;
 
-	void findGoal(float &visionRatio, int &goalX, int &goalY);
+	void findGoal(float &visionRatio, int &goalX, int &goalY, bool &seen);
 };
 
 #endif

@@ -12,24 +12,31 @@ void GoalDetector::detectGoal() {
 
 	int goalX, goalY;
 	float visionRatio;
+	bool seen;
 
-	findGoal(visionRatio, goalX, goalY);
+	findGoal(visionRatio, goalX, goalY, seen);
 
 	goal->imageCenterX = goalX;
 	goal->imageCenterY = goalY;
 
 	goal->radius = visionRatio;
 
-	goal->seen = true;
+	goal->seen = seen;
 }
 
-void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY) {
+void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
+		bool &seen) {
 	goalX = goalY = 0;
+	visionRatio = 0;
 	int total = 0;
 	for (int x = 0; x < iparams_.width; x++)
 		for (int y = 0; y < iparams_.height; y++)
 			if (getSegPixelValueAt(x,y) == c_BLUE)
 				goalX += x, goalY += y, total++;
-	goalX /= total, goalY /= total;
-	visionRatio = total / iparams_.width / iparams_.height;
+	if (total) {
+		goalX /= total, goalY /= total;
+		visionRatio = total / iparams_.width / iparams_.height;
+	} else {
+		seen = false;
+	}
 }
