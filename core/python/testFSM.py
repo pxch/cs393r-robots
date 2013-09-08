@@ -46,11 +46,12 @@ class LocateBlueWallNode(Node):
   def run(self):
     goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
     print goal.imageCenterX, goal.imageCenterY, goal.radius
-    if radius < 0.5:
-      choice = 0
-    else:
-      choice = 1
-    self.postSignal(choice)
+    if self.getTime() > 0.5:
+      if goal.radius < 0.5:
+        choice = 0
+      else:
+        choice = 1
+      self.postSignal(choice)
     
 class FoundBall(object):
   Yes = 1
