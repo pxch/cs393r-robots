@@ -77,6 +77,7 @@ class TurnHeadNode(Node):
 
 class WalkNode(Node):
   def run(self):
+    commands.setStiffness()
     commands.setWalkVelocity(.5, 0, 0)
     if self.getTime() > 2.0:
       commands.stand()
