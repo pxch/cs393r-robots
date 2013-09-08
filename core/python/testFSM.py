@@ -20,9 +20,9 @@ class FindBallNode(Node):
   def run(self):
     ball = core.world_objects.getObjPtr(core.WO_BALL)    
     if ball.seen:
-      core.speach.say("YES")
+      core.speech.say("YES")
     else:
-      core.speach.say("NO")
+      core.speech.say("NO")
 
 class SpeakNode(Node):
   def __init__(self, phrase):
