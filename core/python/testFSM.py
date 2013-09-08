@@ -48,6 +48,7 @@ class SitNode(Node):
     self.task = pose.Sit()
 
   def run(self):
+    commands.speech.say("Sit down")
     self.task.processFrame() 
     if self.task.finished():
       self.postCompleted()
@@ -58,6 +59,7 @@ class StandNode(Node):
     self.task = pose.Stand()
 
   def run(self):
+    commands.speech.say("Stand up")
     self.task.processFrame()
     if self.task.finished():
       self.postCompleted()
@@ -76,7 +78,8 @@ class TurnHeadNode(Node):
 class WalkNode(Node):
   def run(self):
     commands.setWalkVelocity(.5, 0, 0)
-    if self.getTime() > 2.0:
+    commands.speech.say("I am walking")
+    if self.getTime() > 10.0:
       commands.stand()
       self.postSuccess()
 
