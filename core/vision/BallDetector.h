@@ -17,6 +17,7 @@ public:
 	}
 
 	void detectBall();
+	void findBall(int& imageX, int& imageY, int& seen);
 
 	BallCandidate candidates[MAX_BALL_CANDS];
 
@@ -29,7 +30,6 @@ private:
 
 	BlobDetector* blob_detector_;
 
-	void findBall(int& imageX, int& imageY, int& seen);
 };
 
 #endif
