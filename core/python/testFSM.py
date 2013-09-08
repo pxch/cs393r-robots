@@ -73,7 +73,7 @@ class TurnHeadNode(Node):
   def run(self):
     core.speech.say("I am turning head")
     commands.setHeadPan(pi / 3, 2)
-    if self.getTime() > 3.0:
+    if self.getTime() > 10.0:
       self.postSuccess()
 
 class WalkNode(Node):
