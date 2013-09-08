@@ -12,7 +12,8 @@ class TestMachine(StateMachine):
     
     self._adt(start, N, stand)
     self._adt(stand, C, turnHead)
-    self._adt(turnHead, S, finish)
+    self._adt(turnHead, S, sit)
+    self._adt(sit, S, finish)
 
 class FoundBall(object):
   Yes = 1
@@ -65,8 +66,7 @@ class TurnHeadNode(Node):
     super(TurnHeadNode, self).__init__()
 
   def run(self):
-    commands.setStiffness()
-    commands.setWalkVelocity(.5, 0, 0)
+    commands.setWalkVelocity(1, 0, 0)
     if self.getTime() > 3.0:
       core.speech.say("you are an idiot you can't control me")
       commands.stand()
