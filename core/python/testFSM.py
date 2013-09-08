@@ -64,12 +64,11 @@ class StandNode(Node):
       
 class TurnHeadNode(Node):
   def __init__(self):
-    super(SitNode, self).__init__()
-    self.task = commands.setHeadPan(pi / 3, 2)
+    super(TurnHeadNode, self).__init__()
     
   def run(self):
-    self.task.processFrame()
-    if self.task.finished():
+    commands.setHeadPan(pi / 3, 2)
+    if self.getTime() > 3.0:
       self.postCompleted()
 
 
