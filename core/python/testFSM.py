@@ -12,7 +12,7 @@ class TestMachine(StateMachine):
     walk = WalkNode()
     locateBall = LocateBallNode()
     locateBlueWall = LocateBlueWallNode()
-    tiltHead = TiltHeadNode(-35)
+    tiltHead = TiltHeadNode(-28)
 
     self._adt(start, N, stand)
     self._adt(stand, C, tiltHead)
