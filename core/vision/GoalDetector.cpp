@@ -51,6 +51,4 @@ void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
 	} else {
 		seen = false;
 	}
-	std::cout << "blue pixels: " << total << std::endl;
-	std::cout << "blue ratio:  " << visionRatio << std::endl;
 }
