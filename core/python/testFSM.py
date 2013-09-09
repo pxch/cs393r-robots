@@ -56,9 +56,9 @@ class LocateBlueWallNode(Node):
       if goal.fromTopCamera:
         if goal.radius < 0.5:
           if goal.imageCenterX < 160:
-            choice = BlueWallLocation.FarLeft
-          else:
             choice = BlueWallLocation.FarRight
+          else:
+            choice = BlueWallLocation.FarLeft
         else:
           choice = BlueWallLocation.Near
       self.postSignal(choice)
