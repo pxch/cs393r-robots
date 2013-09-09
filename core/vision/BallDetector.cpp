@@ -14,7 +14,8 @@ BallDetector::BallDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 }
 
 void BallDetector::detectBall() {
-	int imageX, imageY, seen;
+	int imageX, imageY;
+	bool seen;
 	findBall(imageX, imageY, seen); // function defined elsewhere that fills in imageX, imageY by reference
 	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 
@@ -29,7 +30,7 @@ void BallDetector::detectBall() {
 	ball->seen = seen;
 }
 
-void BallDetector::findBall(int& imageX, int& imageY, int& seen) {
+void BallDetector::findBall(int& imageX, int& imageY, bool& seen) {
 	imageX = imageY = 0;
 	int total = 0;
 	for (int x = 0; x < iparams_.width; x++)
@@ -38,7 +39,7 @@ void BallDetector::findBall(int& imageX, int& imageY, int& seen) {
 				imageX += x, imageY += y, total++;
 	if (total > 0) {
 		imageX /= total, imageY /= total;
-		seen = 1;
+		seen = true;
 	} else
-		seen = 0;
+		seen = false;
 }
