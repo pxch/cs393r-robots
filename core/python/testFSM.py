@@ -130,7 +130,7 @@ class BallRightNode(Node):
 
 class TiltHeadNode(Node):
   def __init__(self, tilt):
-    super(BallRightNode, self).__init__()
+    super(TiltHeadNode, self).__init__()
     self.tilt = tilt
   
   def run(self):
