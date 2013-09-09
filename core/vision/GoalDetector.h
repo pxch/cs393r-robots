@@ -20,7 +20,7 @@ public:
 
 	int YellowPostCounter;
 
-	void detectGoal();
+	void detectGoal(Camera::Type const &cameraType);
 
 private:
 	TextLogger* textlogger;

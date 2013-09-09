@@ -25,10 +25,6 @@ class BallLocation:
   Left = 0
   Right = 1
   Middle = 2
-  
-class BlueWallLocation:
-  Far = 0
-  Near = 1
 
 class LocateBallNode(Node):
   def run(self):
@@ -36,22 +32,28 @@ class LocateBallNode(Node):
     print ball.imageCenterX, ball.imageCenterY
     if self.getTime() > 0.2:
       if ball.imageCenterX < 150:
-        choice = 0
+        choice = BallLocation.Left
       elif ball.imageCenterX > 170:
-        choice = 1
+        choice = BallLocation.Right
       else:
-        choice = 2
+        choice = BallLocation.Middle
       self.postSignal(choice)  
+
+class BlueWallLocation:
+  Far = 0
+  Near = 1
 
 class LocateBlueWallNode(Node):
   def run(self):
     goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
     print goal.imageCenterX, goal.imageCenterY, goal.radius
     if self.getTime() > 0.5:
-      if goal.radius < 0.5:
-        choice = 0
-      else:
-        choice = 1
+      choice = BlueWallLocation.Near
+      if goal.fromTopCamera:
+        if goal.radius < 0.5:
+          choice = BlueWallLocation.Far
+        else:
+          choice = BlueWallLocation.Near
       self.postSignal(choice)
     
 class FoundBall(object):

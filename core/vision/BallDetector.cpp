@@ -13,7 +13,7 @@ BallDetector::BallDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 	candidateCount = 0;
 }
 
-void BallDetector::detectBall() {
+void BallDetector::detectBall(Camera::Type const &cameraType) {
 	int imageX, imageY;
 	bool seen;
 	findBall(imageX, imageY, seen); // function defined elsewhere that fills in imageX, imageY by reference
@@ -28,6 +28,12 @@ void BallDetector::detectBall() {
 	ball->visionDistance = cmatrix_.groundDistance(p);
 
 	ball->seen = seen;
+
+	if (cameraType == Camera::TOP) {
+		ball->fromTopCamera = true;
+	} else {
+		ball->fromTopCamera = false;
+	}
 }
 
 void BallDetector::findBall(int& imageX, int& imageY, bool& seen) {
