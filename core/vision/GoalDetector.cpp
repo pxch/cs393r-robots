@@ -38,7 +38,7 @@ void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
 			}
 		}
 	}
-
+	std::cout << "blue pixels: " << total << std::endl;
 	if (total) {
 		goalX /= total, goalY /= total;
 		visionRatio = float(total) / float(iparams_.width)
