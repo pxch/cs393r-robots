@@ -21,7 +21,8 @@ class TestMachine(StateMachine):
     self._adt(tiltHead, C, locateBlueWall)
     self._adt(locateBlueWall, S(BlueWallLocation.FarLeft), walkLeft, S, locateBlueWall)
     self._adt(locateBlueWall, S(BlueWallLocation.FarRight), walkRight, S, locateBlueWall)
-    self._adt(locateBlueWall, S(BlueWallLocation.Near), sit)
+    self._adt(locateBlueWall, S(BlueWallLocation.Near), stand)
+    self._adt(stand, C, sit)
     self._adt(sit, C, finish)
 
 class BallLocation:
@@ -56,9 +57,9 @@ class LocateBlueWallNode(Node):
       if goal.fromTopCamera:
         if goal.radius < 0.5:
           if goal.imageCenterX < 160:
-            choice = BlueWallLocation.FarLeft
-          else:
             choice = BlueWallLocation.FarRight
+          else:
+            choice = BlueWallLocation.FarLeft
         else:
           choice = BlueWallLocation.Near
       self.postSignal(choice)
