@@ -118,14 +118,14 @@ class WalkNode(Node):
 
 class WalkLeftNode(Node):
   def run(self):
-    commands.setWalkVelocity(1, 0, pi / 18)
+    commands.setWalkVelocity(.2, 0, pi / 18)
     if self.getTime() > 5.0:
       commands.stand()
       self.postSuccess()
 
 class WalkRightNode(Node):
   def run(self):
-    commands.setWalkVelocity(1, 0, -pi / 18)
+    commands.setWalkVelocity(.2, 0, -pi / 18)
     if self.getTime() > 5.0:
       commands.stand()
       self.postSuccess()      
