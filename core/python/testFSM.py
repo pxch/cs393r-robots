@@ -10,12 +10,13 @@ class TestMachine(StateMachine):
     sit = SitNode()
     stand = StandNode()
     walk = WalkNode()
-    turnHead = TurnHeadNode()
     locateBall = LocateBallNode()
     locateBlueWall = LocateBlueWallNode()
+    tiltHead = TiltHeadNode(-35)
 
     self._adt(start, N, stand)
-    self._adt(stand, C, locateBlueWall)
+    self._adt(stand, C, tiltHead)
+    self._adt(tiltHead, C, locateBlueWall)
     self._adt(locateBlueWall, S(BlueWallLocation.Far), walk, S, locateBlueWall)
     self._adt(locateBlueWall, S(BlueWallLocation.Near), sit)
     self._adt(sit, C, finish)
@@ -113,7 +114,8 @@ class BallLeftNode(Node):
 
   def run(self):
     commands.setHeadPan(pi / 18, 0.2, True)
-    if self.getTime() > 0.2:
+    if self.getTime() > 0.3:
+      # XXX: don't use time to terminate
       self.postSuccess()
  
 class BallRightNode(Node):
@@ -122,5 +124,17 @@ class BallRightNode(Node):
 
   def run(self):
     commands.setHeadPan(-pi / 18, 0.2, True)
-    if self.getTime() > 0.2:
+    if self.getTime() > 0.3:
+      # XXX: don't use time to terminate
       self.postSuccess()
+
+class TiltHeadNode(Node):
+  def __init__(self, tilt):
+    super(BallRightNode, self).__init__()
+    self.tilt = tilt
+  
+  def run(self):
+    commands.setHeadTilt(self.tilt)
+    if self.getTime() > 2.0:
+      # XXX: don't use time to terminate
+      self.postCompleted()
