@@ -13,11 +13,14 @@ class TestMachine(StateMachine):
     locateBall = LocateBallNode()
     locateBlueWall = LocateBlueWallNode()
     tiltHead = TiltHeadNode(-21)
+    walkLeft = WalkLeftNode()
+    walkRight = WalkRightNode()
 
     self._adt(start, N, stand)
     self._adt(stand, C, tiltHead)
     self._adt(tiltHead, C, locateBlueWall)
-    self._adt(locateBlueWall, S(BlueWallLocation.Far), walk, S, locateBlueWall)
+    self._adt(locateBlueWall, S(BlueWallLocation.FarLeft), walkLeft, S, locateBlueWall)
+    self._adt(locateBlueWall, S(BlueWallLocation.FarRight), walkRight, S, locateBlueWall)
     self._adt(locateBlueWall, S(BlueWallLocation.Near), sit)
     self._adt(sit, C, finish)
 
@@ -40,8 +43,9 @@ class LocateBallNode(Node):
       self.postSignal(choice)  
 
 class BlueWallLocation:
-  Far = 0
-  Near = 1
+  FarRight = 0
+  FarLeft = 1
+  Near = 2
 
 class LocateBlueWallNode(Node):
   def run(self):
@@ -51,7 +55,10 @@ class LocateBlueWallNode(Node):
       choice = BlueWallLocation.Near
       if goal.fromTopCamera:
         if goal.radius < 0.5:
-          choice = BlueWallLocation.Far
+          if goal.imageCenterX < 160:
+            choice = BlueWallLocation.FarLeft
+          else:
+            choice = BlueWallLocation.FarRight
         else:
           choice = BlueWallLocation.Near
       self.postSignal(choice)
@@ -105,10 +112,23 @@ class StandNode(Node):
 class WalkNode(Node):
   def run(self):
     commands.setWalkVelocity(1, 0, 0)
-    core.speech.say("I am walking toward the goal")
     if self.getTime() > 10.0:
       commands.stand()
       self.postSuccess()
+
+class WalkLeftNode(Node):
+  def run(self):
+    commands.setWalkVelocity(1, 0, pi / 18)
+    if self.getTime() > 5.0:
+      commands.stand()
+      self.postSuccess()
+
+class WalkRightNode(Node):
+  def run(self):
+    commands.setWalkVelocity(1, 0, -pi / 18)
+    if self.getTime() > 5.0:
+      commands.stand()
+      self.postSuccess()      
       
 class BallLeftNode(Node):
   def __init__(self):
