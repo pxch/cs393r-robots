@@ -21,8 +21,7 @@ class TestMachine(StateMachine):
     self._adt(tiltHead, C, locateBlueWall)
     self._adt(locateBlueWall, S(BlueWallLocation.FarLeft), walkLeft, S, locateBlueWall)
     self._adt(locateBlueWall, S(BlueWallLocation.FarRight), walkRight, S, locateBlueWall)
-    self._adt(locateBlueWall, S(BlueWallLocation.Near), stand)
-    self._adt(stand, C, sit)
+    self._adt(locateBlueWall, S(BlueWallLocation.Near), stand, C, sit)
     self._adt(sit, C, finish)
 
 class BallLocation:
