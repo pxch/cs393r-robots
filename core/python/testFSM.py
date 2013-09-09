@@ -98,18 +98,6 @@ class StandNode(Node):
     self.task.processFrame()
     if self.task.finished():
       self.postCompleted()
-      
-class TurnHeadNode(Node):
-  # XXX: complete this
-  
-  def __init__(self):
-    super(TurnHeadNode, self).__init__()
-    
-  def run(self):
-    core.speech.say("I am turning head")
-    commands.setHeadPan(pi / 3, 2)
-    if self.getTime() > 10.0:
-      self.postSuccess()
 
 class WalkNode(Node):
   def run(self):
@@ -117,23 +105,6 @@ class WalkNode(Node):
     core.speech.say("I am walking toward the goal")
     if self.getTime() > 10.0:
       commands.stand()
-      self.postSuccess()
-
-
-class TrackBallNode(Node):
-  # XXX not used now
-  def __init__(self):
-    super(TrackBallNode, self).__init__()
-
-  def run(self):
-    ball = core.world_objects.getObjPtr(core.WO_BALL)
-    print ball.imageCenterX, ball.imageCenterY
-    if ball.imageCenterX < 160:
-      commands.setHeadPan(pi / 18, 0.1)
-    else:
-      commands.setHeadPan(-pi / 18, 0.1)
-
-    if self.getTime() > 30.0:
       self.postSuccess()
       
 class BallLeftNode(Node):
