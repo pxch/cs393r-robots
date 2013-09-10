@@ -35,17 +35,16 @@ class LocateBallNode(Node):
   
   def run(self):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
-    if self.getTime() > 0.2:
-      choice = BallLocation.Middle
-      if ball.fromTopCamera == self.fromTop:
-        print ball.imageCenterX, ball.imageCenterY
-        if ball.imageCenterX < 150:
-          choice = BallLocation.Left
-        elif ball.imageCenterX > 170:
-          choice = BallLocation.Right
-        else:
-          choice = BallLocation.Middle
-      self.postSignal(choice)  
+    choice = BallLocation.Middle
+    if ball.fromTopCamera == self.fromTop:
+      print ball.imageCenterX, ball.imageCenterY
+      if ball.imageCenterX < 150:
+        choice = BallLocation.Left
+      elif ball.imageCenterX > 170:
+        choice = BallLocation.Right
+      else:
+        choice = BallLocation.Middle
+    self.postSignal(choice)  
 
 class BlueWallLocation:
   FarRight = 0
