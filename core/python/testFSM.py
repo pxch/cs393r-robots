@@ -10,7 +10,7 @@ class TestMachine(StateMachine):
     sit = SitNode()
     stand = StandNode()
     walk = WalkNode()
-    locateBall = LocateBallNode()
+    locateBall = LocateBallNode(False)
     locateBlueWall = LocateBlueWallNode()
     tiltHead = TiltHeadNode(-21.1)
     walkLeft = WalkLeftNode()
@@ -18,7 +18,10 @@ class TestMachine(StateMachine):
 
     self._adt(start, N, stand)
     self._adt(stand, C, tiltHead)
-    self._adt(tiltHead, C, finish)
+    self._adt(tiltHead, C, locateBall)
+    self._adt(locateBall, S(BallLocation.Left), walkLeft, S, locateBall)
+    self._adt(locateBall, S(BallLocation.Right), walkRight, S, locateBall)
+    self._adt(locateBall, S(BallLocation.Middle), walk, S, locateBall)
 
 class BallLocation:
   Left = 0
@@ -26,16 +29,22 @@ class BallLocation:
   Middle = 2
 
 class LocateBallNode(Node):
+  def __init__(self, fromTop):
+    super(LocateBallNode, self).__init__()
+    self.fromTop = fromTop
+  
   def run(self):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
     print ball.imageCenterX, ball.imageCenterY
     if self.getTime() > 0.2:
-      if ball.imageCenterX < 150:
-        choice = BallLocation.Left
-      elif ball.imageCenterX > 170:
-        choice = BallLocation.Right
-      else:
-        choice = BallLocation.Middle
+      choice = BallLocation.Middle
+      if ball.fromTopCamera == self.fromTop:
+        if ball.imageCenterX < 150:
+          choice = BallLocation.Left
+        elif ball.imageCenterX > 170:
+          choice = BallLocation.Right
+        else:
+          choice = BallLocation.Middle
       self.postSignal(choice)  
 
 class BlueWallLocation:
@@ -58,21 +67,6 @@ class LocateBlueWallNode(Node):
         else:
           choice = BlueWallLocation.Near
       self.postSignal(choice)
-    
-class FoundBall(object):
-  Yes = 1
-  No = 0
-    
-class FindBallNode(Node):
-  def __init__(self):
-    super(FindBallNode, self).__init__()
-  
-  def run(self):
-    ball = core.world_objects.getObjPtr(core.WO_BALL)    
-    if ball.seen:
-      self.postSignal(FindBall.Yes)
-    else:
-      self.postSignal(FindBall.No)
 
 class SpeakNode(Node):
   def __init__(self, phrase):
@@ -107,21 +101,21 @@ class StandNode(Node):
 
 class WalkNode(Node):
   def run(self):
-    commands.setWalkVelocity(1, 0, 0)
-    if self.getTime() > 10.0:
+    commands.setWalkVelocity(0.1, 0, 0)
+    if self.getTime() > 1.0:
       commands.stand()
       self.postSuccess()
 
 class WalkLeftNode(Node):
   def run(self):
-    commands.setWalkVelocity(.1, 0, pi / 18)
+    commands.setWalkVelocity(0.1, 0, pi / 18)
     if self.getTime() > 1.0:
       commands.stand()
       self.postSuccess()
 
 class WalkRightNode(Node):
   def run(self):
-    commands.setWalkVelocity(.1, 0, -pi / 18)
+    commands.setWalkVelocity(0.1, 0, -pi / 18)
     if self.getTime() > 1.0:
       commands.stand()
       self.postSuccess()      
