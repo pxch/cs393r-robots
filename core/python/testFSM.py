@@ -1,5 +1,5 @@
 from state import * 
-import commands, core, util, pose
+import commands, core, util, pose, percepts
 import time
 from math import pi
 
