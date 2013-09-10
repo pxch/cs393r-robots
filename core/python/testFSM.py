@@ -18,7 +18,7 @@ class TestMachine(StateMachine):
 
     self._adt(start, N, stand)
     self._adt(stand, C, tiltHead)
-    self._adt(tiltHead, C, Node(), T(10), sit, C, finish)
+    self._adt(tiltHead, C, finish)
 
 class BallLocation:
   Left = 0
