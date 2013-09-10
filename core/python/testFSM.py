@@ -18,7 +18,7 @@ class TestMachine(StateMachine):
     walkRight = WalkRightNode(0.1)
 
     self._adt(start, N, stand1)
-    self._adt(stand1, C, WalkNode(10.0, 0.1, 0, 0), C, WalkNode(5.0, 0, 0, pi / 4), C, StandNode(), C, TurnHeadNode(-pi / 3, 2, True), C, TurnHeadNode(pi / 3, 2, True), C, stand2)
+    self._adt(stand1, C, WalkNode(10.0, 0.1, 0, 0), S, WalkNode(5.0, 0, 0, pi / 4), S, StandNode(), S, TurnHeadNode(-pi / 3, 2, True), S, TurnHeadNode(pi / 3, 2, True), S, sit, C, stand2)
     self._adt(stand2, C, tiltHead)
     self._adt(tiltHead, C, locateBall)
     self._adt(locateBall, S(BallLocation.Left), walkLeft, S, locateBall)
@@ -90,6 +90,7 @@ class SitNode(Node):
     self.task = pose.Sit()
 
   def run(self):
+    core.speech.say("sit")
     self.task.processFrame() 
     if self.task.finished():
       self.postCompleted()
@@ -100,6 +101,7 @@ class StandNode(Node):
     self.task = pose.Stand()
 
   def run(self):
+    core.speech.say("stand")
     self.task.processFrame()
     if self.task.finished():
       self.postCompleted()
