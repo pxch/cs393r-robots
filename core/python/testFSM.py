@@ -12,17 +12,13 @@ class TestMachine(StateMachine):
     walk = WalkNode()
     locateBall = LocateBallNode()
     locateBlueWall = LocateBlueWallNode()
-    tiltHead = TiltHeadNode(-10)
+    tiltHead = TiltHeadNode(-21)
     walkLeft = WalkLeftNode()
     walkRight = WalkRightNode()
 
     self._adt(start, N, stand)
     self._adt(stand, C, tiltHead)
-    self._adt(tiltHead, C, locateBlueWall)
-    self._adt(locateBlueWall, S(BlueWallLocation.FarLeft), walkLeft, S, locateBlueWall)
-    self._adt(locateBlueWall, S(BlueWallLocation.FarRight), walkRight, S, locateBlueWall)
-    self._adt(locateBlueWall, S(BlueWallLocation.Near), StandNode(), C, sit)
-    self._adt(sit, C, finish)
+    self._adt(tiltHead, C, finish)
 
 class BallLocation:
   Left = 0
