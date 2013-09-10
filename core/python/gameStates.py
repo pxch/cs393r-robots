@@ -38,7 +38,7 @@ class Playing(MachineTask):
   def __init__(self):
     super(Playing, self).__init__(testFSM.TestMachine())
 
-Playing = kicks.Kick
+#Playing = kicks.Kick
 
 class Testing(Task):
   def run(self):
