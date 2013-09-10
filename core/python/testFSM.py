@@ -8,16 +8,18 @@ class TestMachine(StateMachine):
     start = Node()
     finish = Node()
     sit = SitNode()
-    stand = StandNode()
-    walk = WalkNode()
+    stand1 = StandNode()
+    stand2 = StandNode()
+    walk = WalkNode(1, 0.1, 0, 0)
     locateBall = LocateBallNode(False)
     locateBlueWall = LocateBlueWallNode()
     tiltHead = TiltHeadNode(-21.1)
-    walkLeft = WalkLeftNode()
-    walkRight = WalkRightNode()
+    walkLeft = WalkLeftNode(0.1)
+    walkRight = WalkRightNode(0.1)
 
-    self._adt(start, N, stand)
-    self._adt(stand, C, tiltHead)
+    self._adt(start, N, stand1)
+    self._adt(stand1, C, WalkNode(10.0, 0.1, 0, 0), C, WalkNode(5.0, 0, 0, pi / 4), C, StandNode(), C, TurnHeadNode(-pi / 3, 2, True), C, TurnHeadNode(pi / 3, 2, True), C, stand2)
+    self._adt(stand2, C, tiltHead)
     self._adt(tiltHead, C, locateBall)
     self._adt(locateBall, S(BallLocation.Left), walkLeft, S, locateBall)
     self._adt(locateBall, S(BallLocation.Right), walkRight, S, locateBall)
@@ -35,6 +37,10 @@ class LocateBallNode(Node):
   
   def run(self):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
+    if ball.seen:
+      core.speech.say("I see the ball")
+    else:
+      core.speech.say("Where is the ball")
     choice = BallLocation.Middle
     if ball.fromTopCamera == self.fromTop:
       print ball.imageCenterX, ball.imageCenterY
@@ -99,23 +105,39 @@ class StandNode(Node):
       self.postCompleted()
 
 class WalkNode(Node):
+  def __init__(self, walkTime, x, y, theta):
+    super(WalkNode, self).__init__()
+    self.walkTime = walkTime
+    self.x = x
+    self.y = y
+    self.theta = theta
+      
   def run(self):
-    commands.setWalkVelocity(0.1, 0, 0)
-    if self.getTime() > 1.0:
+    print percepts.joint_angles[core.LKneePitch]  # XXX: remove
+    commands.setWalkVelocity(self.x, self.y, self.theta)
+    if self.getTime() > self.walkTime:
       commands.stand()
       self.postSuccess()
 
 class WalkLeftNode(Node):
+  def __init__(self, walkTime):
+    super(WalkLeftNode, self).__init__()
+    self.walkTime = walkTime
+  
   def run(self):
     commands.setWalkVelocity(0.1, 0, pi / 18)
-    if self.getTime() > 1.0:
+    if self.getTime() > self.walkTime:
       commands.stand()
       self.postSuccess()
 
 class WalkRightNode(Node):
+  def __init__(self, walkTime):
+    super(WalkRightNode, self).__init__()
+    self.walkTime = walkTime
+      
   def run(self):
     commands.setWalkVelocity(0.1, 0, -pi / 18)
-    if self.getTime() > 1.0:
+    if self.getTime() > self.walkTime:
       commands.stand()
       self.postSuccess()      
       
@@ -149,3 +171,18 @@ class TiltHeadNode(Node):
     if self.getTime() > 2.0:
       # XXX: don't use time to terminate
       self.postCompleted()
+
+class TurnHeadNode(Node):
+  def __init__(self, angle, turnTime, relative):
+    super(TurnHeadNode, self).__init__()
+    self.angle = angle
+    self.turnTime = turnTime
+    self.relative = relative
+  
+  def run(self):
+    commands.setHeadPan(self.angle, self.turnTime, self.relative)
+    if self.getTime() > self.turnTime + 0.1:
+      self.postSuccess()
+
+
+
