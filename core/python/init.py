@@ -9,6 +9,8 @@ import percepts
 import lights
 import classBvr
 import util
+import cfgkick
+import commands
 behavior = classBvr
 
 def init():
@@ -29,6 +31,7 @@ def processFrame():
     global firstFrame
     core.instance.preVision()
     if firstFrame:
+      commands.setKickParameters(cfgkick.StraightKick, cfgkick.StraightSuperKick)
       core.world_objects.init(core.robot_state.team_)
       core.visionC.initSpecificModule()
       core.speech.say("Vision")

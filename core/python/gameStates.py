@@ -2,7 +2,7 @@
 
 import core
 from task import Task, HeadBodyTask, MachineTask
-import pose, head
+import pose, head, kicks
 import commands, cfgstiff
 import testFSM
 
@@ -37,6 +37,8 @@ class Ready(HeadBodyTask):
 class Playing(MachineTask):
   def __init__(self):
     super(Playing, self).__init__(testFSM.TestMachine())
+
+Playing = kicks.Kick
 
 class Testing(Task):
   def run(self):
