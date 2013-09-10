@@ -21,7 +21,7 @@ class TestMachine(StateMachine):
     self._adt(tiltHead, C, locateBlueWall)
     self._adt(locateBlueWall, S(BlueWallLocation.FarLeft), walkLeft, S, locateBlueWall)
     self._adt(locateBlueWall, S(BlueWallLocation.FarRight), walkRight, S, locateBlueWall)
-    self._adt(locateBlueWall, S(BlueWallLocation.Near), stand, C, sit)
+    self._adt(locateBlueWall, S(BlueWallLocation.Near), StandNode(), C, sit)
     self._adt(sit, C, finish)
 
 class BallLocation:
@@ -119,14 +119,14 @@ class WalkNode(Node):
 class WalkLeftNode(Node):
   def run(self):
     commands.setWalkVelocity(.1, 0, pi / 18)
-    if self.getTime() > 5.0:
+    if self.getTime() > 1.0:
       commands.stand()
       self.postSuccess()
 
 class WalkRightNode(Node):
   def run(self):
     commands.setWalkVelocity(.1, 0, -pi / 18)
-    if self.getTime() > 5.0:
+    if self.getTime() > 1.0:
       commands.stand()
       self.postSuccess()      
       
