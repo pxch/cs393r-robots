@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "BallDetector.h"
 
 using namespace Eigen;
@@ -30,8 +32,11 @@ void BallDetector::detectBall(Camera::Type const &cameraType) {
 	ball->seen = seen;
 
 	if (cameraType == Camera::TOP) {
+		std::cout << "top camera" << std::endl;
 		ball->fromTopCamera = true;
+
 	} else {
+		std::cout << "bottom camera" << std::endl;
 		ball->fromTopCamera = false;
 	}
 }
