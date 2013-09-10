@@ -37,6 +37,7 @@ class LocateBallNode(Node):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
     if self.getTime() > 0.2:
       choice = BallLocation.Middle
+      print ball.fromTopCamera, self.fromTop
       if ball.fromTopCamera == self.fromTop:
         print ball.imageCenterX, ball.imageCenterY
         if ball.imageCenterX < 150:
