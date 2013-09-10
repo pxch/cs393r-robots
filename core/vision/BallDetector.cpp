@@ -16,6 +16,10 @@ BallDetector::BallDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 }
 
 void BallDetector::detectBall(Camera::Type const &cameraType) {
+	if (cameraType == Camera::TOP) {
+		return;
+	}
+
 	int imageX, imageY;
 	bool seen;
 	findBall(imageX, imageY, seen); // function defined elsewhere that fills in imageX, imageY by reference
