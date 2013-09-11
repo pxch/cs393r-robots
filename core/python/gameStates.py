@@ -2,7 +2,7 @@
 
 import core
 from task import Task, HeadBodyTask, MachineTask
-import pose, head
+import pose, head, kicks
 import commands, cfgstiff
 import testFSM
 

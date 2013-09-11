@@ -9,6 +9,8 @@ import percepts
 import lights
 import classBvr
 import util
+import cfgkick
+import commands
 behavior = classBvr
 
 def init():
