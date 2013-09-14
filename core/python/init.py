@@ -55,3 +55,4 @@ def handle():
   UTdebug.log(0,'PYTHON ERROR:')
   UTdebug.log(0, message)
   core.speech.say("python")
+  core.pythonC.python_ok_ = False

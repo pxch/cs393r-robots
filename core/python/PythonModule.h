@@ -42,13 +42,12 @@ public:
   void specifyMemoryBlocks();
   void initSpecificModule();
   void processFrame();
-  void behaviorProcessFrame();
   void initPython();
-  void doStrategyCalculations();
   void call(const std::string &cmd);
 
   void updateModuleMemory(Memory *memory);
 
+  bool checkPython();
   void startPython();
   void triggerRestart(bool trigger) {python_restart_requested_ = trigger;};
   bool isOk() {return python_ok_; };
@@ -92,11 +91,11 @@ public:
   void setInt(int *arr, int ind, int val);
   unsigned char getUchar(unsigned char *arr,int ind);
   void setUchar(unsigned char *arr, int ind, unsigned char val);
+  Pose3D getPose3D(Pose3D* arr, int ind);
+  void setPose3D(Pose3D* arr, int ind, Pose3D val);
 
-private:
   PythonInterp *python_interp_;
   bool python_ok_;
-public:
   bool python_restart_requested_;
 };
 
