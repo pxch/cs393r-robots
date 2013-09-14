@@ -17,13 +17,13 @@ class TestMachine(StateMachine):
     walkLeft = WalkLeftNode(0.1)
     walkRight = WalkRightNode(0.1)
 
-    self._adt(start, N, stand1)
-    self._adt(stand1, C, WalkNode(10.0, 0.1, 0, 0), S, WalkNode(5.0, 0, 0, pi / 4), S, StandNode(), C, TurnHeadNode(-pi / 9, 2.0, True), S, TurnHeadNode(pi / 9, 2.0, True), S, sit, C, stand2)
-    self._adt(stand2, C, tiltHead)
-    self._adt(tiltHead, C, locateBall)
-    self._adt(locateBall, S(BallLocation.Left), walkLeft, S, locateBall)
-    self._adt(locateBall, S(BallLocation.Right), walkRight, S, locateBall)
-    self._adt(locateBall, S(BallLocation.Middle), walk, S, locateBall)
+    self._adt(start, N, stand1, C, finish)
+    #self._adt(stand1, C, WalkNode(10.0, 0.1, 0, 0), S, WalkNode(5.0, 0, 0, pi / 4), S, StandNode(), C, TurnHeadNode(-pi / 9, 2.0, True), S, TurnHeadNode(pi / 9, 2.0, True), S, sit, C, stand2)
+    #self._adt(stand2, C, tiltHead)
+    #self._adt(tiltHead, C, locateBall)
+    #self._adt(locateBall, S(BallLocation.Left), walkLeft, S, locateBall)
+    #self._adt(locateBall, S(BallLocation.Right), walkRight, S, locateBall)
+    #self._adt(locateBall, S(BallLocation.Middle), walk, S, locateBall)
 
 class BallLocation:
   Left = 0
