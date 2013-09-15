@@ -109,15 +109,6 @@ void ImageProcessor::processFrame() {
 	updateTransform();
 	classifier_->classifyImage(color_table_);
 
-	if (camera_ == Camera::BOTTOM) {
-		WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
-		for (int x = 0; x != iparams_.width; ++x) {
-			for (int y = 0; y != iparams_.height; ++y) {
-				ball->bottomCamera[x][y] = Color(getSegPixelValueAt(x,y));
-			}
-		}
-	}
-
 	ball_detector_->detectBall(camera_);
 	goal_detector_->detectGoal(camera_);
 }
