@@ -201,6 +201,9 @@ public:
 	int ballBlobIndex;
 
 	bool fromTopCamera; // true if observed from top cam, false if from bottom
+
+private:
+	int hasaDiga;
 };
 
 #endif
