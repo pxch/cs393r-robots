@@ -21,11 +21,25 @@ class TestMachine(StateMachine):
     self._adt(sit, C, finish)
 
 class SearchBallNode(Node):
+  MY_SUCCESS = 0
+  MY_START = 1
+  MY_NO_BALL = 2
+  
   def __init__(self):
     super(SearchBallNode, self).__init__()
+    self.my_state = SearchBallNode.MY_START 
 
   def run(self):
     core.speech.say("searching the ball")
+    
+    ball = core.world_objects.getObjPtr(core.WO_BALL)
+    
+    if self.my_state == SearchBallNode.MY_SUCCESS:
+      self.postSuccess()
+    elif self.my_state == SearchBallNode.MY_START:
+      self.my_state = SearchBallNode.MY_NO_BALL
+    elif self.my_state == SearchBallNode.MY_NO_BALL:
+      commands.setWalkVelocity(0, 0, -pi)
 
 class SearchGoalNode(Node):
   def __init__(self):
@@ -33,6 +47,8 @@ class SearchGoalNode(Node):
 
   def run(self):
     core.speech.say("searching the goal")
+    
+    self.postSuccess()
 
 class KickBallNode(Node):
   def __init__(self):
@@ -40,6 +56,8 @@ class KickBallNode(Node):
 
   def run(self):
     core.speech.say("kicking the ball")
+    
+    self.postSuccess()
     
 class StandNode(Node):
   def __init__(self):
