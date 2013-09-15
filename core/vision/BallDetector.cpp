@@ -26,24 +26,37 @@ void BallDetector::detectBall(Camera::Type const &cameraType) {
 		ball->seen = false;
 
 		findBall(imageX, imageY, seen);
+		ball->seen = seen;
+
+		if (ball->seen) {
+			ball->fromTopCamera = false;
+		}
 
 	} else {
+
 		if (ball->seen == false) {
 
 			findBall(imageX, imageY, seen);
+			ball->seen = seen;
+
+			if (ball->seen) {
+				ball->fromTopCamera = true;
+			}
 
 		}
 	}
 
-	ball->imageCenterX = imageX;
-	ball->imageCenterY = imageY;
+	if (ball->seen) {
 
-	Position p = cmatrix_.getWorldPosition(imageX, imageY);
-	ball->visionBearing = cmatrix_.bearing(p);
-	ball->visionElevation = cmatrix_.elevation(p);
-	ball->visionDistance = cmatrix_.groundDistance(p);
+		ball->imageCenterX = imageX;
+		ball->imageCenterY = imageY;
 
-	ball->seen = seen;
+		Position p = cmatrix_.getWorldPosition(imageX, imageY);
+		ball->visionBearing = cmatrix_.bearing(p);
+		ball->visionElevation = cmatrix_.elevation(p);
+		ball->visionDistance = cmatrix_.groundDistance(p);
+
+	}
 
 }
 

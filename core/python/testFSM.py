@@ -22,8 +22,21 @@ class TestMachine(StateMachine):
 
 class SearchBallNode(Node):
   MY_SUCCESS = 0
+  
   MY_START = 1
+  
   MY_NO_BALL = 2
+  
+  MY_BALL_TOP_LEFT = 3
+  MY_BALL_TOP_RIGHT = 4
+  
+  MY_BALL_BOTTOM_LEFT_FAR = 5
+  MY_BALL_BOTTOM_LEFT_MID = 6
+  MY_BALL_BOTTOM_LEFT_NEAR = 7
+  # FAR NEAR boundary y value is 80
+  MY_BALL_BOTTOM_RIGHT_FAR = 8
+  MY_BALL_BOTTOM_RIGHT_MID = 9
+  MY_BALL_BOTTOM_RIGHT_NEAR = 10
   
   def __init__(self):
     super(SearchBallNode, self).__init__()
@@ -36,10 +49,48 @@ class SearchBallNode(Node):
     
     if self.my_state == SearchBallNode.MY_SUCCESS:
       self.postSuccess()
+      
     elif self.my_state == SearchBallNode.MY_START:
       self.my_state = SearchBallNode.MY_NO_BALL
+      
     elif self.my_state == SearchBallNode.MY_NO_BALL:
-      commands.setWalkVelocity(0, 0, -pi)
+      commands.setWalkVelocity(0, 0, pi)
+      
+      if ball.seen:
+        commands.stand()
+        
+        if ball.fromTopCamera:
+          
+          if ball.imageCenterX < 160:
+            self.my_state = SearchBallNode.MY_BALL_TOP_LEFT
+            
+          else:
+            self.my_state = SearchBallNode.MY_BALL_TOP_RIGHT
+            
+        else:  # from bottom camera 
+          
+          if ball.imageCenterY < 70:  # far
+            if ball.imageCenterX < 160:
+              self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_FAR
+            else: 
+              self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_FAR
+            
+          elif ball.imageCenterY > 90:  # near
+            if ball.imageCenterX < 160:
+              self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_NEAR
+            else:
+              self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_NEAR
+          
+          else:  # ball is in bottom middle
+            
+            if ball.imageCenterX < 150:  # mid left
+              self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_MID
+              
+            elif ball.imageCenterX > 170:  # mid right
+              self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_MID
+          
+            else:
+              self.my_state = SearchBallNode.MY_SUCCESS
 
 class SearchGoalNode(Node):
   def __init__(self):
