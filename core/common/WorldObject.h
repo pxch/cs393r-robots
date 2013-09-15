@@ -3,6 +3,7 @@
 
 #include <math/Geometry.h>
 #include <common/Enum.h>
+#include <vision/enums/Colors.h>
 
 ENUM(
 		WorldObjectType,   // Types of objects
@@ -202,8 +203,7 @@ public:
 
 	bool fromTopCamera; // true if observed from top cam, false if from bottom
 
-	/* does this break stuff???? */
-	int hasaDiga;
+	Color bottomCamera[320][240];
 };
 
 #endif

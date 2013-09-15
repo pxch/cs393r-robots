@@ -16,7 +16,7 @@ BallDetector::BallDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 }
 
 void BallDetector::detectBall(Camera::Type const &cameraType) {
-	if (cameraType == Camera::TOP) {
+	if (cameraType == Camera::BOTTOM) {
 		return;
 	}
 
