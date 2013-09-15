@@ -7,7 +7,7 @@
 
 ENUM(
 		WorldObjectType,   // Types of objects
-		WO_BALL, WO_BALL_BOTTOM, WO_BALL_TOP,
+		WO_BALL,
 
 		// Self and Teammates
 		WO_TEAM1, WO_TEAM2, WO_TEAM3, WO_TEAM4, WO_TEAM5,
