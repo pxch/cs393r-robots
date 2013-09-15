@@ -1,15 +1,13 @@
 #ifndef _WORLD_OBJECT_H
 #define _WORLD_OBJECT_H
 
-#include <vector>
-
 #include <math/Geometry.h>
 #include <common/Enum.h>
 #include <vision/enums/Colors.h>
 
 ENUM(
 		WorldObjectType,   // Types of objects
-		WO_BALL,
+		WO_BALL, WO_BALL_BOTTOM, WO_BALL_TOP,
 
 		// Self and Teammates
 		WO_TEAM1, WO_TEAM2, WO_TEAM3, WO_TEAM4, WO_TEAM5,
@@ -205,7 +203,6 @@ public:
 
 	bool fromTopCamera; // true if observed from top cam, false if from bottom
 
-	std::vector<std::vector<Color> > bottomCamera;
 };
 
 #endif
