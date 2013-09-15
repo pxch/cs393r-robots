@@ -14,11 +14,11 @@ class TestMachine(StateMachine):
     kickBall = KickBallNode()
 
     self._adt(start, C, stand)
-    self._adt(stand, C, searchBall)
-    self._adt(searchBall, S, searchGoal)
-    self._adt(searchGoal, S, kickBall)
-    self._adt(kickBall, S, sit)
-    self._adt(sit, C, finish)
+    # self._adt(stand, C, searchBall)
+    # self._adt(searchBall, S, searchGoal)
+    # self._adt(searchGoal, S, kickBall)
+    # self._adt(kickBall, S, sit)
+    # self._adt(sit, C, finish)
 
 class SearchBallNode(Node):
   def __init__(self):
