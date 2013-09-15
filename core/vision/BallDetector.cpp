@@ -16,14 +16,24 @@ BallDetector::BallDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 }
 
 void BallDetector::detectBall(Camera::Type const &cameraType) {
-	if (cameraType == Camera::BOTTOM) {
-		return;
-	}
+	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 
 	int imageX, imageY;
 	bool seen;
-	findBall(imageX, imageY, seen); // function defined elsewhere that fills in imageX, imageY by reference
-	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+
+	if (camera_ == Camera::BOTTOM) {
+
+		ball->seen = false;
+
+		findBall(imageX, imageY, seen);
+
+	} else {
+		if (ball->seen == false) {
+
+			findBall(imageX, imageY, seen);
+
+		}
+	}
 
 	ball->imageCenterX = imageX;
 	ball->imageCenterY = imageY;
@@ -35,12 +45,6 @@ void BallDetector::detectBall(Camera::Type const &cameraType) {
 
 	ball->seen = seen;
 
-	if (cameraType == Camera::TOP) {
-		ball->fromTopCamera = true;
-
-	} else {
-		ball->fromTopCamera = false;
-	}
 }
 
 void BallDetector::findBall(int& imageX, int& imageY, bool& seen) {
