@@ -202,7 +202,7 @@ public:
 
 	bool fromTopCamera; // true if observed from top cam, false if from bottom
 
-private:
+	/* does this break stuff???? */
 	int hasaDiga;
 };
 
