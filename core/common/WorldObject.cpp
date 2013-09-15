@@ -25,6 +25,11 @@ WorldObject::WorldObject() {
 	imageCenterY = 0;
 	fieldLineIndex = -1;
 	fromTopCamera = false;
+
+	bottomCamera.reserve(320);
+	for (int i = 0; i != 320; ++i) {
+		bottomCamera[i].resize(240);
+	}
 }
 
 WorldObject::~WorldObject() {

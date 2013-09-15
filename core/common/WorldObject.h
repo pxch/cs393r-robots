@@ -1,6 +1,8 @@
 #ifndef _WORLD_OBJECT_H
 #define _WORLD_OBJECT_H
 
+#include <vector>
+
 #include <math/Geometry.h>
 #include <common/Enum.h>
 #include <vision/enums/Colors.h>
@@ -203,7 +205,7 @@ public:
 
 	bool fromTopCamera; // true if observed from top cam, false if from bottom
 
-	Color bottomCamera[320][240];
+	std::vector<std::vector<Color> > bottomCamera;
 };
 
 #endif
