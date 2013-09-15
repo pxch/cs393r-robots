@@ -113,7 +113,7 @@ void ImageProcessor::processFrame() {
 		WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 		for (int x = 0; x != iparams_.width; ++x) {
 			for (int y = 0; y != iparams_.height; ++y) {
-				ball->bottomCamera[x][y] = getSegPixelValueAt(x,y);
+				ball->bottomCamera[x][y] = Color(getSegPixelValueAt(x,y));
 			}
 		}
 	}
