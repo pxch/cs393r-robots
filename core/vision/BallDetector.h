@@ -16,7 +16,7 @@ public:
 		textlogger = tl;
 	}
 
-	void detectBall(Camera::Type const &cameraType);
+	void detectBall();
 
 	BallCandidate candidates[MAX_BALL_CANDS];
 

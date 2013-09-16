@@ -15,7 +15,7 @@ BallDetector::BallDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 	candidateCount = 0;
 }
 
-void BallDetector::detectBall(Camera::Type const &cameraType) {
+void BallDetector::detectBall() {
 	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 
 	int imageX, imageY;

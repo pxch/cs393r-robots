@@ -109,8 +109,8 @@ void ImageProcessor::processFrame() {
 	updateTransform();
 	classifier_->classifyImage(color_table_);
 
-	ball_detector_->detectBall(camera_);
-	goal_detector_->detectGoal(camera_);
+	ball_detector_->detectBall();
+	goal_detector_->detectGoal();
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
