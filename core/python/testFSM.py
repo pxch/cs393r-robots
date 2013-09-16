@@ -13,12 +13,12 @@ class TestMachine(StateMachine):
     searchGoal = SearchGoalNode()
     kickBall = KickBallNode()
 
-    self._adt(start, N, stand, C, finish)
-    # self._adt(stand, C, searchBall)
-    # self._adt(searchBall, S, searchGoal)
-    # self._adt(searchGoal, S, kickBall)
-    # self._adt(kickBall, S, sit)
-    # self._adt(sit, C, finish)
+    self._adt(start, N, stand)
+    self._adt(stand, C, searchBall)
+    self._adt(searchBall, S, searchGoal)
+    self._adt(searchGoal, S, kickBall)
+    self._adt(kickBall, S, sit)
+    self._adt(sit, C, finish)
 
 class SearchBallNode(Node):
   MY_SUCCESS = 0
@@ -41,11 +41,58 @@ class SearchBallNode(Node):
   def __init__(self):
     super(SearchBallNode, self).__init__()
     self.my_state = SearchBallNode.MY_START 
+    
+    self.xErrInt = 0.0  # x error integral
+    self.yErrInt = 0.0  # y error integral
+    
+  def switchWalkState(self):
+    ball = core.world_objects.getObjPtr(core.WO_BALL)
+    
+    if not ball.seen:
+      self.my_state = SearchBallNode.MY_NO_BALL
+      return
+    
+    if ball.fromTopCamera:
+          
+      if ball.imageCenterX < 160:
+        self.my_state = SearchBallNode.MY_BALL_TOP_LEFT
+        
+      else:
+        self.my_state = SearchBallNode.MY_BALL_TOP_RIGHT
+        
+    else:  # from bottom camera 
+      
+      if ball.imageCenterY < 70:  # far
+        if ball.imageCenterX < 160:
+          self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_FAR
+        else: 
+          self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_FAR
+        
+      elif ball.imageCenterY > 90:  # near
+        if ball.imageCenterX < 160:
+          self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_NEAR
+        else:
+          self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_NEAR
+      
+      else:  # ball is in bottom middle
+        
+        if ball.imageCenterX < 150:  # mid left
+          self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_MID
+          
+        elif ball.imageCenterX > 170:  # mid right
+          self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_MID
+      
+        else:
+          self.my_state = SearchBallNode.MY_SUCCESS
+
 
   def run(self):
     core.speech.say("searching the ball")
     
     ball = core.world_objects.getObjPtr(core.WO_BALL)
+    
+    xErr = 0
+    yErr = 0
     
     if self.my_state == SearchBallNode.MY_SUCCESS:
       self.postSuccess()
@@ -59,38 +106,39 @@ class SearchBallNode(Node):
       if ball.seen:
         commands.stand()
         
-        if ball.fromTopCamera:
-          
-          if ball.imageCenterX < 160:
-            self.my_state = SearchBallNode.MY_BALL_TOP_LEFT
-            
-          else:
-            self.my_state = SearchBallNode.MY_BALL_TOP_RIGHT
-            
-        else:  # from bottom camera 
-          
-          if ball.imageCenterY < 70:  # far
-            if ball.imageCenterX < 160:
-              self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_FAR
-            else: 
-              self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_FAR
-            
-          elif ball.imageCenterY > 90:  # near
-            if ball.imageCenterX < 160:
-              self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_NEAR
-            else:
-              self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_NEAR
-          
-          else:  # ball is in bottom middle
-            
-            if ball.imageCenterX < 150:  # mid left
-              self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_MID
+        self.switchWalkState()
               
-            elif ball.imageCenterX > 170:  # mid right
-              self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_MID
-          
-            else:
-              self.my_state = SearchBallNode.MY_SUCCESS
+    elif self.my_state == SearchBallNode.MY_BALL_TOP_LEFT:
+      xErr = 160 - x
+      yErr = 240 - y    
+      # commands.setWalkVelocity(, ,0)
+      self.switchWalkState()
+    
+    elif self.my_state == SearchBallNode.MY_BALL_TOP_RIGHT:
+      xErr = 160 - x
+      yErr = 240 - y
+      self.switchWalkState()         
+    
+    elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_LEFT_FAR:
+      self.switchWalkState()
+    
+    elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_LEFT_MID:
+      self.switchWalkState()
+      
+    elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_LEFT_NEAR:
+      self.switchWalkState() 
+    
+    elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_RIGHT_FAR:
+      self.switchWalkState()
+    
+    elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_RIGHT_MID:
+      self.switchWalkState()
+    
+    elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_RIGHT_NEAR:
+      self.switchWalkState()
+    
+    self.xErrInt += xErr
+    self.yErrInt += yErr
 
 class SearchGoalNode(Node):
   def __init__(self):

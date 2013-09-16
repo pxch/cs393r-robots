@@ -41,12 +41,12 @@ class Sit(Task):
       pose = util.deepcopy(cfgpose.sittingPoseV3)
       for joint, val in cfgpose.armSidePose.items():
         pose[joint] = val
-      self.subtask = skills.ToPoseMoveHead(tilt = 0.0, pose = pose)
+      self.subtask = skills.ToPoseMoveHead(tilt=0.0, pose=pose)
       self.subtask.start()
       st.transition(st.sit)
     elif st.inState(st.sit) and (not self.subtask or self.subtask.finished()):
       self.skippedState = False
-      self.subtask = skills.ToPoseMoveHead(pose = cfgpose.sittingPoseV3, time = 1.0)
+      self.subtask = skills.ToPoseMoveHead(pose=cfgpose.sittingPoseV3, time=1.0)
       self.subtask.start()
       st.transition(st.relaxknee)
     elif st.inState(st.relaxknee) and self.subtask.finished():
@@ -65,6 +65,7 @@ class Stand(Task):
 
   def run(self):
     core.kick_request.setNoKick()
+    commands.setStiffness()
     core.walk_request.stand()
     if self.getTime() > 2.0:
       self.finish()
