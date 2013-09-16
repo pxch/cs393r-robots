@@ -15,32 +15,49 @@ BallDetector::BallDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 	candidateCount = 0;
 }
 
-void BallDetector::detectBall(Camera::Type const &cameraType) {
-	if (cameraType == Camera::BOTTOM) {
-		return;
-	}
+void BallDetector::detectBall() {
+	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 
 	int imageX, imageY;
 	bool seen;
-	findBall(imageX, imageY, seen); // function defined elsewhere that fills in imageX, imageY by reference
-	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 
-	ball->imageCenterX = imageX;
-	ball->imageCenterY = imageY;
+	if (camera_ == Camera::BOTTOM) {
 
-	Position p = cmatrix_.getWorldPosition(imageX, imageY);
-	ball->visionBearing = cmatrix_.bearing(p);
-	ball->visionElevation = cmatrix_.elevation(p);
-	ball->visionDistance = cmatrix_.groundDistance(p);
+		ball->seen = false;
 
-	ball->seen = seen;
+		findBall(imageX, imageY, seen);
+		ball->seen = seen;
 
-	if (cameraType == Camera::TOP) {
-		ball->fromTopCamera = true;
+		if (ball->seen) {
+			ball->fromTopCamera = false;
+		}
 
 	} else {
-		ball->fromTopCamera = false;
+
+		if (ball->seen == false) {
+
+			findBall(imageX, imageY, seen);
+			ball->seen = seen;
+
+			if (ball->seen) {
+				ball->fromTopCamera = true;
+			}
+
+		}
 	}
+
+	if (ball->seen) {
+
+		ball->imageCenterX = imageX;
+		ball->imageCenterY = imageY;
+
+		Position p = cmatrix_.getWorldPosition(imageX, imageY);
+		ball->visionBearing = cmatrix_.bearing(p);
+		ball->visionElevation = cmatrix_.elevation(p);
+		ball->visionDistance = cmatrix_.groundDistance(p);
+
+	}
+
 }
 
 void BallDetector::findBall(int& imageX, int& imageY, bool& seen) {

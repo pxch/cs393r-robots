@@ -8,7 +8,7 @@ GoalDetector::GoalDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 				blob_detector), line_detector_(line_detector) {
 }
 
-void GoalDetector::detectGoal(Camera::Type const &cameraType) {
+void GoalDetector::detectGoal() {
 	// XXX: decide whose goal this is
 	WorldObject* goal = &vblocks_.world_object->objects_[WO_OPP_GOAL];
 
@@ -25,7 +25,7 @@ void GoalDetector::detectGoal(Camera::Type const &cameraType) {
 
 	goal->seen = seen;
 
-	if (cameraType == Camera::TOP) {
+	if (camera_ == Camera::TOP) {
 		goal->fromTopCamera = true;
 	} else {
 		goal->fromTopCamera = false;
