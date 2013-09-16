@@ -56,3 +56,39 @@ void BallDetector::findBall(int& imageX, int& imageY, bool& seen) {
 	} else
 		seen = false;
 }
+
+void BallDetector::findBallMaxOrange(int& imageX, int& imageY, bool& seen) {
+	int radiusThres = 5;
+
+	cv::Mat orangeBlock = cv::Mat(iparams_.width, iparams_.height, CV_8UC1);
+
+	imageX = imageY = 0;
+	int total = 0;
+
+	for (int x = 0; x < iparams_.width; x++) {
+		for (int y = 0; y < iparams_.height; y++) {
+			if (getSegPixelValueAt(x,y) == c_ORANGE) {
+				imageX += x, imageY += y, total++;
+				Mat(x, y) = 255;
+			}
+			else {
+				Mat(x, y) = 0;
+			}
+		}
+	}
+
+	seen = false;
+
+	cv::vector<Vec3f> circles;
+
+	HoughCircles(orangeBlock, circles, CV_HOUGH_GRADIENT, 1, iparams_.width/8, 200, 100, 0, 0 );
+
+	for (int i = 0; i < circles.size(); i++) {
+		if circle[i][2] > radiusThres {
+			imageX = circle[i][0];
+			imageY = circle[i][1];
+			seen = true;
+			radiusThres = circle[i][2];
+		}
+	}
+}
