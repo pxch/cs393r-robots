@@ -74,7 +74,7 @@ void BallDetector::findBall(int& imageX, int& imageY, bool& seen) {
 		seen = false;
 }
 
-void BallDetector::findBallMaxOrange(int& imageX, int& imageY, bool& seen) {
+void BallDetector::findBallCircle(int& imageX, int& imageY, bool& seen) {
 	int radiusThres = 5;
 
 	cv::Mat orangeBlock = cv::Mat(iparams_.width, iparams_.height, CV_8UC1);
@@ -98,7 +98,7 @@ void BallDetector::findBallMaxOrange(int& imageX, int& imageY, bool& seen) {
 
 	cv::vector<Vec3f> circles;
 
-	HoughCircles(orangeBlock, circles, CV_HOUGH_GRADIENT, 1, iparams_.width/8, 200, 100, 0, 0 );
+	HoughCircles(orangeBlock, circles, cv::CV_HOUGH_GRADIENT, 1, iparams_.width/8, 200, 100, 0, 0 );
 
 	for (int i = 0; i < circles.size(); i++) {
 		if circle[i][2] > radiusThres {
