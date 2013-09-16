@@ -13,12 +13,12 @@ class TestMachine(StateMachine):
     searchGoal = SearchGoalNode()
     kickBall = KickBallNode()
 
-    self._adt(start, N, stand)
-    self._adt(stand, C, searchBall)
-    self._adt(searchBall, S, searchGoal)
-    self._adt(searchGoal, S, kickBall)
-    self._adt(kickBall, S, sit)
-    self._adt(sit, C, finish)
+    self._adt(start, N, stand, C, TiltHeadNode(10), S, finish)
+    # self._adt(stand, C, searchBall)
+    # self._adt(searchBall, S, searchGoal)
+    # self._adt(searchGoal, S, kickBall)
+    # self._adt(kickBall, S, sit)
+    # self._adt(sit, C, finish)
 
 class SearchBallNode(Node):
   MY_SUCCESS = 0
