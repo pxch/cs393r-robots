@@ -275,29 +275,7 @@ class WalkNode(Node):
     commands.setWalkVelocity(self.x, self.y, self.theta)
     if self.getTime() > self.walkTime:
       commands.stand()
-      self.postSuccess()
-
-class WalkLeftNode(Node):
-  def __init__(self, walkTime):
-    super(WalkLeftNode, self).__init__()
-    self.walkTime = walkTime
-
-  def run(self):
-    commands.setWalkVelocity(0.1, 0, pi / 18)
-    if self.getTime() > self.walkTime:
-      commands.stand()
-      self.postSuccess()
-
-class WalkRightNode(Node):
-  def __init__(self, walkTime):
-    super(WalkRightNode, self).__init__()
-    self.walkTime = walkTime
-
-  def run(self):
-    commands.setWalkVelocity(0.1, 0, -pi / 18)
-    if self.getTime() > self.walkTime:
-      commands.stand()
-      self.postSuccess()      
+      self.postSuccess()     
       
 class BallLeftNode(Node):
   def __init__(self):
