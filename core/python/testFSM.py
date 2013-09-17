@@ -51,7 +51,7 @@ class SearchBallNode(Node):
     self.prevYErr = None
   
   def PID(self, xErr, yErr):
-    K_I = 0.0
+    K_I = 0.00001
     K_D = 0.0
 
     dErrDt = self.dErrDt(xErr, yErr)
@@ -63,7 +63,7 @@ class SearchBallNode(Node):
     return (self.inputToMotor(xInput), self.inputToMotor(yInput))
   
   def inputToMotor(self, inValue):
-    BOUNDARY_VAL = 700.0
+    BOUNDARY_VAL = 400.0
     motorSpeed = 0
     if fabs(inValue) > BOUNDARY_VAL:
       return copysign(inValue, motorSpeed)
@@ -125,6 +125,8 @@ class SearchBallNode(Node):
     
     xErr = 0.0
     yErr = 0.0
+    
+    controlSignal = (0.0, 0.0)
     
     if self.my_state == SearchBallNode.MY_SUCCESS:
       self.postSuccess()
@@ -218,6 +220,7 @@ class SearchBallNode(Node):
     self.prevYErr = yErr
     
     print "ball seen: ", ball.seen, "top? ", ball.fromTopCamera, "xErr: ", xErr, "yErr: ", yErr, "state: ", self.my_state
+    print "front/back walk: ", controlSignal[1], "left/right walk", controlSignal[0]
 
 class SearchGoalNode(Node):
   def __init__(self):
