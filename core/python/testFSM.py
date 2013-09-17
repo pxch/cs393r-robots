@@ -51,19 +51,23 @@ class SearchBallNode(Node):
     self.prevYErr = None
   
   def PID(self, xErr, yErr):
+    K_I = 0.0
+    K_D = 0.0
+
     dErrDt = self.dErrDt(xErr, yErr)
     
-    xInput = xErr + self.xErrInt - dErrDt[0]
+    xInput = xErr + K_I * self.xErrInt - K_D * dErrDt[0]
     
-    yInput = yErr + self.yErrInt - dErrDt[1]
+    yInput = yErr + K_I * self.yErrInt - K_D * dErrDt[1]
     
     return (self.inputToMotor(xInput), self.inputToMotor(yInput))
   
   def inputToMotor(self, inValue):
+    BOUNDARY_VAL = 700.0
     motorSpeed = 0
-    if fabs(inValue) > 100.0:
+    if fabs(inValue) > BOUNDARY_VAL:
       return copysign(inValue, motorSpeed)
-    motorSpeed = inValue / 100.0
+    motorSpeed = inValue / BOUNDARY_VAL
     return motorSpeed
   
   def dErrDt(self, xErr, yErr):
@@ -91,13 +95,13 @@ class SearchBallNode(Node):
         
     else:  # from bottom camera 
       
-      if ball.imageCenterY < 70:  # far
+      if ball.imageCenterY < 65:  # far
         if ball.imageCenterX < 160:
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_FAR
         else: 
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_FAR
         
-      elif ball.imageCenterY > 90:  # near
+      elif ball.imageCenterY > 95:  # near
         if ball.imageCenterX < 160:
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_NEAR
         else:
@@ -105,10 +109,10 @@ class SearchBallNode(Node):
       
       else:  # ball is in bottom middle
         
-        if ball.imageCenterX < 150:  # mid left
+        if ball.imageCenterX < 145:  # mid left
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_MID
           
-        elif ball.imageCenterX > 170:  # mid right
+        elif ball.imageCenterX > 175:  # mid right
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_MID
       
         else:
