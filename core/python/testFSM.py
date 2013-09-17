@@ -120,7 +120,7 @@ class SearchBallNode(Node):
           self.my_state = SearchBallNode.MY_SUCCESS
 
   def run(self):
-    core.speech.say("searching fucking the ball")
+    core.speech.say("searching the ball")
     
     ball = core.world_objects.getObjPtr(core.WO_BALL)
     
@@ -264,12 +264,12 @@ class SearchGoalNode(Node):
     
     print "yErr: ", yErr, "xErr: ", xErr, "front/back signal: ", FBSignal, "left/right signal ", LRSignal
     
-    commands.setWalkVelocity(FBSignal, LRSignal, -pi / 30)
+    commands.setWalkVelocity(FBSignal, LRSignal, -pi / 60)
     
     self.yErrInt += yErr
     
   def run(self):
-    core.speech.say("searching the fucking goal")
+    core.speech.say("searching the goal")
     
     if self.myState == SearchGoalNode.MY_SUCCESS:
       commands.stand()
@@ -298,7 +298,7 @@ class KickBallNode(Node):
     super(KickBallNode, self).__init__()
 
   def run(self):
-    core.speech.say("kicking the fucking ball")
+    core.speech.say("kicking the ball")
     
     self.postSuccess()
     
