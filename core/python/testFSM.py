@@ -1,7 +1,7 @@
 from state import * 
 import commands, core, util, pose, percepts
 import time
-from math import pi
+from math import pi, fabs, copysign
 from re import search
 
 class TestMachine(StateMachine):
@@ -50,17 +50,21 @@ class SearchBallNode(Node):
     self.prevXErr = None
     self.prevYErr = None
   
-  def topPID(self, xErr, yErr):
-    return
+  def PID(self, xErr, yErr):
+    dErrDt = self.dErrDt(xErr, yErr)
+    
+    xInput = xErr + self.xErrInt - dErrDt[0]
+    
+    yInput = yErr + self.yErrInt - dErrDt[1]
+    
+    return (self.inputToMotor(xInput), self.inputToMotor(yInput))
   
-  def bottomFarPID(self, xErr, yErr):
-    return
-  
-  def bottomMidPID(self, xErr):
-    return
-  
-  def bottomNearPID(self, xErr, yErr):
-    return
+  def inputToMotor(self, inValue):
+    motorSpeed = 0
+    if fabs(inValue) > 100.0:
+      return copysign(inValue, motorSpeed)
+    motorSpeed = inValue / 100.0
+    return motorSpeed
   
   def dErrDt(self, xErr, yErr):
     """
@@ -135,8 +139,8 @@ class SearchBallNode(Node):
       xErr = 160 - ball.imageCenterX
       yErr = 320 - ball.imageCenterY
       
-      controlSignal = self.topPID(xErr, yErr)
-      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      controlSignal = self.PID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0.0)
       
       self.switchWalkState()
     
@@ -144,8 +148,8 @@ class SearchBallNode(Node):
       xErr = 160 - ball.imageCenterX
       yErr = 320 - ball.imageCenterY
       
-      controlSignal = self.topPID(xErr, yErr)
-      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      controlSignal = self.PID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0.0)
       
       self.switchWalkState()
     
@@ -153,8 +157,8 @@ class SearchBallNode(Node):
       xErr = 160 - ball.imageCenterX
       yErr = 80 - ball.imageCenterY
       
-      controlSignal = self.topPID(xErr, yErr)
-      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      controlSignal = self.PID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0.0)
       
       self.switchWalkState()
     
@@ -162,8 +166,8 @@ class SearchBallNode(Node):
       xErr = 160 - ball.imageCenterX
       yErr = 80 - ball.imageCenterY
       
-      controlSignal = self.topPID(xErr, yErr)
-      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      controlSignal = self.PID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], 0.0, 0.0)
       
       self.switchWalkState()
     
@@ -171,8 +175,8 @@ class SearchBallNode(Node):
       xErr = 160 - ball.imageCenterX
       yErr = 80 - ball.imageCenterY
       
-      controlSignal = self.topPID(xErr, yErr)
-      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      controlSignal = self.PID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0.0)
       
       self.switchWalkState()
     
@@ -180,8 +184,8 @@ class SearchBallNode(Node):
       xErr = 160 - ball.imageCenterX
       yErr = 80 - ball.imageCenterY
       
-      controlSignal = self.topPID(xErr, yErr)
-      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      controlSignal = self.PID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0.0)
       
       self.switchWalkState()
     
@@ -189,8 +193,8 @@ class SearchBallNode(Node):
       xErr = 160 - ball.imageCenterX
       yErr = 80 - ball.imageCenterY
       
-      controlSignal = self.topPID(xErr, yErr)
-      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      controlSignal = self.PID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], 0.0, 0.0)
       
       self.switchWalkState()
     
@@ -198,8 +202,8 @@ class SearchBallNode(Node):
       xErr = 160 - ball.imageCenterX
       yErr = 80 - ball.imageCenterYs
       
-      controlSignal = self.topPID(xErr, yErr)
-      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      controlSignal = self.PID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0.0)
       
       self.switchWalkState()
     
@@ -208,6 +212,8 @@ class SearchBallNode(Node):
     
     self.prevXErr = xErr
     self.prevYErr = yErr
+    
+    print "ball seen: ", ball.seen, "xErr: ", xErr, "yErr", yErr
 
 class SearchGoalNode(Node):
   def __init__(self):
