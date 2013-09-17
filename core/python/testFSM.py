@@ -14,7 +14,7 @@ class TestMachine(StateMachine):
     searchGoal = SearchGoalNode()
     kickBall = KickBallNode()
 
-    self._adt(start, N, stand)
+    self._adt(start, N, TiltHeadNode(-26.5), C, stand)
     self._adt(stand, C, searchBall)
     self._adt(searchBall, S, searchGoal)
     self._adt(searchGoal, S, kickBall)
