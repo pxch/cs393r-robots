@@ -51,7 +51,7 @@ class SearchBallNode(Node):
     self.prevYErr = None
   
   def PID(self, xErr, yErr):
-    K_I = 0.00001
+    K_I = 0.001
     K_D = 0.0
 
     dErrDt = self.dErrDt(xErr, yErr)
