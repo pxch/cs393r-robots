@@ -129,6 +129,7 @@ class SearchBallNode(Node):
     controlSignal = (0.0, 0.0)
     
     if self.my_state == SearchBallNode.MY_SUCCESS:
+      commands.stand()
       self.postSuccess()
       
     elif self.my_state == SearchBallNode.MY_START:
@@ -223,13 +224,62 @@ class SearchBallNode(Node):
     print "front/back walk: ", controlSignal[1], "left/right walk", controlSignal[0]
 
 class SearchGoalNode(Node):
+  MY_START = 0
+  MY_SUCCESS = 1
+  
+  MY_FIND_GOAL = 2
+  
   def __init__(self):
     super(SearchGoalNode, self).__init__()
-
+    self.myState = SearchGoalNode.MY_START
+    self.yErrInt = 0.0
+  
+  def inputToWalk(self, controlInput):
+    BOUNDARY_VAL = 400.0
+    motor = 0
+    if fabs(controlInput) > BOUNDARY_VAL:
+      return copysign(controlInput, motor)
+    return motor / BOUNDARY_VAL
+  
+  def switchWalkState(self):
+    ball = core.world_objects.getObjPtr(core.WO_BALL)
+    
+    if not ball.seen:
+      raise Exception("BALL NOT SEEN")
+    else:
+      if ball.fromTopCamera:
+        raise Exception("BALL FROM TOP")
+    
+    yErr = 80 - ball.imageCenterY
+    
+    K_I = 0.001
+    
+    commands.setWalkVelocity(0.2, self.inputToWalk(yErr + K_I * self.yErrInt), 0.0)
+    
+    self.yErrInt += yErr
+    
   def run(self):
     core.speech.say("searching the goal")
     
-    self.postSuccess()
+    if self.myState == SearchGoalNode.MY_SUCCESS:
+      commands.stand()
+      self.postSuccess()
+    
+    elif self.myState == SearchGoalNode.MY_START:
+      commands.stand()
+      self.myState = SearchGoalNode.MY_FIND_GOAL
+    
+    elif self.myState == SearchGoalNode.MY_FIND_GOAL:
+      
+      goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
+      if goal.seen:
+        if goal.imageCenterX > 145 and goal.imageCenterY < 175:
+          self.myState = SearchGoalNode.MY_SUCCESS
+          
+        else:
+          self.switchWalkState()  
+      else:
+        self.switchWalkState()
 
 class KickBallNode(Node):
   def __init__(self):
