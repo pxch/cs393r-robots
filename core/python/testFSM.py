@@ -62,6 +62,14 @@ class SearchBallNode(Node):
   def bottomNearPID(self, xErr, yErr):
     return
   
+  def dErrDt(self, xErr, yErr):
+    """
+    dErr / dt
+    """
+    if self.prevXErr == None:
+      return (0.0, 0.0)
+    return (xErr - self.prevXErr, yErr - self.prevYErr)
+  
   def switchWalkState(self):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
     
@@ -127,30 +135,72 @@ class SearchBallNode(Node):
       xErr = 160 - ball.imageCenterX
       yErr = 320 - ball.imageCenterY
       
+      controlSignal = self.topPID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      
       self.switchWalkState()
     
     elif self.my_state == SearchBallNode.MY_BALL_TOP_RIGHT:
       xErr = 160 - ball.imageCenterX
       yErr = 320 - ball.imageCenterY
       
+      controlSignal = self.topPID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      
       self.switchWalkState()
     
     elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_LEFT_FAR:
+      xErr = 160 - ball.imageCenterX
+      yErr = 80 - ball.imageCenterY
+      
+      controlSignal = self.topPID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      
       self.switchWalkState()
     
     elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_LEFT_MID:
+      xErr = 160 - ball.imageCenterX
+      yErr = 80 - ball.imageCenterY
+      
+      controlSignal = self.topPID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      
       self.switchWalkState()
     
     elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_LEFT_NEAR:
+      xErr = 160 - ball.imageCenterX
+      yErr = 80 - ball.imageCenterY
+      
+      controlSignal = self.topPID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      
       self.switchWalkState()
     
     elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_RIGHT_FAR:
+      xErr = 160 - ball.imageCenterX
+      yErr = 80 - ball.imageCenterY
+      
+      controlSignal = self.topPID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      
       self.switchWalkState()
     
     elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_RIGHT_MID:
+      xErr = 160 - ball.imageCenterX
+      yErr = 80 - ball.imageCenterY
+      
+      controlSignal = self.topPID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      
       self.switchWalkState()
     
     elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_RIGHT_NEAR:
+      xErr = 160 - ball.imageCenterX
+      yErr = 80 - ball.imageCenterYs
+      
+      controlSignal = self.topPID(xErr, yErr)
+      commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0)
+      
       self.switchWalkState()
     
     self.xErrInt += xErr
