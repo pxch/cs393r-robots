@@ -273,8 +273,10 @@ class SearchGoalNode(Node):
       
       goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
       if goal.seen:
-        if goal.imageCenterX > 145 and goal.imageCenterY < 175:
-          self.myState = SearchGoalNode.MY_SUCCESS
+        if goal.imageCenterX > 145 and goal.imageCenterX < 175:
+          # self.myState = SearchGoalNode.MY_SUCCESS
+          print "goal seen"
+          self.switchWalkState() 
           
         else:
           self.switchWalkState()  
