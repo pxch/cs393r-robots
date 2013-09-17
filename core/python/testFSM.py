@@ -200,7 +200,7 @@ class SearchBallNode(Node):
     
     elif self.my_state == SearchBallNode.MY_BALL_BOTTOM_RIGHT_NEAR:
       xErr = 160 - ball.imageCenterX
-      yErr = 80 - ball.imageCenterYs
+      yErr = 80 - ball.imageCenterY
       
       controlSignal = self.PID(xErr, yErr)
       commands.setWalkVelocity(controlSignal[0], controlSignal[1], 0.0)
