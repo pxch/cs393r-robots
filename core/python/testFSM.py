@@ -213,7 +213,7 @@ class SearchBallNode(Node):
     self.prevXErr = xErr
     self.prevYErr = yErr
     
-    print "ball seen: ", ball.seen, "top? ", ball.fromTopCamera, "xErr: ", xErr, "yErr", yErr
+    print "ball seen: ", ball.seen, "top? ", ball.fromTopCamera, "xErr: ", xErr, "yErr: ", yErr, "state: ", self.my_state
 
 class SearchGoalNode(Node):
   def __init__(self):
