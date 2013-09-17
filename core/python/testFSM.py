@@ -321,7 +321,6 @@ class WalkNode(Node):
     self.theta = theta
 
   def run(self):
-#    print percepts.joint_angles[core.LKneePitch]  # XXX: remove
     commands.setWalkVelocity(self.x, self.y, self.theta)
     if self.getTime() > self.walkTime:
       commands.stand()
