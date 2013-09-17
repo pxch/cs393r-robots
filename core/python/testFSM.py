@@ -66,8 +66,9 @@ class SearchBallNode(Node):
     BOUNDARY_VAL = 400.0
     motorSpeed = 0
     if fabs(inValue) > BOUNDARY_VAL:
-      return copysign(inValue, motorSpeed)
-    motorSpeed = inValue / BOUNDARY_VAL
+      copysign(inValue, motorSpeed)
+    else:
+      motorSpeed = inValue / BOUNDARY_VAL
     return motorSpeed
   
   def dErrDt(self, xErr, yErr):
@@ -236,10 +237,12 @@ class SearchGoalNode(Node):
   
   def inputToWalk(self, controlInput):
     BOUNDARY_VAL = 400.0
-    motor = 0
+    motor = 0.0
     if fabs(controlInput) > BOUNDARY_VAL:
-      return copysign(controlInput, motor)
-    return motor / BOUNDARY_VAL
+      copysign(controlInput, motor)
+    else:
+      motor = controlInput / BOUNDARY_VAL
+    return motor
   
   def switchWalkState(self):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
