@@ -1,7 +1,7 @@
 from state import * 
 import commands, core, util, pose, percepts
 import time
-from math import pi, fabs, copysign
+from math import pi, fabs, copysign, atan
 from re import search
 
 class TestMachine(StateMachine):
@@ -261,7 +261,7 @@ class SearchGoalNode(Node):
     
     print "yErr: ", yErr, "front/back signal: ", FBSignal
     
-    commands.setWalkVelocity(FBSignal, 0.2, 0.0)
+    commands.setWalkVelocity(FBSignal, 0.2, -atan(FBSignal / 0.2))
     
     self.yErrInt += yErr
     
