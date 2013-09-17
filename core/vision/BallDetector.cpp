@@ -27,6 +27,8 @@ void BallDetector::detectBall() {
 
 		findBall(imageX, imageY, seen);
 		ball->seen = seen;
+		ball->imageCenterX = imageX;
+		ball->imageCenterY = imageY;
 
 		if (ball->seen) {
 			ball->fromTopCamera = false;
@@ -38,24 +40,14 @@ void BallDetector::detectBall() {
 
 			findBall(imageX, imageY, seen);
 			ball->seen = seen;
+			ball->imageCenterX = imageX;
+			ball->imageCenterY = imageY;
 
 			if (ball->seen) {
 				ball->fromTopCamera = true;
 			}
 
 		}
-	}
-
-	if (ball->seen) {
-
-		ball->imageCenterX = imageX;
-		ball->imageCenterY = imageY;
-
-		Position p = cmatrix_.getWorldPosition(imageX, imageY);
-		ball->visionBearing = cmatrix_.bearing(p);
-		ball->visionElevation = cmatrix_.elevation(p);
-		ball->visionDistance = cmatrix_.groundDistance(p);
-
 	}
 
 }
