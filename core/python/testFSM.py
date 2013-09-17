@@ -258,10 +258,11 @@ class SearchGoalNode(Node):
     K_I = 0.001
     
     FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
+    turnAngle = -atan(FBSignal / 0.2)
     
-    print "yErr: ", yErr, "front/back signal: ", FBSignal
+    print "yErr: ", yErr, "front/back signal: ", FBSignal, "turning angle: ", turnAngle
     
-    commands.setWalkVelocity(FBSignal, 0.2, -atan(FBSignal / 0.2))
+    commands.setWalkVelocity(FBSignal, 0.2, turnAngle)
     
     self.yErrInt += yErr
     
