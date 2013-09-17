@@ -120,7 +120,7 @@ class SearchBallNode(Node):
           self.my_state = SearchBallNode.MY_SUCCESS
 
   def run(self):
-    core.speech.say("searching the ball")
+    core.speech.say("searching fucking the ball")
     
     ball = core.world_objects.getObjPtr(core.WO_BALL)
     
@@ -234,6 +234,7 @@ class SearchGoalNode(Node):
     super(SearchGoalNode, self).__init__()
     self.myState = SearchGoalNode.MY_START
     self.yErrInt = 0.0
+    self.xErrInt = 0.0
   
   def inputToWalk(self, controlInput):
     BOUNDARY_VAL = 400.0
@@ -254,19 +255,21 @@ class SearchGoalNode(Node):
         print "BALL FROM TOP"
     
     yErr = 80 - ball.imageCenterY
+    xErr = 160 - ball.imageCenterX
     
     K_I = 0.001
     
     FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
+    LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)
     
-    print "yErr: ", yErr, "front/back signal: ", FBSignal
+    print "yErr: ", yErr, "xErr: ", xErr, "front/back signal: ", FBSignal, "left/right signal ", LRSignal
     
-    commands.setWalkVelocity(FBSignal, 0.3, -pi / 18)
+    commands.setWalkVelocity(FBSignal, LRSignal, -pi / 30)
     
     self.yErrInt += yErr
     
   def run(self):
-    core.speech.say("searching the goal")
+    core.speech.say("searching the fucking goal")
     
     if self.myState == SearchGoalNode.MY_SUCCESS:
       commands.stand()
@@ -295,7 +298,7 @@ class KickBallNode(Node):
     super(KickBallNode, self).__init__()
 
   def run(self):
-    core.speech.say("kicking the ball")
+    core.speech.say("kicking the fucking ball")
     
     self.postSuccess()
     
