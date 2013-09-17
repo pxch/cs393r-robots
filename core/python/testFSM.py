@@ -248,21 +248,20 @@ class SearchGoalNode(Node):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
     
     if not ball.seen:
-      raise Exception("BALL NOT SEEN")
+      print "BALL NOT SEEN"
     else:
       if ball.fromTopCamera:
-        raise Exception("BALL FROM TOP")
+        print "BALL FROM TOP"
     
     yErr = 80 - ball.imageCenterY
     
     K_I = 0.001
     
     FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
-    turnAngle = -atan(FBSignal / 0.2)
     
-    print "yErr: ", yErr, "front/back signal: ", FBSignal, "turning angle: ", turnAngle
+    print "yErr: ", yErr, "front/back signal: ", FBSignal
     
-    commands.setWalkVelocity(FBSignal, 0.2, turnAngle)
+    commands.setWalkVelocity(FBSignal, 0.3, -pi / 18)
     
     self.yErrInt += yErr
     
