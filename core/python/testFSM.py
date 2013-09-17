@@ -254,7 +254,11 @@ class SearchGoalNode(Node):
     
     K_I = 0.001
     
-    commands.setWalkVelocity(0.2, self.inputToWalk(yErr + K_I * self.yErrInt), 0.0)
+    FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
+    
+    print "yErr: ", yErr, "front/back signal: ", FBSignal
+    
+    commands.setWalkVelocity(FBSignal, 0.2, 0.0)
     
     self.yErrInt += yErr
     
