@@ -15,7 +15,7 @@ class TestMachine(StateMachine):
     readyToKick = KickBallNode()
     kick = KickNode()
 
-    self._adt(start, N, TiltHeadNode(-26.5), C, stand, C, finish)
+    self._adt(start, N, TiltHeadNode(-26.5), C, stand)
     self._adt(stand, C, searchBall)
     self._adt(searchBall, S, searchGoal)
     self._adt(searchGoal, S, readyToKick)
