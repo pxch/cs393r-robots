@@ -53,7 +53,7 @@ class SearchBallNode(Node):
     self.prevYErr = None
   
   def PID(self, xErr, yErr):
-    K_I = 0.0005
+    K_I = 0.0001
     K_D = 0.0
 
     dErrDt = self.dErrDt(xErr, yErr)
@@ -98,13 +98,13 @@ class SearchBallNode(Node):
         
     else:  # from bottom camera 
       
-      if ball.imageCenterY < 65:  # far
+      if ball.imageCenterY < 60:  # far
         if ball.imageCenterX < 160:
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_FAR
         else: 
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_FAR
         
-      elif ball.imageCenterY > 95:  # near
+      elif ball.imageCenterY > 100: # near
         if ball.imageCenterX < 160:
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_NEAR
         else:
@@ -239,7 +239,7 @@ class SearchGoalNode(Node):
     self.xErrInt = 0.0
   
   def inputToWalk(self, controlInput):
-    BOUNDARY_VAL = 400.0
+    BOUNDARY_VAL = 200.0
     motor = 0.0
     if fabs(controlInput) > BOUNDARY_VAL:
       copysign(controlInput, motor)
@@ -262,7 +262,7 @@ class SearchGoalNode(Node):
       yErr = 80 - ball.imageCenterY
     xErr = 160 - ball.imageCenterX
     
-    K_I = 0.0005
+    K_I = 0.0001
     
     FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
     LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)
@@ -316,7 +316,7 @@ class KickBallNode(Node):
     self.myState = KickBallNode.MY_START
     
   def inputToWalk(self, controlInput):
-    BOUNDARY_VAL = 600.0
+    BOUNDARY_VAL = 800.0
     motor = 0.0
     if fabs(controlInput) > BOUNDARY_VAL:
       copysign(controlInput, motor)
