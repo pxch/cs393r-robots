@@ -12,13 +12,15 @@ class TestMachine(StateMachine):
     sit = SitNode()
     searchBall = SearchBallNode()
     searchGoal = SearchGoalNode()
-    kickBall = KickBallNode()
+    readyToKick = KickBallNode()
+    kick = KickNode()
 
     self._adt(start, N, TiltHeadNode(-26.5), C, stand, C, finish)
     self._adt(stand, C, searchBall)
     self._adt(searchBall, S, searchGoal)
-    self._adt(searchGoal, S, kickBall)
-    self._adt(kickBall, S, sit)
+    self._adt(searchGoal, S, readyToKick)
+    self._adt(readyToKick , S, kick)
+    self._adt(kick, C, sit)
     self._adt(sit, C, finish)
 
 class SearchBallNode(Node):
@@ -51,7 +53,7 @@ class SearchBallNode(Node):
     self.prevYErr = None
   
   def PID(self, xErr, yErr):
-    K_I = 0.0001
+    K_I = 0.0005
     K_D = 0.0
 
     dErrDt = self.dErrDt(xErr, yErr)
@@ -260,7 +262,7 @@ class SearchGoalNode(Node):
       yErr = 80 - ball.imageCenterY
     xErr = 160 - ball.imageCenterX
     
-    K_I = 0.0001
+    K_I = 0.0005
     
     FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
     LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)
@@ -287,23 +289,80 @@ class SearchGoalNode(Node):
       
       goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
       print "goal seen? ", goal.seen, "goal X: ", goal.imageCenterX
-      if goal.seen:
-        if goal.imageCenterX > 145 and goal.imageCenterX < 175:
-          self.myState = SearchGoalNode.MY_SUCCESS
-          
-        else:
-          self.switchWalkState()  
+
+      if goal.seen and goal.imageCenterX > 145 and goal.imageCenterX < 175:
+        self.myState = SearchGoalNode.MY_SUCCESS
+ 
       else:
         self.switchWalkState()
 
 class KickBallNode(Node):
+  """
+  get ready to kick
+  
+  left 120, 180
+  
+  right 180, 180
+  """
+  
+  MY_START = 0
+  MY_GOTO_BALL = 1
+  MY_READY = 2
+  MY_KICK = 3
+  MY_SUCCESS = 4
+  
   def __init__(self):
     super(KickBallNode, self).__init__()
+    self.myState = KickBallNode.MY_START
+    
+  def inputToWalk(self, controlInput):
+    BOUNDARY_VAL = 600.0
+    motor = 0.0
+    if fabs(controlInput) > BOUNDARY_VAL:
+      copysign(controlInput, motor)
+    else:
+      motor = controlInput / BOUNDARY_VAL
+    return motor
 
   def run(self):
     core.speech.say("kicking the ball")
     
-    self.postSuccess()
+    if self.myState == KickBallNode.MY_SUCCESS:
+      self.postSuccess()
+      
+    elif self.myState == KickBallNode.MY_START:
+      commands.stand()
+      self.myState = KickBallNode.MY_GOTO_BALL
+    
+    elif self.myState == KickBallNode.MY_READY:
+      commands.stand()
+      self.myState = KickBallNode.MY_KICK
+    
+    elif self.myState == KickBallNode.MY_KICK:
+      self.myState = KickBallNode.MY_SUCCESS
+    
+    elif self.myState == KickBallNode.MY_GOTO_BALL:
+      ball = core.world_objects.getObjPtr(core.WO_BALL)
+      
+      if not ball.seen:
+        print "BALL NOT SEEN"
+      
+      if ball.fromTopCamera:
+        yErr = 420 - ball.imageCenterY
+      else:
+        yErr = 180 - ball.imageCenterY
+      xErr = 180 - ball.imageCenterX
+      
+      if fabs(xErr) < 15.0 and fabs(yErr) < 15.0:
+        commands.stand()
+        self.myState = KickBallNode.MY_READY
+      else:
+        LRSignal = self.inputToWalk(xErr)  # left right
+        FBSignal = self.inputToWalk(yErr)  # forward backward
+        
+        print "xErr: ", xErr, "yErr: ", yErr, "left/right: ", LRSignal, "for/back: ", FBSignal
+        
+        commands.setWalkVelocity(FBSignal, LRSignal, 0.0)
     
 class StandNode(Node):
   def __init__(self):
@@ -385,5 +444,13 @@ class TurnHeadNode(Node):
     if self.getTime() > self.turnTime + 10.0:
       self.postSuccess()
 
+class KickNode(Node):
+  def __init__(self):
+    super(KickNode, self).__init__()
+    self.task = kicks.Kick()
 
+  def run(self):
+    self.task.processFrame()
+    if self.task.finished():
+      self.postCompleted()
 
