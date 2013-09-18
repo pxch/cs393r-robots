@@ -20,6 +20,8 @@ void GoalDetector::detectGoal() {
 
 		goal->seen = false;
 
+	} else {
+
 		findGoal(visionRatio, goalX, goalY, seen);
 
 		if (seen) {
@@ -31,28 +33,7 @@ void GoalDetector::detectGoal() {
 
 			goal->radius = visionRatio;
 
-			goal->fromTopCamera = false;
-
-		}
-
-	} else {
-
-		if (!goal->seen) {
-
-			findGoal(visionRatio, goalX, goalY, seen);
-
-			if (seen) {
-
-				goal->seen = true;
-
-				goal->imageCenterX = goalX;
-				goal->imageCenterY = goalY;
-
-				goal->radius = visionRatio;
-
-				goal->fromTopCamera = true;
-
-			}
+			goal->fromTopCamera = true;
 
 		}
 
