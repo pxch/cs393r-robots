@@ -289,7 +289,7 @@ class SearchGoalNode(Node):
       print "goal seen? ", goal.seen, "goal X: ", goal.imageCenterX
       if goal.seen:
         if goal.imageCenterX > 145 and goal.imageCenterX < 175:
-           self.myState = SearchGoalNode.MY_SUCCESS
+          self.myState = SearchGoalNode.MY_SUCCESS
           
         else:
           self.switchWalkState()  
