@@ -423,6 +423,9 @@ class DribbleNode(Node):
     
     print "xErr: ", xErr, "yErr", yErr, "left/right ", LRSignal, "for/back ", FBSignal
     
+    goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
+    print "goal seen? ", goal.seen, "blue ratio: ", goal.radius
+    
     return (FBSignal, LRSignal)
   
   def run(self):
