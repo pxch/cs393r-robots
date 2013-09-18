@@ -117,10 +117,17 @@ void ImageProcessor::ballInGoal() {
 	}
 
 	int x0, y0, x1, y1;
-	x0 = ball->imageCenterX;
-	y0 = ball->imageCenterY;
-	x1 = goal->imageCenterX;
-	y1 = goal->imageCenterY;
+	if (ball->imageCenterX < goal->imageCenterX) {
+		x0 = ball->imageCenterX;
+		y0 = ball->imageCenterY;
+		x1 = goal->imageCenterX;
+		y1 = goal->imageCenterY;
+	} else {
+		x0 = goal->imageCenterX;
+		y0 = goal->imageCenterY;
+		x1 = ball->imageCenterX;
+		y1 = ball->imageCenterY;
+	}
 
 	int total = 0;
 	int target = 0;
@@ -132,9 +139,10 @@ void ImageProcessor::ballInGoal() {
 
 	int y = y0;
 	for (int x = x0; x <= x1; x++) {
-		total ++;
-		if (getSegPixelValueAt(x,y) == c_BLUE || getSegPixelValueAt(x,y) == c_ORANGE) {
-			target ++;
+		total++;
+		if (getSegPixelValueAt(x,y) == c_BLUE
+				|| getSegPixelValueAt(x,y) == c_ORANGE) {
+			target++;
 		}
 		error = error + deltaerr;
 		if (error >= 0.5) {
@@ -143,8 +151,14 @@ void ImageProcessor::ballInGoal() {
 		}
 	}
 
-	if (double(target) / double(total) > 0.5)
+	if (total == 0) {
+		ball->type = 0;
+		return;
+	}
+
+	if (double(target) / double(total) > 0.5) {
 		ball->type = 1;
+	}
 
 	return;
 }
