@@ -276,11 +276,11 @@ class SearchGoalNode(Node):
       if self.turnDirection == None:
         self.turnDirection = -1.0  # turn right while going left, goal on right
         if goal.imageCenterX < 160.0:
-          turnDirection = 1.0  # goal on left, turn left while going right
+          self.turnDirection = 1.0  # goal on left, turn left while going right
     
-    print "yErr: ", yErr, "xErr: ", xErr, "front/back signal: ", FBSignal, "left/right signal ", LRSignal
+    print "yErr: ", yErr, "xErr: ", xErr, "front/back signal: ", FBSignal, "left/right signal ", LRSignal, "turn", self.turnDirection
     
-    commands.setWalkVelocity(FBSignal, LRSignal, turnDirection * pi / 50.0)
+    commands.setWalkVelocity(FBSignal, LRSignal, self.turnDirection * pi / 50.0)
     
     self.yErrInt += yErr
     self.xErrInt += xErr
@@ -470,6 +470,7 @@ class DribbleNode(Node):
       commands.setWalkVelocity(ballSignal[0], ballSignal[1], 0.0)
     
       if self.movingCounter == DribbleNode.MY_MOVING_MAX:
+        self.movingCounter = 0
         self.myState = self.MY_TURNING
     
 class StandNode(Node):
