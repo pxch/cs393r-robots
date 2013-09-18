@@ -1,5 +1,5 @@
 from state import * 
-import commands, core, util, pose, percepts
+import commands, core, util, pose, percepts, kicks
 import time
 from math import pi, fabs, copysign, atan
 from re import search
