@@ -363,6 +363,21 @@ class KickBallNode(Node):
         print "xErr: ", xErr, "yErr: ", yErr, "left/right: ", LRSignal, "for/back: ", FBSignal
         
         commands.setWalkVelocity(FBSignal, LRSignal, 0.0)
+        
+class DribbleNode(Node):
+  MY_START = 0
+  
+  MY_DRIBBLE = 1
+  
+  MY_SUCCESS = 2
+  
+  def __init__(self):
+    super(DribbleNode, self).__init__()
+    self.myState = DribbleNode.MY_START
+  
+  def run(self):
+    if self.myState == DribbleNode.MY_START:
+      commands.stand()
     
 class StandNode(Node):
   def __init__(self):
