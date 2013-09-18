@@ -431,6 +431,7 @@ class DribbleNode(Node):
   def run(self):
     if self.myState == DribbleNode.MY_START:
       commands.stand()
+      self.myState = DribbleNode.MY_MOVING
       
     elif self.myState == DribbleNode.MY_SUCCESS:
       commands.stand()
