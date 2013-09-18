@@ -266,7 +266,7 @@ class SearchGoalNode(Node):
       yErr = 80 - ball.imageCenterY
     xErr = 160 - ball.imageCenterX
     
-    K_I = 0.001
+    K_I = 0.01
     
     FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
     LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)
