@@ -14,11 +14,13 @@ class TestMachine(StateMachine):
     searchGoal = SearchGoalNode()
     readyToKick = KickBallNode()
     kick = KickNode()
+    dribble = DribbleNode()
 
     self._adt(start, N, TiltHeadNode(-26.5), C, stand)
     self._adt(stand, C, searchBall)
     self._adt(searchBall, S, searchGoal)
-    self._adt(searchGoal, S, readyToKick)
+    self._adt(searchGoal, S, dribble)
+    self._adt(dribble, S, readyToKick)
     self._adt(readyToKick , S, kick)
     self._adt(kick, C, sit)
     self._adt(sit, C, finish)
@@ -104,7 +106,7 @@ class SearchBallNode(Node):
         else: 
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_FAR
         
-      elif ball.imageCenterY > 100: # near
+      elif ball.imageCenterY > 100:  # near
         if ball.imageCenterX < 160:
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_NEAR
         else:
@@ -237,6 +239,8 @@ class SearchGoalNode(Node):
     self.myState = SearchGoalNode.MY_START
     self.yErrInt = 0.0
     self.xErrInt = 0.0
+    
+    self.turnDirection = None
   
   def inputToWalk(self, controlInput):
     BOUNDARY_VAL = 200.0
@@ -267,9 +271,16 @@ class SearchGoalNode(Node):
     FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
     LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)
     
+    goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
+    if goal.seen:
+      if self.turnDirection == None:
+        self.turnDirection = -1.0  # turn right while going left, goal on right
+        if goal.imageCenterX < 160.0:
+          turnDirection = 1.0  # goal on left, turn left while going right
+    
     print "yErr: ", yErr, "xErr: ", xErr, "front/back signal: ", FBSignal, "left/right signal ", LRSignal
     
-    commands.setWalkVelocity(FBSignal, LRSignal, -pi / 50)
+    commands.setWalkVelocity(FBSignal, LRSignal, turnDirection * pi / 50.0)
     
     self.yErrInt += yErr
     self.xErrInt += xErr
@@ -365,19 +376,100 @@ class KickBallNode(Node):
         commands.setWalkVelocity(FBSignal, LRSignal, 0.0)
         
 class DribbleNode(Node):
+  """
+  dribble coordinate
+  
+  160 200
+  """
+  
   MY_START = 0
   
-  MY_DRIBBLE = 1
-  
   MY_SUCCESS = 2
+  
+  MY_TURNING = 3
+  MY_MOVING = 4
+  
+  MY_MOVING_MAX = 10
   
   def __init__(self):
     super(DribbleNode, self).__init__()
     self.myState = DribbleNode.MY_START
+    
+    self.movingCounter = 0
+  
+  def toMotor(self, inputVal):
+    BOUNDARY_VAL = 800.0
+    motor = 0.0
+    if fabs(inputVal) > BOUNDARY_VAL:
+      copysign(inputVal, motor)
+    else:
+      motor = inputVal / BOUNDARY_VAL
+    return motor
+
+  def ballSignal(self):
+    ball = core.world_objects.getObjPtr(core.WO_BALL)
+    
+    if not ball.seen:
+      print "BALL NOT SEEN"
+        
+    xErr = 160.0 - ball.imageCenterX
+    if ball.fromTopCamera:
+      yErr = 440.0 - ball.imageCenterY
+    else:
+      yErr = 200.0 - ball.imageCenterY 
+    
+    LRSignal = self.toMotor(xErr)
+    FBSignal = self.toMotor(yErr)
+    
+    print "xErr: ", xErr, "yErr", yErr, "left/right ", LRSignal, "for/back ", FBSignal
+    
+    goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
+    print "goal seen? ", goal.seen, "blue ratio: ", goal.radius
+    
+    return (FBSignal, LRSignal)
   
   def run(self):
     if self.myState == DribbleNode.MY_START:
       commands.stand()
+      
+    elif self.myState == DribbleNode.MY_SUCCESS:
+      commands.stand()
+      self.postSuccess()
+    
+    elif self.myState == DribbleNode.MY_TURNING:
+      print "dribble turning"
+      
+      goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
+      
+      if not goal.seen:
+        print "GOAL NOT SEEN!!!"
+      
+      if fabs(goal.imageCenterX - 160.0) < 15.0:
+        if goal.radius > 0.5:
+          self.myState = DribbleNode.MY_SUCCESS
+        else:
+          self.myState = DribbleNode.MY_MOVING
+      
+      else:
+        if goal.imageCenterX > 160.0:
+          turnDirection = -1.0  # goal on right, turn right while going left
+        else:
+          turnDirection = 1.0
+          
+        ballSignal = self.ballSignal()
+        commands.setWalkVelocity(ballSignal[0], ballSignal[1], turnDirection * pi / 70.0)
+      
+    elif self.myState == DribbleNode.MY_MOVING:
+      print "dribble moving"
+      
+      self.movingCounter += 1
+      
+      ballSignal = self.ballSignal()
+      
+      commands.setWalkVelocity(ballSignal[0], ballSignal[1], 0.0)
+    
+      if self.movingCounter == DribbleNode.MY_MOVING_MAX:
+        self.myState = self.MY_TURNING
     
 class StandNode(Node):
   def __init__(self):
