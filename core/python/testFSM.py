@@ -254,7 +254,10 @@ class SearchGoalNode(Node):
       if ball.fromTopCamera:
         print "BALL FROM TOP"
     
-    yErr = 80 - ball.imageCenterY
+    if ball.fromTopCamera:
+      yErr = 240 - ball.imageCenterY
+    else:
+      yErr = 80 - ball.imageCenterY
     xErr = 160 - ball.imageCenterX
     
     K_I = 0.001
@@ -264,9 +267,10 @@ class SearchGoalNode(Node):
     
     print "yErr: ", yErr, "xErr: ", xErr, "front/back signal: ", FBSignal, "left/right signal ", LRSignal
     
-    commands.setWalkVelocity(FBSignal, LRSignal, -pi / 60)
+    commands.setWalkVelocity(FBSignal, LRSignal, -pi / 50)
     
     self.yErrInt += yErr
+    self.xErrInt += xErr
     
   def run(self):
     core.speech.say("searching the goal")
@@ -282,11 +286,10 @@ class SearchGoalNode(Node):
     elif self.myState == SearchGoalNode.MY_FIND_GOAL:
       
       goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
+      print "goal seen? ", goal.seen, "goal X: ", goal.imageCenterX
       if goal.seen:
         if goal.imageCenterX > 145 and goal.imageCenterX < 175:
-          # self.myState = SearchGoalNode.MY_SUCCESS
-          print "goal seen"
-          self.switchWalkState() 
+           self.myState = SearchGoalNode.MY_SUCCESS
           
         else:
           self.switchWalkState()  
