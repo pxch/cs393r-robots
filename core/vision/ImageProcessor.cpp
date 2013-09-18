@@ -105,12 +105,20 @@ void ImageProcessor::setCalibration(RobotCalibration calibration) {
 	calibration_ = new RobotCalibration(calibration);
 }
 
+void ImageProcessor::ballInGoal() {
+	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+}
+
 void ImageProcessor::processFrame() {
 	updateTransform();
 	classifier_->classifyImage(color_table_);
 
 	ball_detector_->detectBall();
 	goal_detector_->detectGoal();
+
+	if (camera_ == Camera::TOP) {
+		ballInGoal();
+	}
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {

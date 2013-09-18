@@ -17,7 +17,7 @@ void GoalDetector::detectGoal() {
 	bool seen;
 
 	if (camera_ == Camera::BOTTOM) {
-
+		goal->seen = false;
 		return;
 
 	} else {

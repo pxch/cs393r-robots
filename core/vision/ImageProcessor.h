@@ -48,6 +48,7 @@ public:
 	std::vector<BallCandidate*> getBallCandidates();
 	BallCandidate* getBestBallCandidate();
 	bool isImageLoaded();
+
 private:
 	VisionBlocks& vblocks_;
 	const ImageParams& iparams_;
@@ -60,6 +61,8 @@ private:
 
 	RobotCalibration* calibration_;
 	bool enableCalibration_;
+
+	void ballInGoal();
 };
 
 #endif
