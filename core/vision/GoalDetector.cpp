@@ -35,8 +35,6 @@ void GoalDetector::detectGoal() {
 
 			goal->fromTopCamera = true;
 
-      std::cout << "goal seen in C++" << std::endl;
-
 		}
 
 	}

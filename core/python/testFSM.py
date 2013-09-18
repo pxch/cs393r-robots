@@ -51,7 +51,7 @@ class SearchBallNode(Node):
     self.prevYErr = None
   
   def PID(self, xErr, yErr):
-    K_I = 0.001
+    K_I = 0.0001
     K_D = 0.0
 
     dErrDt = self.dErrDt(xErr, yErr)
@@ -260,7 +260,7 @@ class SearchGoalNode(Node):
       yErr = 80 - ball.imageCenterY
     xErr = 160 - ball.imageCenterX
     
-    K_I = 0.001
+    K_I = 0.0001
     
     FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
     LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)
