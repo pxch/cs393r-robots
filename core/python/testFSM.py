@@ -266,7 +266,7 @@ class SearchGoalNode(Node):
       yErr = 80 - ball.imageCenterY
     xErr = 160 - ball.imageCenterX
     
-    K_I = 0.0001
+    K_I = 0.001
     
     FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
     LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)
@@ -277,6 +277,8 @@ class SearchGoalNode(Node):
         self.turnDirection = -1.0  # turn right while going left, goal on right
         if goal.imageCenterX < 160.0:
           self.turnDirection = 1.0  # goal on left, turn left while going right
+    else:
+      self.turnDirection = -1.0
     
     print "yErr: ", yErr, "xErr: ", xErr, "front/back signal: ", FBSignal, "left/right signal ", LRSignal, "turn", self.turnDirection
     
