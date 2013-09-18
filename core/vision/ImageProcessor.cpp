@@ -116,6 +116,36 @@ void ImageProcessor::ballInGoal() {
 		return;
 	}
 
+	int x0, y0, x1, y1;
+	x0 = ball->imageCenterX;
+	y0 = ball->imageCenterY;
+	x1 = goal->imageCenterX;
+	y1 = goal->imageCenterY;
+
+	int total = 0;
+	int target = 0;
+
+	int deltax = x1 - x0;
+	int deltay = y1 - y0;
+	double error = 0;
+	double deltaerr = abs(deltay / deltax);
+
+	int y = y0;
+	for (int x = x0; x <= x1; x++) {
+		total ++;
+		if (getSegPixelValueAt(x,y) == c_BLUE || getSegPixelValueAt(x,y) == c_ORANGE) {
+			target ++;
+		}
+		error = error + deltaerr;
+		if (error >= 0.5) {
+			y = y + 1;
+			error = error - 1.0;
+		}
+	}
+
+	if (double(target) / double(total) > 0.5)
+		ball->type = 1;
+
 	return;
 }
 
