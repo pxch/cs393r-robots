@@ -107,6 +107,53 @@ void ImageProcessor::setCalibration(RobotCalibration calibration) {
 
 void ImageProcessor::ballInGoal() {
 	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+	WorldObject* goal = &vblocks_.world_object->objects_[WO_OPP_GOAL];
+
+	ball->type = 0;
+
+	if (!ball->seen || ! goal->seen) {
+		ball->type = 0;
+		return;
+	}
+
+	int x_left, x_right, y_left, y_right;
+
+	x_left = x_right = y_left = y_right = 0;
+
+	if (ball->imageCenterX = goal->imageCenterX) {
+		ball->type = 1;
+		return;
+	}
+	else if (ball->imageCenterX < goal->imageCenterX) {
+		x_left = ball->imageCenterX;
+		y_left = ball->imageCenterY;
+		x_right = goal->imageCenterX;
+		y_right = goal->imageCenterY;
+	}
+	else {
+		x_left = goal->imageCenterX;
+		y_left = goal->imageCenterY;
+		x_right = ball->imageCenterX;
+		y_right = ball->imageCenterY;
+	}
+
+	int total = x_right - x_left + 1;
+	int target = 0;
+
+	int x, y;
+
+	for (i = 0; i < total; i++) {
+		x = x_left + i;
+		y = y_left + (y_right - y_left) * (x - x_left) / (x_right - x_left);
+		if (getSegPixelValueAt(x,y) == c_BLUE || getSegPixelValueAt(x,y) == c_ORANGE) {
+			target ++;
+		}
+		if (double(target) / double(total) > 0.5) {
+			ball->type = 1;
+		}
+	}
+
+	return;
 }
 
 void ImageProcessor::processFrame() {
