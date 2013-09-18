@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 #include "ImageProcessor.h"
 #include "BallDetector.h"
@@ -155,7 +156,7 @@ void ImageProcessor::ballInGoal() {
 		int deltax = x1 - x0;
 		int deltay = y1 - y0;
 		double error = 0;
-		double deltaerr = abs(deltay / deltax);
+		double deltaerr = abs(double(deltay) / double(deltax));
 
 		int y = y0;
 		for (int x = x0; x <= x1; x++) {
