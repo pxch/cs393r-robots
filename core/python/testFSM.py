@@ -399,26 +399,6 @@ class WalkNode(Node):
     if self.getTime() > self.walkTime:
       commands.stand()
       self.postSuccess()     
-      
-class BallLeftNode(Node):
-  def __init__(self):
-    super(BallLeftNode, self).__init__()
-
-  def run(self):
-    commands.setHeadPan(pi / 18, 0.2, True)
-    if self.getTime() > 0.3:
-      # XXX: don't use time to terminate
-      self.postSuccess()
- 
-class BallRightNode(Node):
-  def __init__(self):
-    super(BallRightNode, self).__init__()
-
-  def run(self):
-    commands.setHeadPan(-pi / 18, 0.2, True)
-    if self.getTime() > 0.3:
-      # XXX: don't use time to terminate
-      self.postSuccess()
 
 class TiltHeadNode(Node):
   def __init__(self, tilt):
