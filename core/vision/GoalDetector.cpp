@@ -18,7 +18,7 @@ void GoalDetector::detectGoal() {
 
 	if (camera_ == Camera::BOTTOM) {
 
-		goal->seen = false;
+		return;
 
 	} else {
 
@@ -34,6 +34,8 @@ void GoalDetector::detectGoal() {
 			goal->radius = visionRatio;
 
 			goal->fromTopCamera = true;
+
+      std::cout << "goal seen in C++" << std::endl;
 
 		}
 
@@ -52,7 +54,8 @@ void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
 			}
 		}
 	}
-	if (total) {
+	if (total > 200) {
+	  seen = true;
 		goalX /= total, goalY /= total;
 		visionRatio = float(total) / float(iparams_.width)
 				/ float(iparams_.height);
