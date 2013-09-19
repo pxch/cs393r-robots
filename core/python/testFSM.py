@@ -398,6 +398,9 @@ class DribbleNode(Node):
     self.myState = DribbleNode.MY_START
     
     self.movingCounter = 0
+    
+    self.xErrInt = 0.0
+    self.yErrInt = 0.0
   
   def toMotor(self, inputVal):
     BOUNDARY_VAL = 800.0
@@ -411,6 +414,8 @@ class DribbleNode(Node):
   def ballSignal(self):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
     
+    K_I = 0.001
+    
     if not ball.seen:
       print "BALL NOT SEEN"
         
@@ -420,13 +425,16 @@ class DribbleNode(Node):
     else:
       yErr = 200.0 - ball.imageCenterY 
     
-    LRSignal = self.toMotor(xErr)
-    FBSignal = self.toMotor(yErr)
+    LRSignal = self.toMotor(xErr + K_I * self.xErrInt)
+    FBSignal = self.toMotor(yErr + K_I * self.yErrInt)
     
     print "xErr: ", xErr, "yErr", yErr, "left/right ", LRSignal, "for/back ", FBSignal
     
     goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
     print "goal seen? ", goal.seen, "blue ratio: ", goal.radius
+    
+    self.xErrInt += xErr
+    self.yErrInt += yErr
     
     return (FBSignal, LRSignal)
   
@@ -480,7 +488,7 @@ class GoalInBallNode(Node):
   
   FOLLOW_BALL = 1
   
-  TIME_OUT = 2
+  TIME_OUT = 15.0
   
   """
   signals to send out
