@@ -482,7 +482,7 @@ class DribbleNode(Node):
         print "GOAL NOT SEEN!!!"
       
       if fabs(goal.imageCenterX - 160.0) < 15.0:
-        if goal.radius > 0.35:
+        if goal.radius > 0.28:
           self.myState = DribbleNode.MY_SUCCESS
         else:
           self.myState = DribbleNode.MY_MOVING
