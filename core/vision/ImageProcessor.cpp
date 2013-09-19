@@ -173,33 +173,31 @@ void ImageProcessor::ballInGoal() {
 			y1 = ball->imageCenterY;
 		}
 
-			int yDist = 0;
-			if (y0 != y1) {
-				yDist = (y1 > y0) ? y1 - y0 + 1 : y0 - y1 + 1;
-			}
-
-			int yStep = 0;
-			if (y0 != y1) {
-				yStep = (y1 > y1) ? 1 : -1;
-			}
-
-			int ySegLen = yDist / segCounts;
-
-			while (x0 != x1 + xStep) {
-				x0 += xStep;
-
-				for (int yCount = 0; yCount == ySegLen || y0 == y1 + yStep;
-						++yCount) {
-					if (getSegPixelValueAt(x0,y0) == c_BLUE
-							|| getSegPixelValueAt(x0,y0) == c_ORANGE) {
-						++good;
-					}
-					++total;
-					y0 += yStep;
-				}
-			}
+		int yDist = 0;
+		if (y0 != y1) {
+			yDist = (y1 > y0) ? y1 - y0 + 1 : y0 - y1 + 1;
 		}
 
+		int yStep = 0;
+		if (y0 != y1) {
+			yStep = (y1 > y1) ? 1 : -1;
+		}
+
+		int ySegLen = yDist / segCounts;
+
+		while (x0 != x1 + xStep) {
+			x0 += xStep;
+
+			for (int yCount = 0; yCount == ySegLen || y0 == y1 + yStep;
+					++yCount) {
+				if (getSegPixelValueAt(x0,y0) == c_BLUE
+						|| getSegPixelValueAt(x0,y0) == c_ORANGE) {
+					++good;
+				}
+				++total;
+				y0 += yStep;
+			}
+		}
 	}
 
 	if (total == 0) {
