@@ -23,7 +23,9 @@ class TestMachine(StateMachine):
     self._adt(searchGoal, S, dribble)
     self._adt(dribble, S, readyToKick)
     self._adt(readyToKick , S, kick)
-    self._adt(kick, C, sit)
+    self._adt(kick, C, ballInGoal)
+    self._adt(ballInGoal, S(GoalInBallNode.SIG_SCORED_NO), searchBall)
+    self._adt(ballInGoal, S(GoalInBallNode.SIG_SCORED_YES), sit)
     self._adt(sit, C, finish)
 
 class SearchBallNode(Node):
