@@ -540,6 +540,10 @@ class KickNode(Node):
     super(KickNode, self).__init__()
     self.task = kicks.Kick()
 
+  def reset(self):
+    super(Node, self).reset()
+    self.task = kicks.Kick()
+  
   def run(self):
     self.task.processFrame()
     if self.task.finished():

@@ -112,72 +112,11 @@ void ImageProcessor::ballInGoal() {
 	ball->type = 0;
 
 	if (!ball->seen || !goal->seen) {
-		ball->type = 0;
 		return;
 	}
 
-	int x0, y0, x1, y1;
-	int x, y;
-
-	int total = 0;
-	int target = 0;
-
-	if (ball->imageCenterX == goal->imageCenterX) {
-		x0 = x1 = ball->imageCenterX;
-		if (ball->imageCenterY < goal->imageCenterY) {
-			y0 = ball->imageCenterY;
-			y1 = goal->imageCenterY;
-		} else {
-			y0 = goal->imageCenterY;
-			y1 = ball->imageCenterY;
-		}
-		x = x0;
-		for (y = y0; y <= y1; y++) {
-			total++;
-			if (getSegPixelValueAt(x,y) == c_BLUE
-					|| getSegPixelValueAt(x,y) == c_ORANGE) {
-				target++;
-			}
-		}
-	} else {
-		if (ball->imageCenterX < goal->imageCenterX) {
-			x0 = ball->imageCenterX;
-			y0 = ball->imageCenterY;
-			x1 = goal->imageCenterX;
-			y1 = goal->imageCenterY;
-		} else {
-			x0 = goal->imageCenterX;
-			y0 = goal->imageCenterY;
-			x1 = ball->imageCenterX;
-			y1 = ball->imageCenterY;
-		}
-
-		int deltax = x1 - x0;
-		int deltay = y1 - y0;
-		double error = 0;
-		double deltaerr = abs(deltay / deltax);
-
-		int y = y0;
-		for (int x = x0; x <= x1; x++) {
-			total++;
-			if (getSegPixelValueAt(x,y) == c_BLUE
-					|| getSegPixelValueAt(x,y) == c_ORANGE) {
-				target++;
-			}
-			error = error + deltaerr;
-			if (error >= 0.5) {
-				y = y + 1;
-				error = error - 1.0;
-			}
-		}
-	}
-	if (total == 0) {
-		ball->type = 0;
+	if (ball->fromTopCamera != goal->fromTopCamera) {
 		return;
-	}
-
-	if (double(target) / double(total) > 0.5) {
-		ball->type = 1;
 	}
 
 	return;
