@@ -119,6 +119,91 @@ void ImageProcessor::ballInGoal() {
 		return;
 	}
 
+	int total = 0;
+	int good = 0; // pixels in goal or ball
+
+	int x0 = ball->imageCenterX;
+	int x1 = ball->imageCenterX;
+
+	if (x0 == x1) {
+
+		int y0, y1;
+		if (ball->imageCenterY > goal->imageCenterY) {
+			y0 = goal->imageCenterY;
+			y1 = ball->imageCenterY;
+		} else {
+			y0 = ball->imageCenterX;
+			y1 = goal->imageCenterY;
+		}
+
+		while (y0 <= y1) {
+			++total;
+			if (getSegPixelValueAt(x0,y0) == c_BLUE
+					|| getSegPixelValueAt(x0,y0) == c_ORANGE) {
+				++good;
+			}
+			++y0;
+		}
+
+	} else {
+
+		int xStep = (x1 > x0) ? 1 : -1;
+
+		int segCounts = (x1 > x0) ? x1 - x0 + 1 : x0 - x1 + 1;
+
+		int y0 = ball->imageCenterY;
+		int y1 = goal->imageCenterY;
+
+		if (y0 == y1) {
+
+			while (x0 != x1 + xStep) {
+				if (getSegPixelValueAt(x0,y0) == c_BLUE
+						|| getSegPixelValueAt(x0,y0) == c_ORANGE) {
+					++good;
+				}
+				x0 += xStep;
+				++total;
+			}
+
+		} else {
+
+			int yDist = 0;
+			if (y0 != y1) {
+				yDist = (y1 > y0) ? y1 - y0 + 1 : y0 - y1 + 1;
+			}
+
+			int yStep = 0;
+			if (y0 != y1) {
+				yStep = (y1 > y1) ? 1 : -1;
+			}
+
+			int ySegLen = yDist / segCounts;
+
+			while (x0 != x1 + xStep) {
+				x0 += xStep;
+
+				for (int yCount = 0; yCount == ySegLen || y0 == y1 + yStep;
+						++yCount) {
+					if (getSegPixelValueAt(x0,y0) == c_BLUE
+							|| getSegPixelValueAt(x0,y0) == c_ORANGE) {
+						++good;
+					}
+					++total;
+					y0 += yStep;
+				}
+			}
+		}
+
+	}
+
+	if (total == 0) {
+		return;
+	}
+
+	if (float(good) / float(total) >= 0.8) {
+		ball->type = 1;
+	}
+
 	return;
 }
 
