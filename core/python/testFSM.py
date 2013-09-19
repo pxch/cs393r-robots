@@ -509,6 +509,17 @@ class GoalInBallNode(Node):
     
     elif self.myState == GoalInBallNode.FOLLOW_BALL:
       ball = core.world_objects.getObjPtr(core.WO_BALL)
+      if ball.type == 1:
+        self.scored = True
+      
+      print "scored? ", ball.type
+      
+      if self.getTime() == GoalInBallNode.TIME_OUT:
+        if self.scored:
+          self.postSignal(GoalInBallNode.SIG_SCORED_YES)
+        else:
+          self.postSignal(GoalInBallNode.SIG_SCORED_NO)
+      
     
 class StandNode(Node):
   def __init__(self):
