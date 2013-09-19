@@ -331,6 +331,9 @@ class KickBallNode(Node):
     super(KickBallNode, self).__init__()
     self.myState = KickBallNode.MY_START
     
+    self.xErrInt = 0.0
+    self.yErrInt = 0.0
+    
   def inputToWalk(self, controlInput):
     BOUNDARY_VAL = 800.0
     motor = 0.0
@@ -373,12 +376,16 @@ class KickBallNode(Node):
         commands.stand()
         self.myState = KickBallNode.MY_READY
       else:
-        LRSignal = self.inputToWalk(xErr)  # left right
-        FBSignal = self.inputToWalk(yErr)  # forward backward
+        K_I = 0.001
+        LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
+        FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)  # forward backward
         
         print "xErr: ", xErr, "yErr: ", yErr, "left/right: ", LRSignal, "for/back: ", FBSignal
         
         commands.setWalkVelocity(FBSignal, LRSignal, 0.0)
+        
+        self.xErrInt += xErr
+        self.yErrInt += yErr
         
 class DribbleNode(Node):
   """
@@ -515,7 +522,7 @@ class GoalInBallNode(Node):
       if ball.type == 1:
         self.scored = True
       
-      print "scored? ", self.scored, "time". self.getTime()
+      print "scored? ", self.scored, "time", self.getTime()
       
       if self.getTime() == GoalInBallNode.TIME_OUT:
         if self.scored:
