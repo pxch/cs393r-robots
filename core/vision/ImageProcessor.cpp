@@ -112,6 +112,7 @@ void ImageProcessor::ballInGoal() {
 	ball->type = 0;
 
 	if (!ball->seen || !goal->seen) {
+		ball->type = 0;
 		return;
 	}
 
@@ -166,6 +167,11 @@ void ImageProcessor::ballInGoal() {
 			}
 
 		} else {
+			x0 = goal->imageCenterX;
+			y0 = goal->imageCenterY;
+			x1 = ball->imageCenterX;
+			y1 = ball->imageCenterY;
+		}
 
 			int yDist = 0;
 			if (y0 != y1) {
@@ -197,6 +203,7 @@ void ImageProcessor::ballInGoal() {
 	}
 
 	if (total == 0) {
+		ball->type = 0;
 		return;
 	}
 
