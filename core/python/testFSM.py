@@ -55,7 +55,7 @@ class SearchBallNode(Node):
     self.prevYErr = None
   
   def PID(self, xErr, yErr):
-    K_I = 0.01
+    K_I = 0.001
     K_D = 0.0
 
     dErrDt = self.dErrDt(xErr, yErr)
@@ -100,13 +100,13 @@ class SearchBallNode(Node):
         
     else:  # from bottom camera 
       
-      if ball.imageCenterY < 60:  # far
+      if ball.imageCenterY < 50:  # far
         if ball.imageCenterX < 160:
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_FAR
         else: 
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_RIGHT_FAR
         
-      elif ball.imageCenterY > 100:  # near
+      elif ball.imageCenterY > 90:  # near
         if ball.imageCenterX < 160:
           self.my_state = SearchBallNode.MY_BALL_BOTTOM_LEFT_NEAR
         else:
@@ -498,6 +498,9 @@ class GoalInBallNode(Node):
     if self.myState == GoalInBallNode.MY_START:
       commands.stand()
       self.myState = GoalInBallNode.FOLLOW_BALL
+    
+    elif self.myState == GoalInBallNode.FOLLOW_BALL:
+      ball = core.world_objects.getObjPtr(core.WO_BALL)
     
 class StandNode(Node):
   def __init__(self):
