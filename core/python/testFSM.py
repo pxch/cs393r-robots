@@ -55,7 +55,7 @@ class SearchBallNode(Node):
     self.prevYErr = None
   
   def PID(self, xErr, yErr):
-    K_I = 0.0001
+    K_I = 0.01
     K_D = 0.0
 
     dErrDt = self.dErrDt(xErr, yErr)
@@ -266,7 +266,7 @@ class SearchGoalNode(Node):
       yErr = 80 - ball.imageCenterY
     xErr = 160 - ball.imageCenterX
     
-    K_I = 0.01
+    K_I = 0.001
     
     FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
     LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)
@@ -474,6 +474,30 @@ class DribbleNode(Node):
       if self.movingCounter == DribbleNode.MY_MOVING_MAX:
         self.movingCounter = 0
         self.myState = self.MY_TURNING
+        
+class GoalInBallNode(Node):
+  MY_START = 0
+  
+  FOLLOW_BALL = 1
+  
+  TIME_OUT = 2
+  
+  """
+  signals to send out
+  """
+  SIG_SCORED_YES = 3
+  SIG_SCORED_NO = 4
+  
+  def __init__(self):
+    super(GoalInBallNode, self).__init__()
+    
+    self.myState = GoalInBallNode.MY_START
+    self.scored = False
+  
+  def run(self):
+    if self.myState == GoalInBallNode.MY_START:
+      commands.stand()
+      self.myState = GoalInBallNode.FOLLOW_BALL
     
 class StandNode(Node):
   def __init__(self):
