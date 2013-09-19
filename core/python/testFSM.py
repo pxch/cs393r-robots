@@ -391,7 +391,7 @@ class DribbleNode(Node):
   MY_TURNING = 3
   MY_MOVING = 4
   
-  MY_MOVING_MAX = 10
+  MY_MOVING_MAX = 50
   
   def __init__(self):
     super(DribbleNode, self).__init__()
