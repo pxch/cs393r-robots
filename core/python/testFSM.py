@@ -15,6 +15,7 @@ class TestMachine(StateMachine):
     readyToKick = KickBallNode()
     kick = KickNode()
     dribble = DribbleNode()
+    ballInGoal = GoalInBallNode()
 
     self._adt(start, N, TiltHeadNode(-26.5), C, stand)
     self._adt(stand, C, searchBall)
