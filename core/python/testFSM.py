@@ -565,7 +565,6 @@ class KickNode(Node):
     self.task = kicks.Kick()
 
   def reset(self):
-    super(Node, self).reset()
     self.task = kicks.Kick()
   
   def run(self):
