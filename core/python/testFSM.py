@@ -459,7 +459,7 @@ class DribbleNode(Node):
         print "GOAL NOT SEEN!!!"
       
       if fabs(goal.imageCenterX - 160.0) < 15.0:
-        if goal.radius > 0.5:
+        if goal.radius > 0.35:
           self.myState = DribbleNode.MY_SUCCESS
         else:
           self.myState = DribbleNode.MY_MOVING
@@ -515,7 +515,7 @@ class GoalInBallNode(Node):
       if ball.type == 1:
         self.scored = True
       
-      print "scored? ", ball.type
+      print "scored? ", self.scored, "time". self.getTime()
       
       if self.getTime() == GoalInBallNode.TIME_OUT:
         if self.scored:
