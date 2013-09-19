@@ -46,6 +46,10 @@ class SearchBallNode(Node):
   MY_BALL_BOTTOM_RIGHT_MID = 9
   MY_BALL_BOTTOM_RIGHT_NEAR = 10
   
+  def reset(self):
+    super(SearchBallNode, self).reset()
+    self.myState = SearchBallNode.MY_START
+  
   def __init__(self):
     super(SearchBallNode, self).__init__()
     self.my_state = SearchBallNode.MY_START 
@@ -237,6 +241,10 @@ class SearchGoalNode(Node):
   
   MY_FIND_GOAL = 2
   
+  def reset(self):
+    super(SearchGoalNode, self).reset()
+    self.myState = SearchGoalNode.MY_START
+  
   def __init__(self):
     super(SearchGoalNode, self).__init__()
     self.myState = SearchGoalNode.MY_START
@@ -327,6 +335,10 @@ class KickBallNode(Node):
   MY_KICK = 3
   MY_SUCCESS = 4
   
+  def reset(self):
+    super(KickBallNode, self).reset()
+    self.myState = KickBallNode.MY_START
+  
   def __init__(self):
     super(KickBallNode, self).__init__()
     self.myState = KickBallNode.MY_START
@@ -402,6 +414,10 @@ class DribbleNode(Node):
   MY_MOVING = 4
   
   MY_MOVING_MAX = 100
+  
+  def reset(self):
+    super(DribbleNode, self).reset()
+    self.myState = DribbleNode.MY_START
   
   def __init__(self):
     super(DribbleNode, self).__init__()
@@ -505,6 +521,10 @@ class GoalInBallNode(Node):
   """
   SIG_SCORED_YES = 3
   SIG_SCORED_NO = 4
+  
+  def reset(self):
+    super(GoalInBallNode, self).reset()
+    self.myState = GoalInBallNode.MY_START
   
   def __init__(self):
     super(GoalInBallNode, self).__init__()
