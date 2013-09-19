@@ -524,7 +524,7 @@ class GoalInBallNode(Node):
       
       print "scored? ", self.scored, "time", self.getTime()
       
-      if self.getTime() == GoalInBallNode.TIME_OUT:
+      if self.getTime() > GoalInBallNode.TIME_OUT:
         if self.scored:
           self.postSignal(GoalInBallNode.SIG_SCORED_YES)
         else:
