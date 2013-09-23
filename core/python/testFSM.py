@@ -3,7 +3,7 @@ import commands, core, util, pose, percepts, kicks
 import time
 from math import pi, fabs, copysign, atan
 from re import search
-from core.python.kicks import Kick
+from kicks import Kick
 
 class TestMachine(StateMachine):
   def setup(self):
