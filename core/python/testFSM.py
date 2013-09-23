@@ -3,6 +3,7 @@ import commands, core, util, pose, percepts, kicks
 import time
 from math import pi, fabs, copysign, atan
 from re import search
+from core.python.kicks import Kick
 
 class TestMachine(StateMachine):
   def setup(self):
@@ -20,9 +21,12 @@ class TestMachine(StateMachine):
     self._adt(start, N, TiltHeadNode(-26.5), C, stand)
     self._adt(stand, C, searchBall)
     self._adt(searchBall, S, searchGoal)
-    self._adt(searchGoal, S, dribble)
-    self._adt(dribble, S, readyToKick)
-    self._adt(readyToKick , S, kick)
+    self._adt(searchGoal, S(SearchGoalNode.MY_SUCCESS), dribble)
+    self._adt(searchGoal, S(SearchGoalNode.MY_BALL_LOST), searchBall)
+    self._adt(dribble, S(DribbleNode.MY_SUCCESS), readyToKick)
+    self._adt(dribble, S(DribbleNode.MY_BALL_LOST), searchBall)
+    self._adt(readyToKick , S(KickBallNode.MY_SUCCESS), kick)
+    self._adt(kick, S(KickBallNode.MY_BALL_LOST), searchBall)
     self._adt(kick, C, ballInGoal)
     self._adt(ballInGoal, S(GoalInBallNode.SIG_SCORED_NO), searchBall)
     self._adt(ballInGoal, S(GoalInBallNode.SIG_SCORED_YES), sit)
@@ -241,6 +245,8 @@ class SearchGoalNode(Node):
   
   MY_FIND_GOAL = 2
   
+  MY_BALL_LOST = 3
+  
   def reset(self):
     super(SearchGoalNode, self).reset()
     self.myState = SearchGoalNode.MY_START
@@ -267,6 +273,8 @@ class SearchGoalNode(Node):
     
     if not ball.seen:
       print "BALL NOT SEEN"
+      self.postSignal(SearchGoalNode.MY_BALL_LOST)
+      return
     else:
       if ball.fromTopCamera:
         print "BALL FROM TOP"
@@ -303,7 +311,7 @@ class SearchGoalNode(Node):
     
     if self.myState == SearchGoalNode.MY_SUCCESS:
       commands.stand()
-      self.postSuccess()
+      self.postSignal(SearchGoalNode.MY_SUCCESS)
     
     elif self.myState == SearchGoalNode.MY_START:
       commands.stand()
@@ -334,6 +342,7 @@ class KickBallNode(Node):
   MY_READY = 2
   MY_KICK = 3
   MY_SUCCESS = 4
+  MY_BALL_LOST = 5
   
   def reset(self):
     super(KickBallNode, self).reset()
@@ -359,7 +368,7 @@ class KickBallNode(Node):
     core.speech.say("kicking the ball")
     
     if self.myState == KickBallNode.MY_SUCCESS:
-      self.postSuccess()
+      self.postSignal(KickBallNode.MY_SUCCESS)
       
     elif self.myState == KickBallNode.MY_START:
       commands.stand()
@@ -377,6 +386,8 @@ class KickBallNode(Node):
       
       if not ball.seen:
         print "BALL NOT SEEN"
+        self.postSignal(KickBallNode.MY_BALL_LOST)
+        return
       
       if ball.fromTopCamera:
         yErr = 420 - ball.imageCenterY
@@ -413,6 +424,8 @@ class DribbleNode(Node):
   MY_TURNING = 3
   MY_MOVING = 4
   
+  MY_BALL_LOST = 5
+  
   MY_MOVING_MAX = 100
   
   def reset(self):
@@ -444,6 +457,8 @@ class DribbleNode(Node):
     
     if not ball.seen:
       print "BALL NOT SEEN"
+      self.postSignal(DribbleNode.MY_BALL_LOST)
+      return None
         
     xErr = 160.0 - ball.imageCenterX
     if ball.fromTopCamera:
@@ -471,7 +486,7 @@ class DribbleNode(Node):
       
     elif self.myState == DribbleNode.MY_SUCCESS:
       commands.stand()
-      self.postSuccess()
+      self.postSignal(DribbleNode.MY_SUCCESS)
     
     elif self.myState == DribbleNode.MY_TURNING:
       print "dribble turning"
@@ -494,6 +509,8 @@ class DribbleNode(Node):
           turnDirection = 1.0
           
         ballSignal = self.ballSignal()
+        if ballSignal == None:
+          return
         commands.setWalkVelocity(ballSignal[0], ballSignal[1], turnDirection * pi / 70.0)
       
     elif self.myState == DribbleNode.MY_MOVING:
