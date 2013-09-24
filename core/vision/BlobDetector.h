@@ -8,8 +8,8 @@
 #include <vision/structures/VisionParams.h>
 #include <vision/Macros.h>
 #include <vision/ObjectDetector.h>
-<<<<<<< HEAD
-#include <vision/structures/Blob.h>
+
+#include <vision/enums/Colors.h>
 
 typedef std::vector<Blob> BlobCollection;
 
@@ -19,31 +19,16 @@ public:
 	void init(TextLogger* tl) {
 		textlogger = tl;
 	}
-
+	;
 	std::vector<BlobCollection> horizontalBlob, verticalBlob;
+	void formWhiteLineBlobs();
+	void formBlobs(Color color);
 
 private:
+	Classifier*& classifier_;
+	VisionPoint ***verticalPoint, ***horizontalPoint;
+	uint32_t **verticalPointCount, **horizontalPointCount;
 	TextLogger* textlogger;
-	Classifier* classifier_;
-=======
-#include <vision/enums/Colors.h>
-  
-typedef std::vector<Blob> BlobCollection;
-
-class BlobDetector : public ObjectDetector {
- public:
-  BlobDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier);
-  void init(TextLogger* tl){textlogger = tl;};
-  std::vector<BlobCollection> horizontalBlob, verticalBlob;
-  void formWhiteLineBlobs();
-  void formBlobs(Color color);
-
- private:
-  Classifier*& classifier_;
-  VisionPoint ***verticalPoint, ***horizontalPoint;
-  uint32_t **verticalPointCount, **horizontalPointCount;
-  TextLogger* textlogger;
->>>>>>> upstream/master
 };
 
 #endif
