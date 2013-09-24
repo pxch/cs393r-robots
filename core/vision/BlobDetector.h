@@ -8,7 +8,6 @@
 #include <vision/structures/VisionParams.h>
 #include <vision/Macros.h>
 #include <vision/ObjectDetector.h>
-
 #include <vision/enums/Colors.h>
 
 typedef std::vector<Blob> BlobCollection;
