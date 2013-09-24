@@ -108,9 +108,21 @@ void ImageProcessor::setCalibration(RobotCalibration calibration) {
 void ImageProcessor::processFrame() {
 	updateTransform();
 	classifier_->classifyImage(color_table_);
+	classifier_->constructRuns();
 
-	ball_detector_->detectBall(camera_);
-	goal_detector_->detectGoal(camera_);
+	/* ... */
+
+	blob_detector_->formBlobs(c_ORANGE);
+	BlobCollection blobs = blob_detector_->horizontalBlob[c_ORANGE];
+	if (blobs.size() > 0) {
+		printf("found %i blobs\n", blobs.size());
+		for (int i = 0; i < blobs.size(); i++) {
+			Blob& b = blobs[i];
+			printf(
+					"blob %i is centered at %i, %i, in bounding box (%i,%i) to (%i,%i)\n",
+					i, b.avgX, b.avgY, b.xi, b.yi, b.xf, b.yf);
+		}
+	}
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
