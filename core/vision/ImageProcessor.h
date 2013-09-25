@@ -16,6 +16,7 @@
 #include <vision/RobotCalibration.h>
 #include <vision/structures/BallCandidate.h>
 #include <math/Pose3D.h>
+#include <core/vision/BallTrack.h>
 
 class ImageProcessor {
 public:
@@ -32,6 +33,9 @@ public:
 	RobotDetector* robot_detector_;
 	CrossDetector* cross_detector_;
 	Classifier* classifier_;
+
+	BallTracker ball_tracker_;
+
 	unsigned char* getImg();
 	unsigned char* getSegImg();
 	unsigned char* getColorTable();

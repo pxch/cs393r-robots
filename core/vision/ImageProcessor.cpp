@@ -4,6 +4,7 @@
 
 #include "ImageProcessor.h"
 #include "BallDetector.h"
+#include "BallTrack.h"
 
 ImageProcessor::ImageProcessor(VisionBlocks& vblocks,
 		const ImageParams& iparams, Camera::Type camera) :
@@ -114,6 +115,14 @@ void ImageProcessor::processFrame() {
 	classifier_->constructRuns();
 
 	ball_detector_->detectBall();
+
+	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+	if (ball->seen) {
+		Position p = cmatrix_.getWorldPosition(ball->imageCenterX,
+				ball->imageCenterY);
+		printf("ball_pos %f %f\n", p.x, p.y);
+	}
+
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
