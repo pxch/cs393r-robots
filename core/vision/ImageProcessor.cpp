@@ -120,8 +120,8 @@ void ImageProcessor::processFrame() {
 		for (int i = 0; i < blobs.size(); i++) {
 			Blob& b = blobs[i];
 			printf(
-					"blob %i is centered at %i, %i, in bounding box (%i,%i) to (%i,%i)\n",
-					i, b.avgX, b.avgY, b.xi, b.yi, b.xf, b.yf);
+					"blob %i is centered at %i, %i, in bounding box (%i,%i) to (%i,%i) lpCount %i\n",
+					i, b.avgX, b.avgY, b.xi, b.yi, b.xf, b.yf, b.lpCount);
 		}
 	}
 }
