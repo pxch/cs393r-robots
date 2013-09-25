@@ -16,7 +16,7 @@ public:
 		textlogger = tl;
 	}
 
-	void detectBall();
+	void detectBall(Camera::Type const &cameraType);
 
 	BallCandidate candidates[MAX_BALL_CANDS];
 
@@ -29,6 +29,7 @@ private:
 
 	BlobDetector* blob_detector_;
 
+	void findBall(int& imageX, int& imageY, bool& seen);
 };
 
 #endif
