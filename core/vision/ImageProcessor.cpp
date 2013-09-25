@@ -109,27 +109,7 @@ void ImageProcessor::setCalibration(RobotCalibration calibration) {
 
 void ImageProcessor::processFrame() {
 	updateTransform();
-	classifier_->classifyImage(color_table_);
-	classifier_->constructRuns();
 
-	/* ... */
-
-	blob_detector_->formBlobs(c_ORANGE);
-	BlobCollection blobs = blob_detector_->horizontalBlob[c_ORANGE];
-	if (blobs.size() > 0) {
-		printf("found %i blobs\n", blobs.size());
-		for (int i = 0; i < blobs.size(); i++) {
-			Blob& b = blobs[i];
-			int blobArea = abs(b.xf - b.xi) * abs(b.yf - b.yi);
-			if (blobArea >= 15) {
-				printf("box area: %d\n", blobArea);
-				printf("IMAGE_POS %i %i\n", b.avgX, b.avgY);
-
-				Position p = cmatrix_.getWorldPosition(b.avgX, b.avgY);
-				printf("WORLD_POS %f %f %f\n", p.x, p.y, p.z);
-			}
-		}
-	}
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {

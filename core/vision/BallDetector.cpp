@@ -15,44 +15,26 @@ BallDetector::BallDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 	candidateCount = 0;
 }
 
-void BallDetector::detectBall(Camera::Type const &cameraType) {
-	if (cameraType == Camera::TOP) {
-		return;
+void BallDetector::detectBall() {
+
+	classifier_->classifyImage(color_table_);
+	classifier_->constructRuns();
+	blob_detector_->formBlobs(c_ORANGE);
+	BlobCollection blobs = blob_detector_->horizontalBlob[c_ORANGE];
+	if (blobs.size() > 0) {
+		printf("found %i blobs\n", blobs.size());
+		for (int i = 0; i < blobs.size(); i++) {
+			Blob& b = blobs[i];
+			int blobArea = abs(b.xf - b.xi) * abs(b.yf - b.yi);
+			if (blobArea >= 15) {
+				printf("box area: %d\n", blobArea);
+				printf("IMAGE_POS %i %i\n", b.avgX, b.avgY);
+
+				Position p = cmatrix_.getWorldPosition(b.avgX, b.avgY);
+				printf("WORLD_POS %f %f %f\n", p.x, p.y, p.z);
+			}
+		}
 	}
 
-	int imageX, imageY;
-	bool seen;
-	findBall(imageX, imageY, seen); // function defined elsewhere that fills in imageX, imageY by reference
-	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
-
-	ball->imageCenterX = imageX;
-	ball->imageCenterY = imageY;
-
-	Position p = cmatrix_.getWorldPosition(imageX, imageY);
-	ball->visionBearing = cmatrix_.bearing(p);
-	ball->visionElevation = cmatrix_.elevation(p);
-	ball->visionDistance = cmatrix_.groundDistance(p);
-
-	ball->seen = seen;
-
-	if (cameraType == Camera::TOP) {
-		ball->fromTopCamera = true;
-
-	} else {
-		ball->fromTopCamera = false;
-	}
 }
 
-void BallDetector::findBall(int& imageX, int& imageY, bool& seen) {
-	imageX = imageY = 0;
-	int total = 0;
-	for (int x = 0; x < iparams_.width; x++)
-		for (int y = 0; y < iparams_.height; y++)
-			if (getSegPixelValueAt(x,y) == c_ORANGE)
-				imageX += x, imageY += y, total++;
-	if (total > 0) {
-		imageX /= total, imageY /= total;
-		seen = true;
-	} else
-		seen = false;
-}
