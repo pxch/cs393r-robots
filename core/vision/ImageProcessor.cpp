@@ -119,9 +119,12 @@ void ImageProcessor::processFrame() {
 		printf("found %i blobs\n", blobs.size());
 		for (int i = 0; i < blobs.size(); i++) {
 			Blob& b = blobs[i];
-			printf(
-					"blob %i is centered at %i, %i, in bounding box (%i,%i) to (%i,%i) lpCount %i\n",
-					i, b.avgX, b.avgY, b.xi, b.yi, b.xf, b.yf, b.lpCount);
+			if (b.lpCount >= 15) {
+				printf("IMAGE_POS %i %i\n", b.avgX, b.avgY);
+
+				Position p = cmatrix_.getWorldPosition(b.avgX, b.avgY);
+				printf("WORLD_POS %f %f %f\n", p.x, p.y, p.z);
+			}
 		}
 	}
 }
