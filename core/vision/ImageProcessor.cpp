@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdio>
+#include <cmath>
 
 #include "ImageProcessor.h"
 #include "BallDetector.h"
@@ -119,7 +120,9 @@ void ImageProcessor::processFrame() {
 		printf("found %i blobs\n", blobs.size());
 		for (int i = 0; i < blobs.size(); i++) {
 			Blob& b = blobs[i];
-			if (b.lpCount >= 15) {
+			int blobArea = abs(b.xf - b.xi) * abs(b.yf - b.yi);
+			if (blobArea >= 15) {
+				printf("box area: %d\n", blobArea);
 				printf("IMAGE_POS %i %i\n", b.avgX, b.avgY);
 
 				Position p = cmatrix_.getWorldPosition(b.avgX, b.avgY);
