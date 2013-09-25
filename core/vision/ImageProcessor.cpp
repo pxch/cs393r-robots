@@ -110,6 +110,10 @@ void ImageProcessor::setCalibration(RobotCalibration calibration) {
 void ImageProcessor::processFrame() {
 	updateTransform();
 
+	classifier_->classifyImage(color_table_);
+	classifier_->constructRuns();
+
+	ball_detector_->detectBall();
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {

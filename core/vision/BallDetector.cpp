@@ -17,8 +17,6 @@ BallDetector::BallDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 
 void BallDetector::detectBall() {
 
-	classifier_->classifyImage(color_table_);
-	classifier_->constructRuns();
 	blob_detector_->formBlobs(c_ORANGE);
 	BlobCollection blobs = blob_detector_->horizontalBlob[c_ORANGE];
 	if (blobs.size() > 0) {
