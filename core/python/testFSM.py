@@ -66,8 +66,9 @@ class TiltHeadNode(Node):
     self.tilt = tilt
   
   def run(self):
+    commands.setStiffness()
     commands.setHeadTilt(self.tilt)
-    if self.getTime() > 2.0:
+    if self.getTime() > 10.0:
       # XXX: don't use time to terminate
       self.postCompleted()
 
