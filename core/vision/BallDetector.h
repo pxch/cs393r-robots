@@ -6,6 +6,8 @@
 #include <vision/ObjectDetector.h>
 #include <vision/Classifier.h>
 #include <vision/structures/BallCandidate.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 class BallDetector: public ObjectDetector {
 public:
@@ -16,7 +18,7 @@ public:
 		textlogger = tl;
 	}
 
-	void detectBall(Camera::Type const &cameraType);
+	void detectBall();
 
 	BallCandidate candidates[MAX_BALL_CANDS];
 
@@ -30,6 +32,7 @@ private:
 	BlobDetector* blob_detector_;
 
 	void findBall(int& imageX, int& imageY, bool& seen);
+	void findBallCircle(int& imageX, int& imageY, bool& seen);
 };
 
 #endif
