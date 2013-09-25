@@ -121,7 +121,7 @@ void ImageProcessor::processFrame() {
 		for (int i = 0; i < blobs.size(); i++) {
 			Blob& b = blobs[i];
 			int blobArea = abs(b.xf - b.xi) * abs(b.yf - b.yi);
-			if (blobArea >= 15) {
+			if (blobArea >= 50) {
 				printf("box area: %d\n", blobArea);
 				printf("IMAGE_POS %i %i\n", b.avgX, b.avgY);
 
