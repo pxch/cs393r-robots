@@ -2,6 +2,7 @@
 #define BALLTRACK_H
 
 #include <common/WorldObject.h>
+#include <vision/CameraMatrix.h>
 
 #include <Eigen/Core>
 
@@ -10,7 +11,8 @@
  */
 class BallTracker {
 public:
-	BallTracker(float dT_ /* time interval between 2 observations */) {
+	BallTracker() :
+			seen(false) {
 
 		for (int i = 0; i != 4; ++i) {
 			for (int j = 0; j != 4; ++j) {
@@ -20,8 +22,8 @@ public:
 		for (int i = 0; i != 4; ++i) {
 			A(i, i) = 1.0;
 		}
-		A(0, 2) = dT_;
-		A(1, 3) = dT_;
+		A(0, 2) = 1.0;
+		A(1, 3) = 1.0;
 
 		for (int i = 0; i != 4; ++i) {
 			for (int j = 0; j != 4; ++j) {
@@ -34,7 +36,7 @@ public:
 
 		for (int i = 0; i != 4; ++i) {
 			R(i, i) = 0.5;
-			Q(i, i) = 0.5;
+			Q(i, i) = 0.01;
 		}
 
 	}
@@ -55,13 +57,15 @@ public:
 	void initState(float x, float y, float v_x, float v_y);
 
 	/* called in the top camera */
-	void track(WorldObject* ball);
+	void track(WorldObject* ball, CameraMatrix &cmatrix_);
 
 private:
 
 	Eigen::Matrix4f R, Q;
 
 	Eigen::Matrix4f A;
+
+	bool seen;
 
 	/*
 	 * The model:

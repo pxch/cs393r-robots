@@ -25,6 +25,18 @@ void BallTracker::updateState(float x, float y, float v_x, float v_y) {
 
 }
 
-void BallTracker::track(WorldObject* ball) {
+void BallTracker::track(WorldObject* ball, CameraMatrix &cmatrix_) {
+	if (!ball->seen) {
+		seen = false;
+		return;
+	}
+
+	Position p = cmatrix_.getWorldPosition(ball->imageCenterX,
+			ball->imageCenterY);
+
+	if (!seen) {
+		seen = true;
+		initState(p.x, p.y, 0.0, 0.0);
+	}
 
 }
