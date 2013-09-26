@@ -16,7 +16,7 @@ void BallTracker::updateState(float x, float y, float v_x, float v_y) {
 	Eigen::Matrix4f tmp1 = cov_ + Q;
 	Eigen::Matrix4f K = cov_ * tmp1.inverse();
 
-	Eigen::Vector4d obs(x, y, v_x, v_y);
+	Eigen::Vector4f obs(x, y, v_x, v_y);
 
 	state = state_ + K * (obs - state_);
 	cov = (Eigen::Matrix4f::Identity() - K) * cov_;
