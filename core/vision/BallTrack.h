@@ -23,7 +23,7 @@ public:
 	 * v_x
 	 * v_y
 	 */
-	Vector4d state;
+	Eigen::Vector4d state;
 
 	void initState(float x, float y, float v_x, float v_y);
 
