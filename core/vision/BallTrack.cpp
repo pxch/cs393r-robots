@@ -1,5 +1,7 @@
 #include <vision/BallTrack.h>
 
+#include <Eigen/LU>
+
 void BallTracker::initState(float x, float y, float v_x, float v_y) {
 	state(0) = x;
 	state(1) = y;
