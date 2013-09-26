@@ -1,3 +1,5 @@
+#include <cstdio>
+
 #include <vision/BallTrack.h>
 
 #include <Eigen/LU>
@@ -39,4 +41,5 @@ void BallTracker::track(WorldObject* ball, CameraMatrix &cmatrix_) {
 		initState(p.x, p.y, 0.0, 0.0);
 	}
 
+	printf("world_pos %f %f\n", p.x, p.y);
 }
