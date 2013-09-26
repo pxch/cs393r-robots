@@ -9,7 +9,7 @@
 ImageProcessor::ImageProcessor(VisionBlocks& vblocks,
 		const ImageParams& iparams, Camera::Type camera) :
 		vblocks_(vblocks), iparams_(iparams), camera_(camera), cmatrix_(
-				iparams_, camera), calibration_(NULL) {
+				iparams_, camera), calibration_(NULL), ball_tracker_(0.05) {
 	enableCalibration_ = false;
 	classifier_ = new Classifier(vblocks_, vparams_, iparams_, camera_);
 	blob_detector_ = new BlobDetector(DETECTOR_PASS_ARGS, classifier_);

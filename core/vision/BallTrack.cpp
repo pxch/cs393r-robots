@@ -7,3 +7,7 @@ void BallTracker::initState(float x, float y, float v_x, float v_y) {
 	state(3) = v_y;
 }
 
+/* observed values */
+void BallTracker::updateState(float x, float y, float v_x, float v_y) {
+
+}
