@@ -118,7 +118,7 @@ void ImageProcessor::processFrame() {
 
 	if (camera_ == Camera::TOP) {
 		WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
-		ball_tracker_.track(ball);
+		ball_tracker_.track(ball, cmatrix_);
 	}
 
 }
