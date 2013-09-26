@@ -1,8 +1,11 @@
 #ifndef BALLTRACK_H
 #define BALLTRACK_H
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
+/*
+ * uses notation from http://robots.stanford.edu/probabilistic-robotics/ppt/kalman.ppt
+ */
 class BallTracker {
 public:
 	BallTracker(float dT_) :
@@ -18,6 +21,15 @@ public:
 		}
 		A(0, 2) = dT_;
 		A(1, 3) = dT_;
+
+		for (int i = 0; i != 4; ++i) {
+			for (int j = 0; j != 4; ++j) {
+				cov(i, j) = 0.0;
+			}
+		}
+		for (int i = 0; i != 4; ++i) {
+			cov(i, i) = 0.5;
+		}
 
 	}
 
@@ -36,6 +48,8 @@ public:
 	 * v_y
 	 */
 	Eigen::Vector4d state;
+
+	Eigen::Matrix4f cov;
 
 	Eigen::Matrix4f A;
 
