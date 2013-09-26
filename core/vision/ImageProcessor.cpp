@@ -116,11 +116,9 @@ void ImageProcessor::processFrame() {
 
 	ball_detector_->detectBall();
 
-	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
-	if (ball->seen) {
-		Position p = cmatrix_.getWorldPosition(ball->imageCenterX,
-				ball->imageCenterY);
-		printf("ball_pos %f %f\n", p.x, p.y);
+	if (camera_ == Camera::TOP) {
+		WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+		ball_tracker_.track(ball);
 	}
 
 }

@@ -24,3 +24,7 @@ void BallTracker::updateState(float x, float y, float v_x, float v_y) {
 	cov = (Eigen::Matrix4f::Identity() - K) * cov_;
 
 }
+
+void BallTracker::track(WorldObject* ball) {
+
+}

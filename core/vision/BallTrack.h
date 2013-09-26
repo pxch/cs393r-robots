@@ -1,6 +1,8 @@
 #ifndef BALLTRACK_H
 #define BALLTRACK_H
 
+#include <common/WorldObject.h>
+
 #include <Eigen/Core>
 
 /*
@@ -8,8 +10,7 @@
  */
 class BallTracker {
 public:
-	BallTracker(float dT_) :
-			tracking(false), dT(dT_) {
+	BallTracker(float dT_ /* time interval between 2 observations */) {
 
 		for (int i = 0; i != 4; ++i) {
 			for (int j = 0; j != 4; ++j) {
@@ -42,11 +43,6 @@ public:
 	}
 
 	/*
-	 * true - if ball is being tracked
-	 */
-	bool tracking;
-
-	/*
 	 * x
 	 * y
 	 * v_x
@@ -58,16 +54,8 @@ public:
 
 	void initState(float x, float y, float v_x, float v_y);
 
-	/*
-	 * The model:
-	 *
-	 * X = [ position \\
-	 * 		 velocity ]
-	 *
-	 * X_{n+1} = ( 1 delta_T \\ X_n
-	 *             0       1 )
-	 */
-	void updateState(float x, float y, float v_x, float v_y); /* observed values */
+	/* called in the top camera */
+	void track(WorldObject* ball);
 
 private:
 
@@ -75,7 +63,16 @@ private:
 
 	Eigen::Matrix4f A;
 
-	float const dT; /* time interval between 2 observations */
+	/*
+	 * The model:
+	 *
+	 * X = [ position \\
+		 * 		 velocity ]
+	 *
+	 * X_{n+1} = ( 1 delta_T \\ X_n
+	 *             0       1 )
+	 */
+	void updateState(float x, float y, float v_x, float v_y); /* observed values */
 
 };
 
