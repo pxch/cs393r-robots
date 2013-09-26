@@ -1,8 +1,7 @@
 #ifndef BALLTRACK_H
 #define BALLTRACK_H
 
-#include <Eigen/Core>
-#include <Eigen/LU>
+#include <Eigen/Dense>
 
 class BallTracker {
 public:
