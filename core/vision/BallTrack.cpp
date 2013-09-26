@@ -10,12 +10,6 @@ void BallTracker::initState(float x, float y, float v_x, float v_y) {
 /* observed values */
 void BallTracker::updateState(float x, float y, float v_x, float v_y) {
 
-	Eigen::Matrix4f R, Q;
-	for (int i = 0; i != 4; ++i) {
-		R(i, i) = 0.5;
-		Q(i, i) = 0.5;
-	}
-
 	Eigen::Vector4d state_ = A * state;
 	Eigen::Matrix4f cov_ = A * cov * A.transpose() + R;
 

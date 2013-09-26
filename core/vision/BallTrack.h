@@ -31,6 +31,11 @@ public:
 			cov(i, i) = 0.5;
 		}
 
+		for (int i = 0; i != 4; ++i) {
+			R(i, i) = 0.5;
+			Q(i, i) = 0.5;
+		}
+
 	}
 
 	~BallTracker() {
@@ -51,10 +56,6 @@ public:
 
 	Eigen::Matrix4f cov;
 
-	Eigen::Matrix4f A;
-
-	float const dT; /* time interval between 2 observations */
-
 	void initState(float x, float y, float v_x, float v_y);
 
 	/*
@@ -69,6 +70,12 @@ public:
 	void updateState(float x, float y, float v_x, float v_y); /* observed values */
 
 private:
+
+	Eigen::Matrix4f R, Q;
+
+	Eigen::Matrix4f A;
+
+	float const dT; /* time interval between 2 observations */
 
 };
 
