@@ -52,7 +52,7 @@ public:
 	 * v_x
 	 * v_y
 	 */
-	Eigen::Vector4d state;
+	Eigen::Vector4f state;
 
 	Eigen::Matrix4f cov;
 
