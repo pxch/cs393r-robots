@@ -16,7 +16,7 @@
 #include <vision/RobotCalibration.h>
 #include <vision/structures/BallCandidate.h>
 #include <math/Pose3D.h>
-#include <core/vision/BallTrack.h>
+#include <vision/BallTrack.h>
 
 class ImageProcessor {
 public:
