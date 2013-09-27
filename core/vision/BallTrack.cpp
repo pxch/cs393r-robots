@@ -48,7 +48,7 @@ void BallTracker::track(WorldObject* ball, CameraMatrix &cmatrix_) {
 	}
 
 	if (ball->seen) {
-		printf("camera_pos %f %f kalman_pos %f %f\n", p.x, p.y, state(0),
-				state(1));
+		printf("camera_pos %f %f kalman_pos %f %f kalman_vel %f %f \n", p.x,
+				p.y, state(0), state(1), state(2), state(3));
 	}
 }
