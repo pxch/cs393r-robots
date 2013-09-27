@@ -66,6 +66,12 @@ private:
 	RobotCalibration* calibration_;
 	bool enableCalibration_;
 
+	/*
+	 * get the position of the lines on the ground
+	 * to limit Nao's motion
+	 */
+	void getGroundLines();
+
 };
 
 #endif

@@ -12,7 +12,7 @@
 class BallTracker {
 public:
 	BallTracker() :
-			seen(false) {
+			seen(false), prev_x(0.0), prev_y(0.0) {
 
 		for (int i = 0; i != 4; ++i) {
 			for (int j = 0; j != 4; ++j) {
@@ -66,6 +66,8 @@ private:
 	Eigen::Matrix4f A;
 
 	bool seen;
+
+	float prev_x, prev_y;
 
 	/*
 	 * The model:

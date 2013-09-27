@@ -39,7 +39,9 @@ void BallTracker::track(WorldObject* ball, CameraMatrix &cmatrix_) {
 	if (!seen) {
 		seen = true;
 		initState(p.x, p.y, 0.0, 0.0);
+	} else {
+		float v_x = p.x - prev_x;
+		float v_y = p.y - prev_y;
+		updateState(p.x, p.y, v_x, v_y);
 	}
-
-	printf("world_pos %f %f\n", p.x, p.y);
 }

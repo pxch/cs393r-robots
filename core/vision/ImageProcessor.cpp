@@ -119,8 +119,16 @@ void ImageProcessor::processFrame() {
 	if (camera_ == Camera::TOP) {
 		WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 		ball_tracker_.track(ball, cmatrix_);
+		if (ball->seen) {
+			printf("camera_pos %f %f kalman_pos %f %f\n", ball->imageCenterX,
+					ball->imageCenterY, ball_tracker_.state(0),
+					ball_tracker_.state(1));
+		}
 	}
 
+}
+
+void ImageProcessor::getGroundLines() {
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
