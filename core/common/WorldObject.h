@@ -207,6 +207,12 @@ public:
 	int fieldLineIndex;
 	int ballBlobIndex;
 
+	/*
+	 * velocity from Kalman filter
+	 */
+	float velocityX;
+	float velocityY;
+
 	bool fromTopCamera; // true if observed from top cam, false if from bottom
 };
 

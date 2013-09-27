@@ -36,6 +36,11 @@ public:
 		cov(2, 2) = 20000.0;
 		cov(3, 3) = 20000.0;
 
+		/*
+		 * if need less smoother
+		 * and follow closer
+		 * increase R
+		 */
 		R(0, 0) = 100000.0;
 		R(1, 1) = 100000.0;
 		R(2, 2) = 200000.0;
