@@ -117,15 +117,20 @@ void ImageProcessor::processFrame() {
 	ball_detector_->detectBall();
 
 	if (camera_ == Camera::TOP) {
-		WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
-		ball_tracker_.track(ball, cmatrix_);
-		if (ball->seen) {
-			printf("camera_pos %f %f kalman_pos %f %f\n", ball->imageCenterX,
-					ball->imageCenterY, ball_tracker_.state(0),
-					ball_tracker_.state(1));
-		}
+		trackBall();
+		getGroundLines();
 	}
 
+}
+
+void ImageProcessor::trackBall() {
+	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+	ball_tracker_.track(ball, cmatrix_);
+	if (ball->seen) {
+		printf("camera_pos %f %f kalman_pos %f %f\n", ball->imageCenterX,
+				ball->imageCenterY, ball_tracker_.state(0),
+				ball_tracker_.state(1));
+	}
 }
 
 void ImageProcessor::getGroundLines() {

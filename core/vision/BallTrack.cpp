@@ -9,6 +9,8 @@ void BallTracker::initState(float x, float y, float v_x, float v_y) {
 	state(1) = y;
 	state(2) = v_x;
 	state(3) = v_y;
+	prev_x = x;
+	prev_y = y;
 }
 
 /* observed values */

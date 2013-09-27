@@ -72,6 +72,8 @@ private:
 	 */
 	void getGroundLines();
 
+	void trackBall();
+
 };
 
 #endif
