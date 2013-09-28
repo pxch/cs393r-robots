@@ -130,6 +130,7 @@ void ImageProcessor::trackBall() {
 
 void ImageProcessor::getGroundLines() {
 	blob_detector_->formBlobs(c_WHITE);
+	blob_detector_->formWhiteLineBlobs();
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
