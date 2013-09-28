@@ -12,7 +12,7 @@
 class BallTracker {
 public:
 	BallTracker() :
-			seen(false), prev_x(0.0), prev_y(0.0) {
+			seen(false) {
 
 		for (int i = 0; i != 4; ++i) {
 			for (int j = 0; j != 4; ++j) {
