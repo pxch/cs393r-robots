@@ -130,7 +130,9 @@ void ImageProcessor::trackBall() {
 
 void ImageProcessor::getGroundLines() {
 	blob_detector_->formBlobs(c_WHITE);
-	blob_detector_->formWhiteLineBlobs();
+	BlobCollection hBlobs = blob_detector_->horizontalBlob[c_WHITE];
+	BlobCollection vBlobs = blob_detector_->verticalBlob[c_WHITE];
+	printf("hBlobs\t%u\tvBlobs\t%u\n", hBlobs.size(), vBlobs.size());
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
