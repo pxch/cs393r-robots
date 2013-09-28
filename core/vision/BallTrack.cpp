@@ -44,7 +44,10 @@ void BallTracker::track(WorldObject* ball, CameraMatrix &cmatrix_) {
 	} else {
 		float v_x = p.x - prev_x;
 		float v_y = p.y - prev_y;
+		prev_x = p.x;
+		prev_y = p.y;
 		updateState(p.x, p.y, v_x, v_y);
+
 	}
 
 	if (ball->seen) {
