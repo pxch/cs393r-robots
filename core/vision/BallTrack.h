@@ -57,8 +57,7 @@ public:
 		 *
 		 */
 
-		Q << 8445.970, 5126.731, -6635.046, -4263.411, 5126.731, 3143.634, -4144.081, -2683.283, -6635.046, -4144.081, 14479.766, 9164.049, -4263.411, -2683.283, 9164.049, 5836.146;
-
+		Q << 8445.970, 5126.731, 5126.731, 3143.634;
 	}
 
 	~BallTracker() {
@@ -81,13 +80,15 @@ public:
 
 private:
 
-	Eigen::Matrix4f R, Q;
+	Eigen::Matrix4f R;
+
+	Eigen::Matrix2f Q;
 
 	Eigen::Matrix4f A;
 
-	bool seen;
+	Eigen::Matrix<float, 2, 4> C;
 
-	float prev_x, prev_y;
+	bool seen;
 
 	/*
 	 * The model:
@@ -98,7 +99,7 @@ private:
 	 * X_{n+1} = ( 1 delta_T \\ X_n
 	 *             0       1 )
 	 */
-	void updateState(float x, float y, float v_x, float v_y); /* observed values */
+	void updateState(float x, float y); /* observed values */
 
 };
 

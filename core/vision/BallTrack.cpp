@@ -14,18 +14,18 @@ void BallTracker::initState(float x, float y, float v_x, float v_y) {
 }
 
 /* observed values */
-void BallTracker::updateState(float x, float y, float v_x, float v_y) {
+void BallTracker::updateState(float x, float y) {
 
 	Eigen::Vector4f state_ = A * state;
 	Eigen::Matrix4f cov_ = A * cov * A.transpose() + R;
 
-	Eigen::Matrix4f tmp1 = cov_ + Q;
-	Eigen::Matrix4f K = cov_ * tmp1.inverse();
+	Eigen::Matrix2f tmp1 = C * cov_ * C.transpose() + Q;
+	Eigen::Matrix<float, 4, 2> K = cov_ * C.transpose() * tmp1.inverse();
 
-	Eigen::Vector4f obs(x, y, v_x, v_y);
+	Eigen::Vector2f obs(x, y);
 
-	state = state_ + K * (obs - state_);
-	cov = (Eigen::Matrix4f::Identity() - K) * cov_;
+	state = state_ + K * (obs - C * state_);
+	cov = (Eigen::Matrix4f::Identity() - K * C) * cov_;
 
 }
 
@@ -42,12 +42,7 @@ void BallTracker::track(WorldObject* ball, CameraMatrix &cmatrix_) {
 		seen = true;
 		initState(p.x, p.y, 0.0, 0.0);
 	} else {
-		float v_x = p.x - prev_x;
-		float v_y = p.y - prev_y;
-		prev_x = p.x;
-		prev_y = p.y;
-		updateState(p.x, p.y, v_x, v_y);
-
+		updateState(p.x, p.y);
 	}
 
 	if (ball->seen) {
