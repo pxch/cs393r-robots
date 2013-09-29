@@ -138,7 +138,7 @@ void ImageProcessor::trackBall() {
 void ImageProcessor::getGroundLines() {
 	bool seenWhite = false;
 	for (int i = 70; i <= 250; ++i) {
-		for (int j = 200; j <= 203; ++j) {
+		for (int j = 200; j <= 210; ++j) {
 			if (getSegPixelValueAt(i,j) == c_WHITE) {
 				seenWhite = true;
 				goto finished_finding_white;
