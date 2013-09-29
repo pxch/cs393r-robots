@@ -38,6 +38,7 @@ class RandWalkGoalLine(Node):
       self.myState = RandWalkGoalLine.MY_SWITCH
       
     elif self.myState == RandWalkGoalLine.MY_SWITCH:
+      commands.stand()
       randDir = randint(1, 4)
       if randDir == 1:
         self.x = 0.5
