@@ -116,23 +116,25 @@ void ImageProcessor::processFrame() {
 
 	ball_detector_->detectBall();
 
-	if (camera_ == Camera::TOP) {
-		trackBall();
-	}
+	trackBall();
 
 	getGroundLines();
 }
 
 void ImageProcessor::trackBall() {
 	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
-	ball_tracker_.track(ball, cmatrix_);
+	if (ball->seen) {
+		if (camera_ == Camera::BOTTOM) {
+			ball_tracker_.track(ball, cmatrix_);
+		}
+		if (camera_ == Camera::TOP && ball->fromTopCamera) {
+			ball_tracker_.track(ball, cmatrix_);
+		}
+	}
 }
 
 void ImageProcessor::getGroundLines() {
-	blob_detector_->formBlobs(c_WHITE);
-	BlobCollection hBlobs = blob_detector_->horizontalBlob[c_WHITE];
-	BlobCollection vBlobs = blob_detector_->verticalBlob[c_WHITE];
-	printf("hBlobs\t%u\tvBlobs\t%u\n", hBlobs.size(), vBlobs.size());
+
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
