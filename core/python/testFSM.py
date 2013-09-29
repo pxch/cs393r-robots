@@ -2,6 +2,7 @@ from state import *
 import commands, core, util, pose, percepts
 import time
 from math import pi
+from random import randint
 
 class TestMachine(StateMachine):
   def setup(self):
@@ -11,6 +12,10 @@ class TestMachine(StateMachine):
     stand1 = StandNode()
 
     self._adt(start, N, TiltHeadNode(-26.5), C, stand1, C, finish)
+
+class RandWalkGoalLine(Node):
+  def __init__(self):
+    super(RandWalkGoalLine, self).__init__()    
 
 class SpeakNode(Node):
   def __init__(self, phrase):
