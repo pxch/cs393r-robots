@@ -41,17 +41,17 @@ class RandWalkGoalLine(Node):
       commands.stand()
       randDir = randint(1, 4)
       if randDir == 1:
-        self.x = 0.5
+        self.x = 0.2
         self.y = 0.0
       elif randDir == 2:
-        self.x = -0.5
+        self.x = -0.2
         self.y = 0.0
       elif randDir == 3:
         self.x = 0.0
-        self.y = 0.5
+        self.y = 0.2
       elif randDir == 4:
         self.x = 0.0
-        self.y = -0.5
+        self.y = -0.2
       self.myState = RandWalkGoalLine.MY_WALK
       print self.myState
       
