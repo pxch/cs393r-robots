@@ -118,7 +118,9 @@ void ImageProcessor::processFrame() {
 
 	trackBall();
 
-	getGroundLines();
+	if (camera_ == Camera::BOTTOM) {
+		getGroundLines();
+	}
 }
 
 void ImageProcessor::trackBall() {
