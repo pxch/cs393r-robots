@@ -59,10 +59,11 @@ class RandWalkGoalLine(Node):
       whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
       if whiteLine.fieldLineIndex == 0:
         commands.setWalkVelocity(self.x, self.y, 0.0)
-        print "white line seen"
+        print self.x, self.y
+        print "white line not seen"
       else:
         commands.stand()
-        print "white line not seen"
+        print "white line seen"
       self.walkCount += 1
       if self.walkCount == RandWalkGoalLine.WALK_FRAMES:
         self.walkCount = 0

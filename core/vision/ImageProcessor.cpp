@@ -147,6 +147,7 @@ void ImageProcessor::getGroundLines() {
 	}
 	finished_finding_white: WorldObject *line =
 			&vblocks_.world_object->objects_[WO_OPP_GOAL_LINE];
+	line->fieldLineIndex = 0;
 	if (seenWhite) {
 		line->fieldLineIndex = 1;
 	} else {
