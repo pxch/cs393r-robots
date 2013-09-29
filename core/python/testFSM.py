@@ -53,6 +53,7 @@ class RandWalkGoalLine(Node):
         self.x = 0.0
         self.y = -0.5
       self.myState = RandWalkGoalLine.MY_WALK
+      print self.myState
       
     elif self.myState == RandWalkGoalLine.MY_WALK:
       whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
@@ -64,6 +65,7 @@ class RandWalkGoalLine(Node):
       if self.walkCount == RandWalkGoalLine.WALK_FRAMES:
         self.walkCount = 0
         self.myState = RandWalkGoalLine.MY_SWITCH
+      print self.myState
 
 class SpeakNode(Node):
   def __init__(self, phrase):
