@@ -134,7 +134,21 @@ void ImageProcessor::trackBall() {
 }
 
 void ImageProcessor::getGroundLines() {
-
+	bool seenWhite = false;
+	for (int i = 70; i <= 250; ++i) {
+		for (int j = 200; j <= 203; ++j) {
+			if (getSegPixelValueAt(i,j) == c_WHITE) {
+				seenWhite = true;
+				goto finished_finding_white;
+			}
+		}
+	}
+	WorldObject *line = &vblocks_.world_object->objects_[WO_OPP_GOAL_LINE];
+	finished_finding_white: if (seenWhite) {
+		line->fieldLineIndex = 1;
+	} else {
+		line->fieldLineIndex = 0;
+	}
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
