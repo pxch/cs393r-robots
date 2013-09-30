@@ -145,7 +145,7 @@ void ImageProcessor::processFrame() {
 				}
 			}
 			printf("white %f orange %f\n", float(white) / float(total),
-					float(white) / float(total));
+					float(orange) / float(total));
 		}
 	}
 }
