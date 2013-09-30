@@ -57,7 +57,7 @@ void BallDetector::findBall(int& imageX, int& imageY, bool& seen) {
 	int total = 0;
 	for (int x = 0; x < iparams_.width; x++)
 		for (int y = 0; y < iparams_.height; y++)
-			if (getSegPixelValueAt(x,y) == c_ORANGE)
+			if (getSegPixelValueAt(x, y) == c_ORANGE)
 				imageX += x, imageY += y, total++;
 	if (total > 0) {
 		imageX /= total, imageY /= total;
