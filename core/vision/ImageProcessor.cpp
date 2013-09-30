@@ -133,7 +133,8 @@ void ImageProcessor::processFrame() {
 				for (int y = -10; y <= 10; ++y) {
 					++total;
 					Color col =
-							getSegPixelValueAt(ball->imageCenterX + x,ball->imageCenterY + y);
+							Color(
+									getSegPixelValueAt(ball->imageCenterX + x,ball->imageCenterY + y));
 					switch (col) {
 					case c_ORANGE:
 						orange += 1;
