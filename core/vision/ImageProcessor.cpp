@@ -121,6 +121,33 @@ void ImageProcessor::processFrame() {
 	if (camera_ == Camera::BOTTOM) {
 		getGroundLines();
 	}
+
+	//XXX: delete this junk code
+	if (camera_ == Camera::TOP) {
+		WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+		if (ball->seen && ball->fromTopCamera) {
+			int orange = 0;
+			int white = 0;
+			int total = 0;
+			for (int x = -10; x <= 10; ++x) {
+				for (int y = -10; y <= 10; ++y) {
+					++total;
+					switch (getSegPixelValueAt(x,y)) {
+					case c_ORANGE:
+						orange += 1;
+						break;
+					case c_WHITE:
+						white += 1;
+						break;
+					default:
+						break;
+					}
+				}
+			}
+			printf("white %f orange %f\n", float(white) / float(total),
+					float(white) / float(total));
+		}
+	}
 }
 
 void ImageProcessor::trackBall() {
@@ -136,6 +163,7 @@ void ImageProcessor::trackBall() {
 }
 
 void ImageProcessor::getGroundLines() {
+	//XXX: get centroid
 	bool seenWhite = false;
 	for (int i = 0; i < 320; ++i) {
 		for (int j = 200; j <= 205; ++j) {
