@@ -18,7 +18,7 @@ class GoalieNode(Node):
   MY_START = 0
   
   def __init__(self):
-    super(RandWalkGoalLine, self).__init__()
+    super(GoalieNode, self).__init__()
     self.myState = GoalieNode.MY_START
   
   def run(self):
