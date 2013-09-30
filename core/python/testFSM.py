@@ -10,9 +10,20 @@ class TestMachine(StateMachine):
     finish = Node()
     sit = SitNode()
     stand1 = StandNode()
-    testWhiteLine = RandWalkGoalLine()
-
-    self._adt(start, N, TiltHeadNode(-26.5), C, stand1, C, testWhiteLine)
+    goalie = GoalieNode()
+    
+    self._adt(start, N, TiltHeadNode(-26.5), C, stand1)
+    
+class GoalieNode(Node):
+  MY_START = 0
+  
+  def __init__(self):
+    super(RandWalkGoalLine, self).__init__()
+    self.myState = GoalieNode.MY_START
+  
+  def run(self):
+    if self.myState == GoalieNode.MY_START:
+      commands.stand()
 
 class RandWalkGoalLine(Node):
   MY_START = 0
