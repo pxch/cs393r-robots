@@ -132,7 +132,9 @@ void ImageProcessor::processFrame() {
 			for (int x = -10; x <= 10; ++x) {
 				for (int y = -10; y <= 10; ++y) {
 					++total;
-					switch (getSegPixelValueAt(ball->imageCenterX + x,ball->imageCenterY + y)) {
+					Color col =
+							getSegPixelValueAt(ball->imageCenterX + x,ball->imageCenterY + y);
+					switch (col) {
 					case c_ORANGE:
 						orange += 1;
 						break;
@@ -144,8 +146,9 @@ void ImageProcessor::processFrame() {
 					}
 				}
 			}
-			printf("white %f orange %f\n", float(white) / float(total),
-					float(orange) / float(total));
+			printf("white %f orange %f ball_center %d %d\n",
+					float(white) / float(total), float(orange) / float(total),
+					ball->imageCenterX, ball->imageCenterY);
 		}
 	}
 }
