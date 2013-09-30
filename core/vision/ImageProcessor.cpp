@@ -122,35 +122,6 @@ void ImageProcessor::processFrame() {
 		getGroundLines();
 	}
 
-	//XXX: delete this junk code
-	if (camera_ == Camera::TOP) {
-		WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
-		if (ball->seen && ball->fromTopCamera) {
-			int orange = 0;
-			int white = 0;
-			int total = 0;
-			for (int x = -10; x <= 10; ++x) {
-				for (int y = -10; y <= 10; ++y) {
-					++total;
-					int cur_x = ball->imageCenterX + x;
-					int cur_y = ball->imageCenterY + y;
-					switch (Color(getSegPixelValueAt(cur_x, cur_y))) {
-					case c_ORANGE:
-						orange += 1;
-						break;
-					case c_WHITE:
-						white += 1;
-						break;
-					default:
-						break;
-					}
-				}
-			}
-			printf("white %f orange %f ball_center %d %d\n",
-					float(white) / float(total), float(orange) / float(total),
-					ball->imageCenterX, ball->imageCenterY);
-		}
-	}
 }
 
 void ImageProcessor::trackBall() {
@@ -166,23 +137,44 @@ void ImageProcessor::trackBall() {
 }
 
 void ImageProcessor::getGroundLines() {
-	//XXX: get centroid
-	bool seenWhite = false;
-	for (int i = 0; i < 320; ++i) {
-		for (int j = 200; j <= 205; ++j) {
-			if (getSegPixelValueAt(i,j) == c_WHITE) {
-				seenWhite = true;
-				goto finished_finding_white;
+	bool centerWhite = false;
+	for (int x = 40; x != 280; ++x) {
+		for (int y = 200; y <= 205; ++y) {
+			if (getSegPixelValueAt(x, y) == c_WHITE) {
+				centerWhite = true;
+				goto centerWhiteDone;
 			}
 		}
 	}
-	finished_finding_white: WorldObject *line =
+	centerWhiteDone: bool leftWhite = false;
+	for (int x = 0; x != 40; ++x) {
+		for (int y = 200; y != 220; ++y) {
+			if (getSegPixelValueAt(x, y) == c_WHITE) {
+				centerWhite = true;
+				goto leftWhiteDone;
+			}
+		}
+	}
+	leftWhiteDone: bool rightWhite = false;
+	for (int x = 280; x != 280; ++x) {
+		for (int y = 200; y != 220; ++y) {
+			if (getSegPixelValueAt(x, y) == c_WHITE) {
+				centerWhite = true;
+				goto rightWhiteDone;
+			}
+		}
+	}
+	rightWhiteDone: finished_finding_white: WorldObject *line =
 			&vblocks_.world_object->objects_[WO_OPP_GOAL_LINE];
 	line->fieldLineIndex = 0;
-	if (seenWhite) {
-		line->fieldLineIndex = 1;
-	} else {
-		line->fieldLineIndex = 0;
+	if (centerWhite) {
+		line->fieldLineIndex += 1;
+	}
+	if (leftWhite) {
+		line->fieldLineIndex += 2;
+	}
+	if (rightWhite) {
+		line->fieldLineIndex += 4;
 	}
 }
 
