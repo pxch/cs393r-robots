@@ -132,7 +132,7 @@ void ImageProcessor::processFrame() {
 			for (int x = -10; x <= 10; ++x) {
 				for (int y = -10; y <= 10; ++y) {
 					++total;
-					switch (getSegPixelValueAt(x,y)) {
+					switch (getSegPixelValueAt(ball->imageCenterX + x,ball->imageCenterY + y)) {
 					case c_ORANGE:
 						orange += 1;
 						break;
