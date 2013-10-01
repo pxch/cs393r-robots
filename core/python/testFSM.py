@@ -81,7 +81,10 @@ class SearchBallNode(Node):
     BOUNDARY_VAL = 400.0
     motorSpeed = 0
     if fabs(inValue) > BOUNDARY_VAL:
-      copysign(inValue, motorSpeed)
+      if inValue > 0:
+        motorSpeed = 1
+      else:
+        motorSpeed = -1
     else:
       motorSpeed = inValue / BOUNDARY_VAL
     return motorSpeed
@@ -263,7 +266,10 @@ class SearchGoalNode(Node):
     BOUNDARY_VAL = 200.0
     motor = 0.0
     if fabs(controlInput) > BOUNDARY_VAL:
-      copysign(controlInput, motor)
+      if inValue > 0:
+        motorSpeed = 1
+      else:
+        motorSpeed = -1
     else:
       motor = controlInput / BOUNDARY_VAL
     return motor
@@ -359,7 +365,10 @@ class KickBallNode(Node):
     BOUNDARY_VAL = 800.0
     motor = 0.0
     if fabs(controlInput) > BOUNDARY_VAL:
-      copysign(controlInput, motor)
+      if controlInput > 0:
+        motor = 1
+      else:
+        motor = -1
     else:
       motor = controlInput / BOUNDARY_VAL
     return motor
@@ -445,7 +454,10 @@ class DribbleNode(Node):
     BOUNDARY_VAL = 800.0
     motor = 0.0
     if fabs(inputVal) > BOUNDARY_VAL:
-      copysign(inputVal, motor)
+      if inputVal > 0:
+        motor = 1
+      else:
+        motor = -1
     else:
       motor = inputVal / BOUNDARY_VAL
     return motor
@@ -466,8 +478,21 @@ class DribbleNode(Node):
     else:
       yErr = 200.0 - ball.imageCenterY 
     
-    LRSignal = self.toMotor(xErr + K_I * self.xErrInt)
-    FBSignal = self.toMotor(yErr + K_I * self.yErrInt)
+    # Bang-Bang Control
+    if xErr > 0:
+      LRSignal = 0.2
+    else:
+      LRSignal = -0.2
+    
+    if yErr > 0:
+      FBSignal = 0.2
+    else:
+      FBSignal = -0.2
+    
+    # PID Control
+    
+#     LRSignal = self.toMotor(xErr + K_I * self.xErrInt)
+#     FBSignal = self.toMotor(yErr + K_I * self.yErrInt)
     
     print "xErr: ", xErr, "yErr", yErr, "left/right ", LRSignal, "for/back ", FBSignal
     
