@@ -14,7 +14,7 @@ class TestMachine(StateMachine):
     stand1 = StandNode()
     goalie = GoalieNode()
     
-    self._adt(start, N, TurnHeadNode(0.0, 2.0, False), S, TiltHeadNode(-26.5), C, stand1, C, goalie)
+    self._adt(start, N, TurnHeadNode(0.0, 1.0, False), S, TiltHeadNode(-26.5), C, stand1, C, goalie)
     
 class GoalieNode(Node):
   MY_START = 0
@@ -136,7 +136,7 @@ class TiltHeadNode(Node):
   def run(self):
     commands.setStiffness()
     commands.setHeadTilt(self.tilt)
-    if self.getTime() > 3.0:
+    if self.getTime() > 1.0:
       # XXX: don't use time to terminate
       self.postCompleted()
 
@@ -150,7 +150,7 @@ class TurnHeadNode(Node):
   def run(self):
     core.speech.say("turn head")
     commands.setHeadPan(self.angle, self.turnTime, self.relative)
-    if self.getTime() > self.turnTime + 1.0:
+    if self.getTime() > self.turnTime:
       self.postSuccess()
 
 
