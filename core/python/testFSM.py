@@ -44,16 +44,20 @@ class GoalieNode(Node):
         if whiteLine.fieldLineIndex == 0:
           print "white line not seen"
           if ball.imageCenterX < 140:
+            print "BALL LEFT"
             commands.setWalkVelocity(0.0, 1.0, 0.0)
           elif ball.imageCenterX > 180:
+            print "BALL RIGHT"
             commands.setWalkVelocity(0.0, -1.0, 0.0)
           else:
             commands.stand()
         else:
           if whiteLine.fieldLineIndex == 1:
             if ball.imageCenterX < 140:
+              print "BALL LEFT"
               commands.setWalkVelocity(-0.5, 1.0, 0.0)
             elif ball.imageCenterX > 180:
+              print "BALL RIGHT"
               commands.setWalkVelocity(-0.5, -1.0, 0.0)
             else:
               commands.setWalkVelocity(-0.5, 0.0, 0.0)
