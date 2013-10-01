@@ -26,7 +26,6 @@ class GoalieNode(Node):
   def __init__(self):
     super(GoalieNode, self).__init__()
     self.myState = GoalieNode.MY_START
-    self.ballTrackQueue = deque()
   
   def run(self):
     if self.myState == GoalieNode.MY_START:
