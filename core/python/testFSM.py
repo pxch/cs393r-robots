@@ -14,7 +14,7 @@ class TestMachine(StateMachine):
     stand1 = StandNode()
     goalie = GoalieNode()
     
-    self._adt(start, N, TurnHeadNode(0.0, 2.0, False), C, TiltHeadNode(-26.5), C, stand1, C, goalie)
+    self._adt(start, N, TurnHeadNode(0.0, 2.0, False), S, TiltHeadNode(-26.5), C, stand1)
     
 class GoalieNode(Node):
   MY_START = 0
