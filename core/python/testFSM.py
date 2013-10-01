@@ -66,16 +66,25 @@ class SearchBallNode(Node):
     self.prevYErr = None
   
   def PID(self, xErr, yErr):
-    K_I = 0.001
-    K_D = 0.0
+    # K_I = 0.001
+    # K_D = 0.0
 
-    dErrDt = self.dErrDt(xErr, yErr)
-    
-    xInput = xErr + K_I * self.xErrInt - K_D * dErrDt[0]
-    
-    yInput = yErr + K_I * self.yErrInt - K_D * dErrDt[1]
-    
-    return (self.inputToMotor(xInput), self.inputToMotor(yInput))
+    # dErrDt = self.dErrDt(xErr, yErr)
+    #
+    # xInput = xErr + K_I * self.xErrInt - K_D * dErrDt[0]
+    #
+    # yInput = yErr + K_I * self.yErrInt - K_D * dErrDt[1]
+    #
+    # return (self.inputToMotor(xInput), self.inputToMotor(yInput))
+    if xErr > 0:
+      xInput = 0.5
+    else:
+      xInput = -0.5
+    if yErr > 0:
+      yInput = 0.5
+    else:
+      yInput = -0.5
+    return (xInput, yInput)
   
   def inputToMotor(self, inValue):
     BOUNDARY_VAL = 400.0
@@ -293,8 +302,16 @@ class SearchGoalNode(Node):
     
     K_I = 0.001
     
-    FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
-    LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)
+    # FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)
+    # LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)
+    if xErr > 0:
+      LRSignal = 0.3
+    else:
+      LRSignal = -0.3
+    if yErr > 0:
+      FBSignal = 0.3
+    else:
+      FBSignal = -0.3
     
     goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
     if goal.seen:
@@ -422,9 +439,8 @@ class KickBallNode(Node):
           FBSignal = -0.2
         
         # PID Control
-      
-#         LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
-#         FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)  # forward backward
+        # LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
+        # FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)  # forward backward
         
         print "xErr: ", xErr, "yErr: ", yErr, "left/right: ", LRSignal, "for/back: ", FBSignal
         
@@ -493,20 +509,20 @@ class DribbleNode(Node):
       yErr = 200.0 - ball.imageCenterY 
     
     # Bang-Bang Control
-#     if xErr > 0:
-#       LRSignal = 0.2
-#     else:
-#       LRSignal = -0.2
-#     
-#     if yErr > 0:
-#       FBSignal = 0.2
-#     else:
-#       FBSignal = -0.2
+    if xErr > 0:
+      LRSignal = 0.2
+    else:
+      LRSignal = -0.2
+     
+    if yErr > 0:
+      FBSignal = 0.2
+    else:
+      FBSignal = -0.2
     
     # PID Control
     
-    LRSignal = self.toMotor(xErr + K_I * self.xErrInt)
-    FBSignal = self.toMotor(yErr + K_I * self.yErrInt)
+    # LRSignal = self.toMotor(xErr + K_I * self.xErrInt)
+    # FBSignal = self.toMotor(yErr + K_I * self.yErrInt)
     
     print "xErr: ", xErr, "yErr", yErr, "left/right ", LRSignal, "for/back ", FBSignal
     
