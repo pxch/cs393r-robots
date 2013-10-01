@@ -41,9 +41,9 @@ class GoalieNode(Node):
       ball = core.world_objects.getObjPtr(core.WO_BALL)
       if ball.seen:
         if ball.imageCenterX < 140:
-          commands.setWalkVelocity(0.0, 0.2, 0.0)
+          commands.setWalkVelocity(0.0, 1.0, 0.0)
         elif ball.imageCenterX > 180:
-          commands.setWalkVelocity(0.0, -0.2, 0.0)
+          commands.setWalkVelocity(0.0, -1.0, 0.0)
         else:
           commands.stand()
 
