@@ -167,6 +167,8 @@ void ImageProcessor::ballMoved() {
 		if (xErrSq >= prevXDev || yErrSq >= prevYDev) {
 			ball->ballBlobIndex = 1;
 		}
+		printf("%d %d %d\n", ball->imageCenterX, ball->imageCenterY,
+				ball->ballBlobIndex);
 	}
 }
 
