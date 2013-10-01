@@ -391,7 +391,7 @@ class KickBallNode(Node):
     return motor
 
   def run(self):
-    core.speech.say("kicking the ball")
+    core.speech.say("proceeding the ball")
     
     if self.myState == KickBallNode.MY_SUCCESS:
       self.postSignal(KickBallNode.MY_SUCCESS)
@@ -414,40 +414,45 @@ class KickBallNode(Node):
         print "BALL NOT SEEN"
         self.postSignal(KickBallNode.MY_BALL_LOST)
         return
-      
+
+      xErr = 180 - ball.imageCenterX
+
       if ball.fromTopCamera:
         yErr = 420 - ball.imageCenterY
       else:
         yErr = 180 - ball.imageCenterY
-      xErr = 180 - ball.imageCenterX
+        if fabs(xErr) < 5.0 and fabs(yErr) < 5.0:
+          commands.stand()
+          self.myState = KickBallNode.MY_READY
+          return
       
-      if fabs(xErr) < 10.0 and fabs(yErr) < 10.0:
-        commands.stand()
-        self.myState = KickBallNode.MY_READY
+#       if fabs(xErr) < 5.0 and fabs(yErr) < 5.0:
+#         commands.stand()
+#         self.myState = KickBallNode.MY_READY
+#       else:
+      K_I = 0.001
+      
+      # Bang-Bang Control
+      if xErr > 0:
+        LRSignal = 0.2
       else:
-        K_I = 0.001
-        
-        # Bang-Bang Control
-        if xErr > 0:
-          LRSignal = 0.2
-        else:
-          LRSignal = -0.2
-    
-        if yErr > 0:
-          FBSignal = 0.2
-        else:
-          FBSignal = -0.1
-        
-        # PID Control
-        # LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
-        # FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)  # forward backward
-        
-        print "xErr: ", xErr, "yErr: ", yErr, "left/right: ", LRSignal, "for/back: ", FBSignal
-        
-        commands.setWalkVelocity(FBSignal, LRSignal, 0.0)
-        
-        self.xErrInt += xErr
-        self.yErrInt += yErr
+        LRSignal = -0.2
+  
+      if yErr > 0:
+        FBSignal = 0.2
+      else:
+        FBSignal = -0.2
+      
+      # PID Control
+      # LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
+      # FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)  # forward backward
+      
+      print "xErr: ", xErr, "yErr: ", yErr, "left/right: ", LRSignal, "for/back: ", FBSignal
+      
+      commands.setWalkVelocity(FBSignal, LRSignal, 0.0)
+      
+      self.xErrInt += xErr
+      self.yErrInt += yErr
         
 class DribbleNode(Node):
   """
@@ -535,6 +540,7 @@ class DribbleNode(Node):
     return (FBSignal, LRSignal)
   
   def run(self):
+    core.speech.say("dribbling the ball")
     if self.myState == DribbleNode.MY_START:
       commands.stand()
       self.myState = DribbleNode.MY_MOVING
