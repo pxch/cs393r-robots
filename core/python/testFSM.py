@@ -18,7 +18,7 @@ class TestMachine(StateMachine):
     dribble = DribbleNode()
     ballInGoal = GoalInBallNode()
 
-    self._adt(start, N, TiltHeadNode(-26.5), C, stand)
+    self._adt(start, N, TurnHeadNode(0.0, 2.0, False), S, TiltHeadNode(-26.5), C, stand)
     self._adt(stand, C, searchBall)
     self._adt(searchBall, S, searchGoal)
     self._adt(searchGoal, S(SearchGoalNode.MY_SUCCESS), dribble)
