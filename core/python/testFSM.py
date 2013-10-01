@@ -391,7 +391,7 @@ class KickBallNode(Node):
     return motor
 
   def run(self):
-    core.speech.say("proceeding the ball")
+    core.speech.say("preparing to kick")
     
     if self.myState == KickBallNode.MY_SUCCESS:
       self.postSignal(KickBallNode.MY_SUCCESS)
@@ -410,49 +410,47 @@ class KickBallNode(Node):
     elif self.myState == KickBallNode.MY_GOTO_BALL:
       ball = core.world_objects.getObjPtr(core.WO_BALL)
       
-      if not ball.seen:
-        print "BALL NOT SEEN"
-        self.postSignal(KickBallNode.MY_BALL_LOST)
-        return
-
-      xErr = 180 - ball.imageCenterX
-
-      if ball.fromTopCamera:
-        yErr = 420 - ball.imageCenterY
-      else:
-        yErr = 180 - ball.imageCenterY
-        if fabs(xErr) < 5.0 and fabs(yErr) < 5.0:
-          commands.stand()
-          self.myState = KickBallNode.MY_READY
+      if not ball.fromTopCamera
+        if not ball.seen:
+          print "BALL NOT SEEN"
+          self.postSignal(KickBallNode.MY_BALL_LOST)
           return
+
+        xErr = 180 - ball.imageCenterX
+
+#         if ball.fromTopCamera:
+#           yErr = 420 - ball.imageCenterY
+#         else:
+        yErr = 180 - ball.imageCenterY
+
       
-#       if fabs(xErr) < 5.0 and fabs(yErr) < 5.0:
-#         commands.stand()
-#         self.myState = KickBallNode.MY_READY
-#       else:
-      K_I = 0.001
-      
-      # Bang-Bang Control
-      if xErr > 0:
-        LRSignal = 0.2
+      if fabs(xErr) < 10.0 and fabs(yErr) < 10.0:
+        commands.stand()
+        self.myState = KickBallNode.MY_READY
       else:
-        LRSignal = -0.2
-  
-      if yErr > 0:
-        FBSignal = 0.2
-      else:
-        FBSignal = -0.2
+        K_I = 0.001
       
-      # PID Control
-      # LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
-      # FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)  # forward backward
-      
-      print "xErr: ", xErr, "yErr: ", yErr, "left/right: ", LRSignal, "for/back: ", FBSignal
-      
-      commands.setWalkVelocity(FBSignal, LRSignal, 0.0)
-      
-      self.xErrInt += xErr
-      self.yErrInt += yErr
+        # Bang-Bang Control
+        if xErr > 0:
+          LRSignal = 0.2
+        else:
+          LRSignal = -0.2
+    
+        if yErr > 0:
+          FBSignal = 0.2
+        else:
+          FBSignal = -0.2
+        
+        # PID Control
+        # LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
+        # FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)  # forward backward
+        
+        print "xErr: ", xErr, "yErr: ", yErr, "left/right: ", LRSignal, "for/back: ", FBSignal
+        
+        commands.setWalkVelocity(FBSignal, LRSignal, 0.0)
+        
+        self.xErrInt += xErr
+        self.yErrInt += yErr
         
 class DribbleNode(Node):
   """
@@ -500,17 +498,17 @@ class DribbleNode(Node):
   def ballSignal(self):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
     
-    K_I = 0.001
+    if not ball.fromTopCamera:
     
-    if not ball.seen:
-      print "BALL NOT SEEN"
-      self.postSignal(DribbleNode.MY_BALL_LOST)
-      return None
+      if not ball.seen:
+        print "BALL NOT SEEN"
+        self.postSignal(DribbleNode.MY_BALL_LOST)
+        return None
         
-    xErr = 160.0 - ball.imageCenterX
-    if ball.fromTopCamera:
-      yErr = 440.0 - ball.imageCenterY
-    else:
+      xErr = 160.0 - ball.imageCenterX
+#       if ball.fromTopCamera:
+#         yErr = 440.0 - ball.imageCenterY
+#       else:
       yErr = 200.0 - ball.imageCenterY 
     
     # Bang-Bang Control
@@ -526,6 +524,8 @@ class DribbleNode(Node):
     
     # PID Control
     
+    # K_I = 0.001
+
     # LRSignal = self.toMotor(xErr + K_I * self.xErrInt)
     # FBSignal = self.toMotor(yErr + K_I * self.yErrInt)
     
