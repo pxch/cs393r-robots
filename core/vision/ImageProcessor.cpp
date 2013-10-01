@@ -119,6 +119,7 @@ void ImageProcessor::processFrame() {
 	trackBall();
 
 	if (camera_ == Camera::TOP) {
+		ballMoved();
 	}
 
 	if (camera_ == Camera::BOTTOM) {
