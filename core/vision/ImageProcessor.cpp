@@ -128,8 +128,8 @@ void ImageProcessor::processFrame() {
 }
 
 void ImageProcessor::ballMoved() {
-	int const MAX_STORED_POS = 45;
-	int const POS_WINDOW;
+	int const MAX_STORED_POS = 20;
+	int const POS_WINDOW = 10;
 	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 	ball->ballBlobIndex = 0;
 	if (ball->seen && ball->fromTopCamera) {
@@ -143,10 +143,28 @@ void ImageProcessor::ballMoved() {
 		float prevXMean = 0.0;
 		float prevYMean = 0.0;
 		for (int i = 0; i != POS_WINDOW; ++i) {
-			prevXMean += ballPos_[i]
+			prevXMean += float(ballPos_[i].first);
+			prevYMean += float(ballPos_[i].second);
 		}
+		prevXMean /= float(POS_WINDOW);
+		prevYMean /= float(POS_WINDOW);
 		float prevXDev = 0.0;
 		float prevYDev = 0.0;
+		for (int i = 0; i != POS_WINDOW; ++i) {
+			prevXDev += (float(ballPos_[i].first) - prevXMean)
+					* (float(ballPos_[i].first) - prevXMean);
+			prevYDev += (float(ballPos_[i].second) - prevYMean)
+					* (float(ballPos_[i].second) - prevYMean);
+		}
+		prevXDev /= float(POS_WINDOW);
+		prevYDev /= float(POS_WINDOW);
+		float xErrSq = (float(ball->imageCenterX) - prevXMean)
+				* (float(ball->imageCenterX) - prevXMean);
+		float yErrSq = (float(ball->imageCenterY) - prevYMean)
+				* (float(ball->imageCenterY) - prevYMean);
+		if (xErrSq >= prevXDev || yErrSq >= prevYDev) {
+			ball->ballBlobIndex = 1;
+		}
 	}
 }
 
