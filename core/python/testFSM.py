@@ -28,24 +28,6 @@ class GoalieNode(Node):
     super(GoalieNode, self).__init__()
     self.myState = GoalieNode.MY_START
     self.ballTrackQueue = deque()
-
-  def ballMoved(self):
-    MAX_TRACKED_BALL_FRAMES = 30
-    CALC_FRAMES = 15
-    ball = core.world_objects.getObjPtr(core.WO_BALL)
-    if ball.seen:
-      if len(self.ballTrackQueue) == MAX_TRACKED_BALL_FRAMES:
-        self.ballTrackQueue.popleft()
-      self.ballTrackQueue.append((ball.imageCenterX, ball.imageCenterY))
-      if len(self.ballTrackQueue) < MAX_TRACKED_BALL_FRAMES:
-        return False
-      prevXMean = sum(p[0] for p in self.ballTrackQueue[:CALC_FRAMES]) / CALC_FRAMES
-      prevYMean = sum(p[1] for p in self.ballTrackQueue[:CALC_FRAMES]) / CALC_FRAMES
-      prevXDev = sum((p[0] - prevXMean) ** 2 for p in self.ballTrackQueue[:CALC_FRAMES]) / CALC_FRAMES
-      prevYDev = sum((p[1] - prevYMean) ** 2 for p in self.ballTrackQueue[:CALC_FRAMES]) / CALC_FRAMES
-      if (ball.imageCenterX - prevXMean) ** 2 > prevXDev or (ball.imageCenterY - prevYMean) ** 2 > prevYDev:
-        return True
-    return False
   
   def run(self):
     if self.myState == GoalieNode.MY_START:
@@ -53,7 +35,8 @@ class GoalieNode(Node):
       self.myState = GoalieNode.MY_WAIT_FOR_BALL_TO_MOVE
     
     if self.myState == GoalieNode.MY_WAIT_FOR_BALL_TO_MOVE:
-      if self.ballMoved():
+      ball = core.world_objects.getObjPtr(core.WO_BALL)
+      if ball.ballBlobIndex != 0:
         self.myState = GoalieNode.MY_BLOCK_BALL
     
     if self.myState == GoalieNode.MY_BLOCK_BALL:

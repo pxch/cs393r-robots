@@ -1,6 +1,9 @@
 #ifndef IMAGEPROCESSOR_H
 #define IMAGEPROCESSOR_H
 
+#include <queue>
+#include <utility>
+
 #include <kinematics/ForwardKinematics.h>
 #include <common/RobotDimensions.h>
 #include <memory/TextLogger.h>
@@ -73,6 +76,9 @@ private:
 	void getGroundLines();
 
 	void trackBall();
+
+	void ballMoved(); //?
+	std::queue<std::pair<int, int> > ballPos_;
 
 };
 

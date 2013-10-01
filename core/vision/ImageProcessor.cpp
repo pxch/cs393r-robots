@@ -118,10 +118,36 @@ void ImageProcessor::processFrame() {
 
 	trackBall();
 
+	if (camera_ == Camera::TOP) {
+	}
+
 	if (camera_ == Camera::BOTTOM) {
 		getGroundLines();
 	}
 
+}
+
+void ImageProcessor::ballMoved() {
+	int const MAX_STORED_POS = 45;
+	int const POS_WINDOW;
+	WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+	ball->ballBlobIndex = 0;
+	if (ball->seen && ball->fromTopCamera) {
+		if (ballPos_.size() == MAX_STORED_POS) {
+			ballPos_.pop();
+		}
+		ballPos_.push(std::make_pair(ball->imageCenterX, ball->imageCenterY));
+		if (ballPos_.size() == MAX_STORED_POS) {
+			return;
+		}
+		float prevXMean = 0.0;
+		float prevYMean = 0.0;
+		for (int i = 0; i != POS_WINDOW; ++i) {
+			prevXMean += ballPos_[i]
+		}
+		float prevXDev = 0.0;
+		float prevYDev = 0.0;
+	}
 }
 
 void ImageProcessor::trackBall() {
@@ -137,35 +163,35 @@ void ImageProcessor::trackBall() {
 }
 
 void ImageProcessor::getGroundLines() {
+	int total = 0;
 	bool centerWhite = false;
 	for (int x = 40; x != 280; ++x) {
 		for (int y = 200; y <= 205; ++y) {
 			if (getSegPixelValueAt(x, y) == c_WHITE) {
 				centerWhite = true;
-				goto centerWhiteDone;
+				++total;
 			}
 		}
 	}
-	centerWhiteDone: bool leftWhite = false;
+	bool leftWhite = false;
 	for (int x = 0; x != 40; ++x) {
 		for (int y = 200; y != 220; ++y) {
 			if (getSegPixelValueAt(x, y) == c_WHITE) {
 				centerWhite = true;
-				goto leftWhiteDone;
+				++total;
 			}
 		}
 	}
-	leftWhiteDone: bool rightWhite = false;
+	bool rightWhite = false;
 	for (int x = 280; x != 280; ++x) {
 		for (int y = 200; y != 220; ++y) {
 			if (getSegPixelValueAt(x, y) == c_WHITE) {
 				centerWhite = true;
-				goto rightWhiteDone;
+				++total;
 			}
 		}
 	}
-	rightWhiteDone: WorldObject *line =
-			&vblocks_.world_object->objects_[WO_OPP_GOAL_LINE];
+	WorldObject *line = &vblocks_.world_object->objects_[WO_OPP_GOAL_LINE];
 	line->fieldLineIndex = 0;
 	if (centerWhite) {
 		line->fieldLineIndex += 1;
@@ -176,6 +202,7 @@ void ImageProcessor::getGroundLines() {
 	if (rightWhite) {
 		line->fieldLineIndex += 4;
 	}
+	line->pixelCount = total;
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
