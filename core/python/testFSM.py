@@ -684,7 +684,7 @@ class TurnHeadNode(Node):
   def run(self):
     core.speech.say("turn head")
     commands.setHeadPan(self.angle, self.turnTime, self.relative)
-    if self.getTime() > self.turnTime + 1:
+    if self.getTime() > self.turnTime + 1.0:
       self.postCompleted()
 
 class KickNode(Node):
