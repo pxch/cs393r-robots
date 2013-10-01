@@ -5,7 +5,6 @@ import commands, core, util, pose, percepts
 import time
 from math import pi, sqrt
 from random import randint
-from collections import deque
 
 class TestMachine(StateMachine):
   def setup(self):
