@@ -164,11 +164,11 @@ void ImageProcessor::ballMoved() {
 				* (float(ball->imageCenterX) - prevXMean);
 		float yErrSq = (float(ball->imageCenterY) - prevYMean)
 				* (float(ball->imageCenterY) - prevYMean);
-		if (xErrSq >= prevXDev || yErrSq >= prevYDev) {
+		if (xErrSq >= 4.0 * prevXDev || yErrSq >= 4.0 * prevYDev) {
 			ball->ballBlobIndex = 1;
 		}
-		printf("%d %d %d\n", ball->imageCenterX, ball->imageCenterY,
-				ball->ballBlobIndex);
+		printf("%d %d %d %f %f %f %f\n", ball->imageCenterX, ball->imageCenterY,
+				ball->ballBlobIndex, prevXDev, prevYDev, xErrSq, yErrSq);
 	}
 }
 
