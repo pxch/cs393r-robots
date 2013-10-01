@@ -63,6 +63,8 @@ private:
 	bool enableCalibration_;
 
 	void ballInGoal();
+
+    void getGroundLines();
 };
 
 #endif

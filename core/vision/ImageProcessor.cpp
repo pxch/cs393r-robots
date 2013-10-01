@@ -222,6 +222,59 @@ void ImageProcessor::processFrame() {
 	if (camera_ == Camera::TOP) {
 		ballInGoal();
 	}
+
+	if (camera_ == Camera::BOTTOM) {
+		getGroundLines();
+	}
+}
+
+void ImageProcessor::getGroundLines() {
+	int total = 0;
+	bool bottomWhite = false;
+	for (int x = 0; x != 320; ++x) {
+		for (int y = 200; y != 210; ++y) {
+			if (getSegPixelValueAt(x, y) == c_WHITE) {
+				bottomWhite = true;
+				++total;
+			}
+		}
+	}
+//	bool leftWhite = false;
+//	for (int x = 0; x != 40; ++x) {
+//		for (int y = 200; y != 220; ++y) {
+//			if (getSegPixelValueAt(x, y) == c_WHITE) {
+//				centerWhite = true;
+//				++total;
+//			}
+//		}
+//	}
+//	bool rightWhite = false;
+//	for (int x = 280; x != 280; ++x) {
+//		for (int y = 200; y != 220; ++y) {
+//			if (getSegPixelValueAt(x, y) == c_WHITE) {
+//				centerWhite = true;
+//				++total;
+//			}
+//		}
+//	}
+	bool topWhite = false;
+	for (int x = 0; x != 320; ++x) {
+		for (int y = 0; y != 10; ++ y) {
+			if (getSegPixelValueAt(x,y) == c_WHITE) {
+				topWhite = true;
+				++ total;
+			}
+		}
+	}
+	WorldObject *line = &vblocks_.world_object->objects_[WO_OPP_GOAL_LINE];
+	line->fieldLineIndex = 0;
+	if (bottomWhite) {
+		line->fieldLineIndex += 1;
+	}
+	if (topWhite) {
+		line->fieldLineIndex += 2;
+	}
+	line->pixelCount = total;
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {

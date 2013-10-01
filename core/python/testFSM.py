@@ -465,7 +465,7 @@ class DribbleNode(Node):
   
   MY_BALL_LOST = 5
   
-  MY_MOVING_MAX = 100
+  MY_MOVING_MAX = 50
   
   def reset(self):
     super(DribbleNode, self).reset()
@@ -517,7 +517,7 @@ class DribbleNode(Node):
     if yErr > 0:
       FBSignal = 0.2
     else:
-      FBSignal = -0.2
+      FBSignal = 0
     
     # PID Control
     
@@ -577,6 +577,10 @@ class DribbleNode(Node):
       
       commands.setWalkVelocity(ballSignal[0], ballSignal[1], 0.0)
     
+      line = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
+      if line.fieldLineIndex == 2 or line.fieldLineIndex == 3:
+        self.myState = self.MY_SUCCESS
+
       if self.movingCounter == DribbleNode.MY_MOVING_MAX:
         self.movingCounter = 0
         self.myState = self.MY_TURNING
