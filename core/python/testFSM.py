@@ -391,7 +391,7 @@ class KickBallNode(Node):
     return motor
 
   def run(self):
-    core.speech.say("preparing to kick")
+    core.speech.say("kicking the ball")
     
     if self.myState == KickBallNode.MY_SUCCESS:
       self.postSignal(KickBallNode.MY_SUCCESS)
@@ -410,26 +410,23 @@ class KickBallNode(Node):
     elif self.myState == KickBallNode.MY_GOTO_BALL:
       ball = core.world_objects.getObjPtr(core.WO_BALL)
       
-      if not ball.fromTopCamera
-        if not ball.seen:
-          print "BALL NOT SEEN"
-          self.postSignal(KickBallNode.MY_BALL_LOST)
-          return
-
-        xErr = 180 - ball.imageCenterX
-
-#         if ball.fromTopCamera:
-#           yErr = 420 - ball.imageCenterY
-#         else:
+      if not ball.seen:
+        print "BALL NOT SEEN"
+        self.postSignal(KickBallNode.MY_BALL_LOST)
+        return
+      
+      if ball.fromTopCamera:
+        yErr = 420 - ball.imageCenterY
+      else:
         yErr = 180 - ball.imageCenterY
-
+      xErr = 180 - ball.imageCenterX
       
       if fabs(xErr) < 10.0 and fabs(yErr) < 10.0:
         commands.stand()
         self.myState = KickBallNode.MY_READY
       else:
         K_I = 0.001
-      
+        
         # Bang-Bang Control
         if xErr > 0:
           LRSignal = 0.2
@@ -439,7 +436,7 @@ class KickBallNode(Node):
         if yErr > 0:
           FBSignal = 0.2
         else:
-          FBSignal = -0.2
+          FBSignal = -0.1
         
         # PID Control
         # LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
@@ -498,17 +495,17 @@ class DribbleNode(Node):
   def ballSignal(self):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
     
-    if not ball.fromTopCamera:
+    K_I = 0.001
     
-      if not ball.seen:
-        print "BALL NOT SEEN"
-        self.postSignal(DribbleNode.MY_BALL_LOST)
-        return None
+    if not ball.seen:
+      print "BALL NOT SEEN"
+      self.postSignal(DribbleNode.MY_BALL_LOST)
+      return None
         
-      xErr = 160.0 - ball.imageCenterX
-#       if ball.fromTopCamera:
-#         yErr = 440.0 - ball.imageCenterY
-#       else:
+    xErr = 160.0 - ball.imageCenterX
+    if ball.fromTopCamera:
+      yErr = 440.0 - ball.imageCenterY
+    else:
       yErr = 200.0 - ball.imageCenterY 
     
     # Bang-Bang Control
@@ -524,8 +521,6 @@ class DribbleNode(Node):
     
     # PID Control
     
-    # K_I = 0.001
-
     # LRSignal = self.toMotor(xErr + K_I * self.xErrInt)
     # FBSignal = self.toMotor(yErr + K_I * self.yErrInt)
     
@@ -540,7 +535,6 @@ class DribbleNode(Node):
     return (FBSignal, LRSignal)
   
   def run(self):
-    core.speech.say("dribbling the ball")
     if self.myState == DribbleNode.MY_START:
       commands.stand()
       self.myState = DribbleNode.MY_MOVING
