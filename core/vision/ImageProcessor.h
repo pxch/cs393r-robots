@@ -1,7 +1,7 @@
 #ifndef IMAGEPROCESSOR_H
 #define IMAGEPROCESSOR_H
 
-#include <queue>
+#include <deque>
 #include <utility>
 
 #include <kinematics/ForwardKinematics.h>
@@ -78,7 +78,7 @@ private:
 	void trackBall();
 
 	void ballMoved(); //?
-	std::queue<std::pair<int, int> > ballPos_;
+	std::deque<std::pair<int, int> > ballPos_;
 
 };
 

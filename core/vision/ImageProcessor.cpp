@@ -134,9 +134,10 @@ void ImageProcessor::ballMoved() {
 	ball->ballBlobIndex = 0;
 	if (ball->seen && ball->fromTopCamera) {
 		if (ballPos_.size() == MAX_STORED_POS) {
-			ballPos_.pop();
+			ballPos_.pop_front();
 		}
-		ballPos_.push(std::make_pair(ball->imageCenterX, ball->imageCenterY));
+		ballPos_.push_back(
+				std::make_pair(ball->imageCenterX, ball->imageCenterY));
 		if (ballPos_.size() == MAX_STORED_POS) {
 			return;
 		}
