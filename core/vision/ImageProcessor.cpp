@@ -139,7 +139,7 @@ void ImageProcessor::ballMoved() {
 		}
 		ballPos_.push_back(
 				std::make_pair(ball->imageCenterX, ball->imageCenterY));
-		if (ballPos_.size() == MAX_STORED_POS) {
+		if (ballPos_.size() != MAX_STORED_POS) {
 			return;
 		}
 		float prevXMean = 0.0;
