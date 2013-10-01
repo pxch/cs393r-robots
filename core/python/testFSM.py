@@ -34,11 +34,16 @@ class GoalieNode(Node):
     
     if self.myState == GoalieNode.MY_WAIT_FOR_BALL_TO_MOVE:
       ball = core.world_objects.getObjPtr(core.WO_BALL)
-      if ball.ballBlobIndex != 0:
+      if ball.imageCenterY >= 90:
         self.myState = GoalieNode.MY_BLOCK_BALL
     
     if self.myState == GoalieNode.MY_BLOCK_BALL:
-      core.speech.say("moving")
+      ball = core.world_objects.getObjPtr(core.WO_BALL)
+      if ball.imageCenterX < 140:
+        commands.setWalkVelocity(0.0, 0.1, 0.0)
+      if ball.imageCenterX > 180:
+        commands.setWalkVelocity(0.0, -0.1, 0.0)
+      
 
 class SpeakNode(Node):
   def __init__(self, phrase):
