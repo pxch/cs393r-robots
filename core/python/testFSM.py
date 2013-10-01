@@ -34,6 +34,7 @@ class GoalieNode(Node):
     
     if self.myState == GoalieNode.MY_WAIT_FOR_BALL_TO_MOVE:
       ball = core.world_objects.getObjPtr(core.WO_BALL)
+      print ball.ballBlobIndex
       if ball.ballBlobIndex != 0:
         self.myState = GoalieNode.MY_BLOCK_BALL
     
