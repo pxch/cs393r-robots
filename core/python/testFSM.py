@@ -1,8 +1,11 @@
+from __future__ import division
+
 from state import * 
 import commands, core, util, pose, percepts
 import time
-from math import pi
+from math import pi, sqrt
 from random import randint
+from collections import deque
 
 class TestMachine(StateMachine):
   def setup(self):
@@ -12,74 +15,49 @@ class TestMachine(StateMachine):
     stand1 = StandNode()
     goalie = GoalieNode()
     
-    self._adt(start, N, TiltHeadNode(-26.5), C, stand1)
+    self._adt(start, N, TiltHeadNode(-26.5), C, goalie)
     
 class GoalieNode(Node):
   MY_START = 0
   
+  MY_WAIT_FOR_BALL_TO_MOVE = 1
+  
+  MY_BLOCK_BALL = 2
+  
   def __init__(self):
     super(GoalieNode, self).__init__()
     self.myState = GoalieNode.MY_START
+    self.ballTrackQueue = deque()
+
+  def ballMoved(self):
+    MAX_TRACKED_BALL_FRAMES = 30
+    CALC_FRAMES = 15
+    ball = core.world_objects.getObjPtr(core.WO_BALL)
+    if ball.seen:
+      if len(self.ballTrackQueue) == MAX_TRACKED_BALL_FRAMES:
+        self.ballTrackQueue.popleft()
+      self.ballTrackQueue.append((ball.imageCenterX, ball.imageCenterY))
+      if len(self.ballTrackQueue) < MAX_TRACKED_BALL_FRAMES:
+        return False
+      prevXMean = sum(p[0] for p in self.ballTrackQueue[:CALC_FRAMES]) / CALC_FRAMES
+      prevYMean = sum(p[1] for p in self.ballTrackQueue[:CALC_FRAMES]) / CALC_FRAMES
+      prevXDev = sum((p[0] - prevXMean) ** 2 for p in self.ballTrackQueue[:CALC_FRAMES]) / CALC_FRAMES
+      prevYDev = sum((p[1] - prevYMean) ** 2 for p in self.ballTrackQueue[:CALC_FRAMES]) / CALC_FRAMES
+      if (ball.imageCenterX - prevXMean) ** 2 > prevXDev or (ball.imageCenterY - prevYMean) ** 2 > prevYDev:
+        return True
+    return False
   
   def run(self):
     if self.myState == GoalieNode.MY_START:
       commands.stand()
-
-class RandWalkGoalLine(Node):
-  MY_START = 0
-  
-  MY_WALK = 1
-  
-  MY_SWITCH = 2
-  
-  WALK_FRAMES = 100
-  
-  def __init__(self):
-    super(RandWalkGoalLine, self).__init__()   
-    self.myState = RandWalkGoalLine.MY_START
-    self.walkCount = 0
+      self.myState = GoalieNode.MY_WAIT_FOR_BALL_TO_MOVE
     
-    # walk parameters 
-    self.x = 0.0
-    self.y = 0.0
-  
-  def run(self):
-    if self.myState == RandWalkGoalLine.MY_START:
-      commands.stand()
-      self.myState = RandWalkGoalLine.MY_SWITCH
-      
-    elif self.myState == RandWalkGoalLine.MY_SWITCH:
-      commands.stand()
-      randDir = randint(1, 4)
-      if randDir == 1:
-        self.x = 0.2
-        self.y = 0.0
-      elif randDir == 2:
-        self.x = -0.2
-        self.y = 0.0
-      elif randDir == 3:
-        self.x = 0.0
-        self.y = 0.2
-      elif randDir == 4:
-        self.x = 0.0
-        self.y = -0.2
-      self.myState = RandWalkGoalLine.MY_WALK
-      print self.myState
-      
-    elif self.myState == RandWalkGoalLine.MY_WALK:
-      whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
-      if whiteLine.fieldLineIndex == 0:
-        commands.setWalkVelocity(self.x, self.y, 0.0)
-        print self.x, self.y
-        print "white line not seen"
-      else:
-        commands.stand()
-        print "white line seen"
-      self.walkCount += 1
-      if self.walkCount == RandWalkGoalLine.WALK_FRAMES:
-        self.walkCount = 0
-        self.myState = RandWalkGoalLine.MY_SWITCH
-      print self.myState
+    if self.myState == GoalieNode.MY_WAIT_FOR_BALL_TO_MOVE:
+      if self.ballMoved():
+        self.myState = GoalieNode.MY_BLOCK_BALL
+    
+    if self.myState == GoalieNode.MY_BLOCK_BALL:
+      core.speech.say("moving")
 
 class SpeakNode(Node):
   def __init__(self, phrase):

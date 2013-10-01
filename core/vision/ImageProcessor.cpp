@@ -164,7 +164,7 @@ void ImageProcessor::getGroundLines() {
 			}
 		}
 	}
-	rightWhiteDone: finished_finding_white: WorldObject *line =
+	rightWhiteDone: WorldObject *line =
 			&vblocks_.world_object->objects_[WO_OPP_GOAL_LINE];
 	line->fieldLineIndex = 0;
 	if (centerWhite) {
