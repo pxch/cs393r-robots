@@ -40,12 +40,41 @@ class GoalieNode(Node):
     if self.myState == GoalieNode.MY_BLOCK_BALL:
       ball = core.world_objects.getObjPtr(core.WO_BALL)
       if ball.seen:
-        if ball.imageCenterX < 140:
-          commands.setWalkVelocity(0.0, 1.0, 0.0)
-        elif ball.imageCenterX > 180:
-          commands.setWalkVelocity(0.0, -1.0, 0.0)
+        whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
+        if whiteLine.fieldLineIndex == 0:
+          print "white line not seen"
+          if ball.imageCenterX < 140:
+            commands.setWalkVelocity(0.0, 1.0, 0.0)
+          elif ball.imageCenterX > 180:
+            commands.setWalkVelocity(0.0, -1.0, 0.0)
+          else:
+            commands.stand()
         else:
-          commands.stand()
+          if whiteLine.fieldLineIndex == 1:
+            if ball.imageCenterX < 140:
+              commands.setWalkVelocity(-0.5, 1.0, 0.0)
+            elif ball.imageCenterX > 180:
+              commands.setWalkVelocity(-0.5, -1.0, 0.0)
+            else:
+              commands.setWalkVelocity(-0.5, 0.0, 0.0)
+          elif whiteLine.fieldLineIndex == 2 :
+            commands.setWalkVelocity(0.0, -1.0, 0.0)
+          elif whiteLine.fieldLineIndex == 3:
+            commands.setWalkVelocity(-0.5, -1.0, 0.0)
+          elif whiteLine.fieldLineIndex == 4:
+            commands.setWalkVelocity(0.0, 1.0, 0.0)
+          elif whiteLine.fieldLineIndex == 5:
+            commands.setWalkVelocity(-0.5, 1.0, 0.0)
+          elif whiteLine.fieldLineIndex == 6:
+            print "THIS SHOULD NOT HAPPEN"
+            if randint(0, 1) == 0:
+              commands.setWalkVelocity(-0.5, 0.0, 0.0)
+            else:
+              commands.setWalkVelocity(0.5, 0.0, 0.0)
+          elif whiteLine.fieldLineIndex == 7:
+            commands.setWalkVelocity(-0.5, 0.0, 0.0)  
+      else:
+        commands.stand()
 
 class SpeakNode(Node):
   def __init__(self, phrase):
