@@ -421,7 +421,7 @@ class KickBallNode(Node):
         yErr = 180 - ball.imageCenterY
       xErr = 180 - ball.imageCenterX
       
-      if fabs(xErr) < 15.0 and fabs(yErr) < 15.0:
+      if fabs(xErr) < 10.0 and fabs(yErr) < 10.0:
         commands.stand()
         self.myState = KickBallNode.MY_READY
       else:
@@ -436,7 +436,7 @@ class KickBallNode(Node):
         if yErr > 0:
           FBSignal = 0.2
         else:
-          FBSignal = -0.2
+          FBSignal = -0.1
         
         # PID Control
         # LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
