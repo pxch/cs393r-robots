@@ -40,10 +40,11 @@ class GoalieNode(Node):
     if self.myState == GoalieNode.MY_BLOCK_BALL:
       ball = core.world_objects.getObjPtr(core.WO_BALL)
       if ball.imageCenterX < 140:
-        commands.setWalkVelocity(0.0, 0.1, 0.0)
-      if ball.imageCenterX > 180:
-        commands.setWalkVelocity(0.0, -0.1, 0.0)
-      
+        commands.setWalkVelocity(0.0, 0.2, 0.0)
+      elif ball.imageCenterX > 180:
+        commands.setWalkVelocity(0.0, -0.2, 0.0)
+      else:
+        commands.stand()
 
 class SpeakNode(Node):
   def __init__(self, phrase):
