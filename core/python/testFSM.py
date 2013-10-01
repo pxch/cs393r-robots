@@ -409,8 +409,22 @@ class KickBallNode(Node):
         self.myState = KickBallNode.MY_READY
       else:
         K_I = 0.001
-        LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
-        FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)  # forward backward
+        
+        # Bang-Bang Control
+        if xErr > 0:
+          LRSignal = 0.2
+        else:
+          LRSignal = -0.2
+    
+        if yErr > 0:
+          FBSignal = 0.2
+        else:
+          FBSignal = -0.2
+        
+        # PID Control
+      
+#         LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
+#         FBSignal = self.inputToWalk(yErr + K_I * self.yErrInt)  # forward backward
         
         print "xErr: ", xErr, "yErr: ", yErr, "left/right: ", LRSignal, "for/back: ", FBSignal
         
@@ -479,20 +493,20 @@ class DribbleNode(Node):
       yErr = 200.0 - ball.imageCenterY 
     
     # Bang-Bang Control
-    if xErr > 0:
-      LRSignal = 0.2
-    else:
-      LRSignal = -0.2
-    
-    if yErr > 0:
-      FBSignal = 0.2
-    else:
-      FBSignal = -0.2
+#     if xErr > 0:
+#       LRSignal = 0.2
+#     else:
+#       LRSignal = -0.2
+#     
+#     if yErr > 0:
+#       FBSignal = 0.2
+#     else:
+#       FBSignal = -0.2
     
     # PID Control
     
-#     LRSignal = self.toMotor(xErr + K_I * self.xErrInt)
-#     FBSignal = self.toMotor(yErr + K_I * self.yErrInt)
+    LRSignal = self.toMotor(xErr + K_I * self.xErrInt)
+    FBSignal = self.toMotor(yErr + K_I * self.yErrInt)
     
     print "xErr: ", xErr, "yErr", yErr, "left/right ", LRSignal, "for/back ", FBSignal
     
