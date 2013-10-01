@@ -274,7 +274,7 @@ void ImageProcessor::getGroundLines() {
 	if (topWhite) {
 		line->fieldLineIndex += 2;
 	}
-	line->pixelCount = total;
+//	line->pixelCount = total;
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
