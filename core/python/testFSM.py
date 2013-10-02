@@ -70,8 +70,11 @@ class GoalieNode(Node):
             elif ball.imageCenterX > 165:
               LRSignal = -1.0
             else:
-              LRSignal = 0.0
-            commands.setWalkVelocity(0.1, LRSignal, turnAngle)
+              LRSignal = None
+            if LRSignal != None:
+              commands.setWalkVelocity(0.1, LRSignal, turnAngle)
+            else:
+              commands.stand()
           if whiteLine.fieldLineIndex == 1:
             if ball.imageCenterX < 155:
               print "BALL LEFT"
