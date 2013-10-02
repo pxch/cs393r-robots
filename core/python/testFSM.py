@@ -41,9 +41,9 @@ class GoalieNode(Node):
     
     if self.myState == GoalieNode.MY_BLOCK_BALL:
       ball = core.world_objects.getObjPtr(core.WO_BALL)
-      print whiteLine.fieldLineIndex
       if ball.seen:
         whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
+        print whiteLine.fieldLineIndex
         if whiteLine.fieldLineIndex == 0:
           print "white line not seen"
           if ball.imageCenterX < 155:
