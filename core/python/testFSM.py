@@ -416,10 +416,10 @@ class KickBallNode(Node):
         return
       
       if ball.fromTopCamera:
-        yErr = 440 - ball.imageCenterY
+        yErr = 240 + 185 - ball.imageCenterY
       else:
-        yErr = 200 - ball.imageCenterY
-      xErr = 192 - ball.imageCenterX
+        yErr = 185 - ball.imageCenterY
+      xErr = 195 - ball.imageCenterX
       
       if fabs(xErr) < 10.0 and fabs(yErr) < 10.0:
         commands.stand()
