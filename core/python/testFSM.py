@@ -445,7 +445,7 @@ class KickBallNode(Node):
         yErr = 195 - ball.imageCenterY
       xErr = 195 - ball.imageCenterX
       
-      if fabs(xErr) < 10.0 and fabs(yErr) < 10.0:
+      if fabs(xErr) < 10.0 and fabs(yErr) < 5.0:
         commands.stand()
         self.myState = KickBallNode.MY_READY
       else:
@@ -470,7 +470,7 @@ class KickBallNode(Node):
         
         whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
         if whiteLine.fieldLineIndex != 0:
-          if whiteLine.ballBlobIndex >= 2500:
+          if whiteLine.ballBlobIndex >= 5000:
             if whiteLine.fieldLineIndex % 2 == 1:
               FBSignal = -0.2
         
@@ -601,7 +601,7 @@ class DribbleNode(Node):
         FBSignal = ballSignal[0]
         whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
         if whiteLine.fieldLineIndex != 0:
-          if whiteLine.ballBlobIndex >= 2500:
+          if whiteLine.ballBlobIndex >= 5000:
             if whiteLine.fieldLineIndex % 2 == 1:
               FBSignal = -0.1
         commands.setWalkVelocity(FBSignal, ballSignal[1], turnDirection * pi / 70.0)
@@ -619,7 +619,7 @@ class DribbleNode(Node):
       FBSignal = ballSignal[0]
       whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
       if whiteLine.fieldLineIndex != 0:
-        if whiteLine.ballBlobIndex >= 2500:
+        if whiteLine.ballBlobIndex >= 5000:
           if whiteLine.fieldLineIndex % 2 == 1:
             FBSignal = -0.1
       
