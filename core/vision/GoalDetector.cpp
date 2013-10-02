@@ -58,6 +58,9 @@ void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
 
 	goalX = goalY = 0;
 	visionRatio = 0;
+	goalLX = goalLY = goalRX = goalRY = 0;
+	goalDirection = 0;
+
 	int total = 0;
 	for (int x = 0; x < iparams_.width; x++) {
 		for (int y = 0; y < iparams_.height; y++) {
@@ -91,7 +94,7 @@ void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
 				}
 			}
 		}
-		goalRX /= rTotal, goalRY /= rTotal;
+		goalRX /= rTotal, goalRY  /= rTotal;
 
 		if (lTotal > rTotal) {
 			goalDirection = 1;
