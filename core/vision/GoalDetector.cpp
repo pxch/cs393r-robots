@@ -4,8 +4,8 @@
 
 GoalDetector::GoalDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 		BlobDetector*& blob_detector, LineDetector*& line_detector) :
-		DETECTOR_INITIALIZE, classifier_(classifier), blob_detector_(
-				blob_detector), line_detector_(line_detector) {
+DETECTOR_INITIALIZE, classifier_(classifier), blob_detector_(
+		blob_detector), line_detector_(line_detector) {
 }
 
 void GoalDetector::detectGoal() {
@@ -73,33 +73,32 @@ void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
 		seen = true;
 		goalX /= total, goalY /= total;
 		visionRatio = float(total) / float(iparams_.width)
-		/ float(iparams_.height);
+				/ float(iparams_.height);
 
 		int lTotal = 0;
 		int rTotal = 0;
 
-		for ( int x = 0; x < goalX; x ++) {
-			for ( int y = 0; y < iparams_.height; y ++) {
+		for (int x = 0; x < goalX; x++) {
+			for (int y = 0; y < iparams_.height; y++) {
 				if (getSegPixelValueAt(x,y) == c_BLUE) {
-					goalLX += x, goalLY += y, lTotal ++;
+					goalLX += x, goalLY += y, lTotal++;
 				}
 			}
 		}
 		goalLX /= lTotal, goalLY /= lTotal;
 
-		for ( int x = goalX; x < iparams_.width; x ++) {
-			for ( int y = 0; y < iparams_.height; y ++) {
+		for (int x = goalX; x < iparams_.width; x++) {
+			for (int y = 0; y < iparams_.height; y++) {
 				if (getSegPixelValueAt(x,y) == c_BLUE) {
-					goalRX += x, goalRY += y, rTotal ++;
+					goalRX += x, goalRY += y, rTotal++;
 				}
 			}
 		}
-		goalRX /= rTotal, goalRY  /= rTotal;
+		goalRX /= rTotal, goalRY /= rTotal;
 
 		if (lTotal > rTotal) {
 			goalDirection = 1;
-		}
-		else {
+		} else {
 			goalDirection = 2;
 		}
 	} else {
