@@ -50,7 +50,7 @@ void GoalDetector::detectGoal() {
 }
 
 void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
-		int &goalLX, int &goalLY, int &goalRX, int &goalRY, int &goalDirection
+		int &goalLX, int &goalLY, int &goalRX, int &goalRY, int &goalDirection,
 		bool &seen) {
 
 	//goalDirection == 1 --> goal on the left

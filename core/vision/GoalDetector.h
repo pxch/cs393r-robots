@@ -29,7 +29,7 @@ private:
 	LineDetector* line_detector_;
 
 	void findGoal(float &visionRatio, int &goalX, int &goalY,
-			int &goalLX, int &goalLY, int &goalRX, int &goalRY, int &goalDirection
+			int &goalLX, int &goalLY, int &goalRX, int &goalRY, int &goalDirection,
 			bool &seen);
 
 #endif
