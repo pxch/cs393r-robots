@@ -43,10 +43,10 @@ class GoalieNode(Node):
         whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
         if whiteLine.fieldLineIndex == 0:
           print "white line not seen"
-          if ball.imageCenterX < 150:
+          if ball.imageCenterX < 155:
             print "BALL LEFT"
             commands.setWalkVelocity(0.0, 1.0, 0.0)
-          elif ball.imageCenterX > 170:
+          elif ball.imageCenterX > 165:
             print "BALL RIGHT"
             commands.setWalkVelocity(0.0, -1.0, 0.0)
           else:
