@@ -440,10 +440,10 @@ class KickBallNode(Node):
         return
       
       if ball.fromTopCamera:
-        yErr = 240 + 190 - ball.imageCenterY
+        yErr = 240 + 195 - ball.imageCenterY
       else:
-        yErr = 190 - ball.imageCenterY
-      xErr = 190 - ball.imageCenterX
+        yErr = 195 - ball.imageCenterY
+      xErr = 195 - ball.imageCenterX
       
       if fabs(xErr) < 10.0 and fabs(yErr) < 10.0:
         commands.stand()
@@ -582,7 +582,7 @@ class DribbleNode(Node):
         print "GOAL NOT SEEN!!!"
       
       if fabs(goal.imageCenterX - 160.0) < 15.0:
-        if goal.radius > 0.28:
+        if goal.radius > 0.2:
           self.myState = DribbleNode.MY_SUCCESS
         else:
           self.myState = DribbleNode.MY_MOVING
@@ -634,7 +634,7 @@ class GoalInBallNode(Node):
   
   FOLLOW_BALL = 1
   
-  TIME_OUT = 15.0
+  TIME_OUT = 5.0
   
   """
   signals to send out
