@@ -201,6 +201,13 @@ public:
 	int fieldLineIndex;
 	int ballBlobIndex;
 
+	int lCenterX;
+	int lCenterY;
+	int rCenterX;
+	int rCenterY;
+
+	int goalCenterDirection;
+
 	bool fromTopCamera; // true if observed from top cam, false if from bottom
 
 };

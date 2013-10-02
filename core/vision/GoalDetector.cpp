@@ -12,7 +12,7 @@ void GoalDetector::detectGoal() {
 	// XXX: decide whose goal this is
 	WorldObject* goal = &vblocks_.world_object->objects_[WO_OPP_GOAL];
 
-	int goalX, goalY;
+	int goalX, goalY, goalLX, goalLY, goalRX, goalRY, goalDirection;
 	float visionRatio;
 	bool seen;
 
@@ -22,7 +22,8 @@ void GoalDetector::detectGoal() {
 
 	} else {
 
-		findGoal(visionRatio, goalX, goalY, seen);
+		findGoal(visionRatio, goalX, goalY, goalLX, goalLY, goalRX, goalRY,
+				goalDirection, seen);
 
 		if (seen) {
 
@@ -30,6 +31,14 @@ void GoalDetector::detectGoal() {
 
 			goal->imageCenterX = goalX;
 			goal->imageCenterY = goalY;
+
+			goal->lCenterX = goalLX;
+			goal->lCenterY = goalLY;
+
+			goal->rCenterX = goalRX;
+			goal->rCenterY = goalRY;
+
+			goal->goalCenterDirection = goalDirection;
 
 			goal->radius = visionRatio;
 
@@ -41,7 +50,12 @@ void GoalDetector::detectGoal() {
 }
 
 void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
+		int &goalLX, int &goalLY, int &goalRX, int &goalRY, int &goalDirection
 		bool &seen) {
+
+	//goalDirection == 1 --> goal on the left
+	//goalDirection == 2 --> goal on the right
+
 	goalX = goalY = 0;
 	visionRatio = 0;
 	int total = 0;
@@ -56,7 +70,35 @@ void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
 		seen = true;
 		goalX /= total, goalY /= total;
 		visionRatio = float(total) / float(iparams_.width)
-				/ float(iparams_.height);
+		/ float(iparams_.height);
+
+		int lTotal = 0;
+		int rTotal = 0;
+
+		for ( int x = 0; x < goalX; x ++) {
+			for ( int y = 0; y < iparams_.height; y ++) {
+				if (getSegPixelValueAt(x,y) == c_BLUE) {
+					goalLX += x, goalLY += y, lTotal ++;
+				}
+			}
+		}
+		goalLX /= lTotal, goalLY /= lTotal;
+
+		for ( int x = goalX; x < iparams_.width; x ++) {
+			for ( int y = 0; y < iparams_.height; y ++) {
+				if (getSegPixelValueAt(x,y) == c_BLUE) {
+					goalRX += x, goalRY += y, rTotal ++;
+				}
+			}
+		}
+		goalRX /= rTotal, goalRY /= rTotal;
+
+		if (lTotal > rTotal) {
+			goalDirection = 1;
+		}
+		else {
+			goalDirection = 2;
+		}
 	} else {
 		seen = false;
 	}
