@@ -55,7 +55,7 @@ class GoalieNode(Node):
           else:
             commands.stand()
         else:
-          if whiteLine.fieldLineIndex < 1imageCenterX6:
+          if whiteLine.fieldLineIndex < 16:
             turnAngle = 0.0
           else:
             whiteLine.fieldLineIndex -= 16
