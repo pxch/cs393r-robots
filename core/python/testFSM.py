@@ -436,7 +436,7 @@ class KickBallNode(Node):
         if yErr > 0:
           FBSignal = 0.2
         else:
-          FBSignal = -0.1
+          FBSignal = -0.2
         
         # PID Control
         # LRSignal = self.inputToWalk(xErr + K_I * self.xErrInt)  # left right
@@ -517,7 +517,7 @@ class DribbleNode(Node):
     if yErr > 0:
       FBSignal = 0.2
     else:
-      FBSignal = 0
+      FBSignal = -0.2
     
     # PID Control
     
