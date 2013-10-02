@@ -177,6 +177,48 @@ void ImageProcessor::getGroundLines() {
 		line->fieldLineIndex += 4;
 	}
 	line->pixelCount = total;
+
+	int leftWCY = 0;
+	int leftTotal = 0;
+	for (int x = 0; x != 10; ++x) {
+		for (int y = 0; y != 240; ++y) {
+			if (getSegPixelValueAt(x, y) == c_WHITE) {
+				leftWCY += y;
+				leftTotal++;
+			}
+		}
+	}
+	if (leftTotal) {
+		leftWCY /= leftTotal;
+	}
+
+	int rightWCY = 0;
+	int rightTotal = 0;
+	for (int x = 310; x != 320; ++x) {
+		for (int y = 0; y != 240; ++y) {
+			if (getSegPixelValueAt(x, y) == c_WHITE) {
+				rightWCY += y;
+				rightTotal++;
+			}
+		}
+	}
+	if (rightTotal) {
+		rightWCY /= rightTotal;
+	}
+
+	// white on right += 8
+	if (leftTotal + rightTotal > 0) {
+		if (leftTotal == 0) {
+			line->fieldLineIndex += 8;
+			return;
+		}
+		if (rightTotal == 0) {
+			return;
+		}
+		if (leftWCY < rightWCY) {
+			line->fieldLineIndex += 8;
+		}
+	}
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
@@ -188,7 +230,7 @@ std::vector<BallCandidate*> ImageProcessor::getBallCandidates() {
 	return candidates;
 }
 
-BallCandidate* ImageProcessor::getBestBallCandidate() {
+BallCandidate * ImageProcessor::getBestBallCandidate() {
 	return NULL;
 }
 
