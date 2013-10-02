@@ -537,9 +537,9 @@ class DribbleNode(Node):
         
     xErr = 160.0 - ball.imageCenterX
     if ball.fromTopCamera:
-      yErr = 440.0 - ball.imageCenterY
+      yErr = 190.0 + 240.0 - ball.imageCenterY
     else:
-      yErr = 200.0 - ball.imageCenterY 
+      yErr = 190.0 - ball.imageCenterY 
     
     # Bang-Bang Control
     if xErr > 0:
