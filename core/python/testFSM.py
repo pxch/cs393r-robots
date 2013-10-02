@@ -34,7 +34,9 @@ class GoalieNode(Node):
     
     if self.myState == GoalieNode.MY_WAIT_FOR_BALL_TO_MOVE:
       ball = core.world_objects.getObjPtr(core.WO_BALL)
-      if ball.velX ** 2 + ball.velY ** 2 >= 400.0:
+      vSq = ball.velX ** 2 + ball.velY ** 2
+      print vSq
+      if vSq >= 1600.0:
         self.myState = GoalieNode.MY_BLOCK_BALL
     
     if self.myState == GoalieNode.MY_BLOCK_BALL:
@@ -53,10 +55,10 @@ class GoalieNode(Node):
             commands.stand()
         else:
           if whiteLine.fieldLineIndex == 1:
-            if ball.imageCenterX < 150:
+            if ball.imageCenterX < 155:
               print "BALL LEFT"
               commands.setWalkVelocity(-0.5, 1.0, 0.0)
-            elif ball.imageCenterX > 170:
+            elif ball.imageCenterX > 165:
               print "BALL RIGHT"
               commands.setWalkVelocity(-0.5, -1.0, 0.0)
             else:
