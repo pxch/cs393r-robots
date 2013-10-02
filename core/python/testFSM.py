@@ -55,7 +55,7 @@ class GoalieNode(Node):
           else:
             commands.stand()
         else:
-          if whiteLine.fieldLineIndex < 16:
+          if whiteLine.fieldLineIndex < 1imageCenterX6:
             turnAngle = 0.0
           else:
             whiteLine.fieldLineIndex -= 16
@@ -65,32 +65,29 @@ class GoalieNode(Node):
             else:
               turnAngle = pi / 60
           if whiteLine.fieldLineIndex == 0:
-            commands.setWalkVelocity(0.2, 0.0, turnAngle)
+            commands.setWalkVelocity(0.3, 0.0, turnAngle)
           if whiteLine.fieldLineIndex == 1:
             if ball.imageCenterX < 155:
               print "BALL LEFT"
-              commands.setWalkVelocity(-0.2, 1.0, turnAngle)
+              commands.setWalkVelocity(-0.3, 1.0, turnAngle)
             elif ball.imageCenterX > 165:
               print "BALL RIGHT"
-              commands.setWalkVelocity(-0.2, -1.0, turnAngle)
+              commands.setWalkVelocity(-0.3, -1.0, turnAngle)
             else:
-              commands.setWalkVelocity(-0.2, 0.0, turnAngle)
+              commands.setWalkVelocity(-0.3, 0.0, turnAngle)
           elif whiteLine.fieldLineIndex == 2:
             commands.setWalkVelocity(0.0, -1.0, turnAngle)
           elif whiteLine.fieldLineIndex == 3:
-            commands.setWalkVelocity(-0.2, -1.0, turnAngle)
+            commands.setWalkVelocity(-0.3, -1.0, turnAngle)
           elif whiteLine.fieldLineIndex == 4:
             commands.setWalkVelocity(0.0, 1.0, turnAngle)
           elif whiteLine.fieldLineIndex == 5:
-            commands.setWalkVelocity(-0.2, 1.0, turnAngle)
+            commands.setWalkVelocity(-0.3, 1.0, turnAngle)
           elif whiteLine.fieldLineIndex == 6:
             print "THIS SHOULD NOT HAPPEN"
-            if randint(0, 1) == 0:
-              commands.setWalkVelocity(-0.5, 0.0, turnAngle)
-            else:
-              commands.setWalkVelocity(0.5, 0.0, turnAngle)
+            commands.setWalkVelocity(-0.3, 0.0, turnAngle)
           elif whiteLine.fieldLineIndex == 7:
-            commands.setWalkVelocity(-0.5, 0.0, turnAngle)  
+            commands.setWalkVelocity(-0.3, 0.0, turnAngle)  
       else:
         commands.stand()
 
