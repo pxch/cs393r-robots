@@ -86,8 +86,9 @@ void ImageProcessor::updateTransform() {
 }
 
 bool ImageProcessor::isRawImageLoaded() {
-	if (camera_ == Camera::TOP)
+	if (camera_ == Camera::TOP) {
 		return vblocks_.image->img_top_;
+	}
 	return vblocks_.image->img_bottom_;
 }
 
@@ -232,7 +233,7 @@ void ImageProcessor::getGroundLines() {
 	int total = 0;
 	bool bottomWhite = false;
 	for (int x = 0; x != 320; ++x) {
-		for (int y = 200; y != 210; ++y) {
+		for (int y = 200; y != 205; ++y) {
 			if (getSegPixelValueAt(x, y) == c_WHITE) {
 				bottomWhite = true;
 				++total;
@@ -259,10 +260,10 @@ void ImageProcessor::getGroundLines() {
 //	}
 	bool topWhite = false;
 	for (int x = 0; x != 320; ++x) {
-		for (int y = 0; y != 10; ++ y) {
+		for (int y = 0; y != 10; ++y) {
 			if (getSegPixelValueAt(x,y) == c_WHITE) {
 				topWhite = true;
-				++ total;
+				++total;
 			}
 		}
 	}
@@ -274,7 +275,7 @@ void ImageProcessor::getGroundLines() {
 	if (topWhite) {
 		line->fieldLineIndex += 2;
 	}
-//	line->pixelCount = total;
+	line->ballBlobIndex = total;
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
