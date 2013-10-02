@@ -56,10 +56,10 @@ class GoalieNode(Node):
             commands.stand()
         else:
           if whiteLine.fieldLineIndex >= 8:
-            turnAngle = -pi / 36
+            turnAngle = -pi / 60
             whiteLine.fieldLineIndex -= 8
           else:
-            turnAngle = pi / 36
+            turnAngle = pi / 60
           if whiteLine.fieldLineIndex == 0:
             commands.setWalkVelocity(0.2, 0.0, turnAngle)
           if whiteLine.fieldLineIndex == 1:
