@@ -48,10 +48,10 @@ class GoalieNode(Node):
           print "white line not seen"
           if ball.imageCenterX < 155:
             print "BALL LEFT"
-            commands.setWalkVelocity(0.2, 1.0, 0.0)
+            commands.setWalkVelocity(0.1, 1.0, 0.0)
           elif ball.imageCenterX > 165:
             print "BALL RIGHT"
-            commands.setWalkVelocity(0.2, -1.0, 0.0)
+            commands.setWalkVelocity(0.1, -1.0, 0.0)
           else:
             commands.stand()
         else:
@@ -71,29 +71,29 @@ class GoalieNode(Node):
               LRSignal = -1.0
             else:
               LRSignal = 0.0
-            commands.setWalkVelocity(0.2, LRSignal, turnAngle)
+            commands.setWalkVelocity(0.1, LRSignal, turnAngle)
           if whiteLine.fieldLineIndex == 1:
             if ball.imageCenterX < 155:
               print "BALL LEFT"
-              commands.setWalkVelocity(-0.2, 1.0, turnAngle)
+              commands.setWalkVelocity(-0.1, 1.0, turnAngle)
             elif ball.imageCenterX > 165:
               print "BALL RIGHT"
-              commands.setWalkVelocity(-0.2, -1.0, turnAngle)
+              commands.setWalkVelocity(-0.1, -1.0, turnAngle)
             else:
-              commands.setWalkVelocity(-0.2, 0.0, turnAngle)
-          elif whiteLine.fieldLineIndex == 2:
+              commands.setWalkVelocity(-0.1, 0.0, turnAngle)
+          elif whiteLine.fieldLineIndex == 1:
             commands.setWalkVelocity(0.0, -1.0, turnAngle)
           elif whiteLine.fieldLineIndex == 3:
-            commands.setWalkVelocity(-0.2, -1.0, turnAngle)
+            commands.setWalkVelocity(-0.1, -1.0, turnAngle)
           elif whiteLine.fieldLineIndex == 4:
             commands.setWalkVelocity(0.0, 1.0, turnAngle)
           elif whiteLine.fieldLineIndex == 5:
-            commands.setWalkVelocity(-0.2, 1.0, turnAngle)
+            commands.setWalkVelocity(-0.1, 1.0, turnAngle)
           elif whiteLine.fieldLineIndex == 6:
             print "THIS SHOULD NOT HAPPEN"
-            commands.setWalkVelocity(-0.2, 0.0, turnAngle)
+            commands.setWalkVelocity(-0.1, 0.0, turnAngle)
           elif whiteLine.fieldLineIndex == 7:
-            commands.setWalkVelocity(-0.2, 0.0, turnAngle)  
+            commands.setWalkVelocity(-0.1, 0.0, turnAngle)  
       else:
         commands.stand()
 
