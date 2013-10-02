@@ -114,6 +114,7 @@ class SearchBallNode(Node):
     
     if whiteLine.fieldLineIndex != 0:
       if whiteLine.ballBlobIndex >= 4900:
+        print "white seen"
         self.my_state = SearchBallNode.MY_AVOID_WHITE
     
     if not ball.seen:
@@ -292,9 +293,9 @@ class SearchGoalNode(Node):
     motor = 0.0
     if fabs(controlInput) > BOUNDARY_VAL:
       if inValue > 0:
-        motorSpeed = 1
+        motor = 1.0
       else:
-        motorSpeed = -1
+        motor = -1.0
     else:
       motor = controlInput / BOUNDARY_VAL
     return motor
@@ -341,6 +342,7 @@ class SearchGoalNode(Node):
     whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
     if whiteLine.fieldLineIndex >= 16:
       whiteLine.fieldLineIndex -= 16
+      print "white seen"
       if whiteLine.fieldLineIndex >= 8:
         self.turnDirection = 1.0
       else:
@@ -472,6 +474,7 @@ class KickBallNode(Node):
         if whiteLine.fieldLineIndex != 0:
           if whiteLine.ballBlobIndex >= 5000:
             if whiteLine.fieldLineIndex % 2 == 1:
+              print "white seen"
               FBSignal = -0.2
         
         commands.setWalkVelocity(FBSignal, LRSignal, 0.0)
@@ -603,6 +606,7 @@ class DribbleNode(Node):
         if whiteLine.fieldLineIndex != 0:
           if whiteLine.ballBlobIndex >= 5000:
             if whiteLine.fieldLineIndex % 2 == 1:
+              print "white seen"
               FBSignal = -0.1
         commands.setWalkVelocity(FBSignal, ballSignal[1], turnDirection * pi / 70.0)
       
