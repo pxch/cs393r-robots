@@ -41,8 +41,12 @@ void BallTracker::track(WorldObject* ball, CameraMatrix &cmatrix_) {
 		initState(p.x, p.y, 0.0, 0.0);
 	} else {
 		updateState(p.x, p.y);
-		printf("kalman_vel %f %f\n", state(2), state(3));
 	}
+
+	ball->posX = state(0);
+	ball->posY = state(1);
+	ball->velX = state(2);
+	ball->velY = state(3);
 
 }
 

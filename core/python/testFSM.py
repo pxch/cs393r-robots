@@ -34,7 +34,7 @@ class GoalieNode(Node):
     
     if self.myState == GoalieNode.MY_WAIT_FOR_BALL_TO_MOVE:
       ball = core.world_objects.getObjPtr(core.WO_BALL)
-      if ball.imageCenterY >= 90:
+      if ball.velX ** 2 + ball.velY ** 2 >= 1600.0:
         self.myState = GoalieNode.MY_BLOCK_BALL
     
     if self.myState == GoalieNode.MY_BLOCK_BALL:

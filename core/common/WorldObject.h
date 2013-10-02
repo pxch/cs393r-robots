@@ -208,6 +208,11 @@ public:
 	int ballBlobIndex;
 	int pixelCount;
 
+	float posX;
+	float posY;
+	float velX;
+	float velY;
+
 	bool fromTopCamera; // true if observed from top cam, false if from bottom
 };
 
