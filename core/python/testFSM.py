@@ -18,7 +18,7 @@ class TestMachine(StateMachine):
     dribble = DribbleNode()
     ballInGoal = GoalInBallNode()
 
-    self._adt(start, N, TurnHeadNode(0.0, 2.0, False), C, TiltHeadNode(-26.5), C, stand)
+    self._adt(start, N, TurnHeadNode(0.0, 1.0, False), C, TiltHeadNode(-26.5), C, stand)
     self._adt(stand, C, searchBall)
     self._adt(searchBall, S, searchGoal)
     self._adt(searchGoal, S(SearchGoalNode.MY_SUCCESS), dribble)
@@ -670,7 +670,7 @@ class TiltHeadNode(Node):
   
   def run(self):
     commands.setHeadTilt(self.tilt)
-    if self.getTime() > 2.0:
+    if self.getTime() > 1.0:
       # XXX: don't use time to terminate
       self.postCompleted()
 
@@ -684,7 +684,7 @@ class TurnHeadNode(Node):
   def run(self):
     core.speech.say("turn head")
     commands.setHeadPan(self.angle, self.turnTime, self.relative)
-    if self.getTime() > self.turnTime + 1.0:
+    if self.getTime() > self.turnTime:
       self.postCompleted()
 
 class KickNode(Node):
