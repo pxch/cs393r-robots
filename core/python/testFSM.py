@@ -537,9 +537,9 @@ class DribbleNode(Node):
         
     xErr = 160.0 - ball.imageCenterX
     if ball.fromTopCamera:
-      yErr = 190.0 + 240.0 - ball.imageCenterY
+      yErr = 185.0 + 240.0 - ball.imageCenterY
     else:
-      yErr = 190.0 - ball.imageCenterY 
+      yErr = 185.0 - ball.imageCenterY 
     
     # Bang-Bang Control
     if xErr > 0:
@@ -547,10 +547,12 @@ class DribbleNode(Node):
     else:
       LRSignal = -0.2
      
-    if yErr > 0:
+    if yErr > 10:
       FBSignal = 0.2
-    else:
+    elif yErr < -10:
       FBSignal = -0.2
+    else:
+      FBSignal = 0.0
     
     # PID Control
     
