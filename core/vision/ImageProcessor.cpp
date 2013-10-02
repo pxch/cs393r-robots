@@ -230,39 +230,27 @@ void ImageProcessor::processFrame() {
 }
 
 void ImageProcessor::getGroundLines() {
-	int total = 0;
+
 	bool bottomWhite = false;
 	for (int x = 0; x != 320; ++x) {
 		for (int y = 200; y != 205; ++y) {
 			if (getSegPixelValueAt(x, y) == c_WHITE) {
 				bottomWhite = true;
-				++total;
 			}
 		}
 	}
-//	bool leftWhite = false;
-//	for (int x = 0; x != 40; ++x) {
-//		for (int y = 200; y != 220; ++y) {
-//			if (getSegPixelValueAt(x, y) == c_WHITE) {
-//				centerWhite = true;
-//				++total;
-//			}
-//		}
-//	}
-//	bool rightWhite = false;
-//	for (int x = 280; x != 280; ++x) {
-//		for (int y = 200; y != 220; ++y) {
-//			if (getSegPixelValueAt(x, y) == c_WHITE) {
-//				centerWhite = true;
-//				++total;
-//			}
-//		}
-//	}
 	bool topWhite = false;
 	for (int x = 0; x != 320; ++x) {
 		for (int y = 0; y != 10; ++y) {
 			if (getSegPixelValueAt(x,y) == c_WHITE) {
 				topWhite = true;
+			}
+		}
+	}
+	int total = 0;
+	for (int x = 0; x != 320; ++x) {
+		for (int y = 0; y != 205; ++y) {
+			if (getSegPixelValueAt(x,y) == c_WHITE) {
 				++total;
 			}
 		}
@@ -276,6 +264,49 @@ void ImageProcessor::getGroundLines() {
 		line->fieldLineIndex += 2;
 	}
 	line->ballBlobIndex = total;
+
+	int leftWCY = 0;
+	int leftTotal = 0;
+	for (int x = 0; x != 10; ++x) {
+		for (int y = 0; y != 240; ++y) {
+			if (getSegPixelValueAt(x, y) == c_WHITE) {
+				leftWCY += y;
+				leftTotal++;
+			}
+		}
+	}
+	if (leftTotal) {
+		leftWCY /= leftTotal;
+	}
+
+	int rightWCY = 0;
+	int rightTotal = 0;
+	for (int x = 310; x != 320; ++x) {
+		for (int y = 0; y != 240; ++y) {
+			if (getSegPixelValueAt(x, y) == c_WHITE) {
+				rightWCY += y;
+				rightTotal++;
+			}
+		}
+	}
+	if (rightTotal) {
+		rightWCY /= rightTotal;
+	}
+
+	// white on right += 8
+	if (leftTotal + rightTotal > 0) {
+		line->fieldLineIndex += 16;
+		if (leftTotal == 0) {
+			line->fieldLineIndex += 8;
+			return;
+		}
+		if (rightTotal == 0) {
+			return;
+		}
+		if (leftWCY < rightWCY) {
+			line->fieldLineIndex += 8;
+		}
+	}
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {

@@ -50,6 +50,8 @@ class SearchBallNode(Node):
   MY_BALL_BOTTOM_RIGHT_MID = 9
   MY_BALL_BOTTOM_RIGHT_NEAR = 10
   
+  MY_AVOID_WHITE = 11
+  
   def reset(self):
     super(SearchBallNode, self).reset()
     self.myState = SearchBallNode.MY_START
@@ -108,9 +110,14 @@ class SearchBallNode(Node):
   
   def switchWalkState(self):
     ball = core.world_objects.getObjPtr(core.WO_BALL)
+    whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
+    
+    if whiteLine.fieldLineIndex != 0:
+      if whiteLine.ballBlobIndex >= 4900:
+        self.my_state = SearchBallNode.MY_AVOID_WHITE
     
     if not ball.seen:
-      self.my_state = SearchBallNode.my_state = SearchBallNode.MY_NO_BALL
+      self.my_state = SearchBallNode.MY_NO_BALL
       return
     
     if ball.fromTopCamera:
@@ -242,6 +249,15 @@ class SearchBallNode(Node):
       
       self.switchWalkState()
     
+    elif self.my_state == SearchBallNode.MY_AVOID_WHITE:
+      xErr = 160 - ball.imageCenterX
+      if xErr < 0:
+        xInput = -0.5
+      else:
+        xInput = 0.5
+      controlSignal = (-0.3, xInput, 0.0)
+      self.switchWalkState()
+    
     self.xErrInt += xErr
     self.yErrInt += yErr
     
@@ -321,6 +337,14 @@ class SearchGoalNode(Node):
           self.turnDirection = 1.0  # goal on left, turn left while going right
     else:
       self.turnDirection = -1.0
+
+    whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
+    if whiteLine.fieldLineIndex >= 16:
+      whiteLine.fieldLineIndex -= 16
+      if whiteLine.fieldLineIndex >= 8:
+        self.turnDirection = 1.0
+      else:
+        self.turnDirection = -1.0
     
     print "yErr: ", yErr, "xErr: ", xErr, "front/back signal: ", FBSignal, "left/right signal ", LRSignal, "turn", self.turnDirection
     
@@ -444,6 +468,12 @@ class KickBallNode(Node):
         
         print "xErr: ", xErr, "yErr: ", yErr, "left/right: ", LRSignal, "for/back: ", FBSignal
         
+        whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
+        if whiteLine.fieldLineIndex != 0:
+          if whiteLine.ballBlobIndex >= 2500:
+            if whiteLine.fieldLineIndex % 2 == 1:
+              FBSignal = -0.2
+        
         commands.setWalkVelocity(FBSignal, LRSignal, 0.0)
         
         self.xErrInt += xErr
@@ -565,8 +595,16 @@ class DribbleNode(Node):
           
         ballSignal = self.ballSignal()
         if ballSignal == None:
+          print "BALL NOT SEEN"
+          self.postSignal(DribbleNode.MY_BALL_LOST)
           return
-        commands.setWalkVelocity(ballSignal[0], ballSignal[1], turnDirection * pi / 70.0)
+        FBSignal = ballSignal[0]
+        whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
+        if whiteLine.fieldLineIndex != 0:
+          if whiteLine.ballBlobIndex >= 2500:
+            if whiteLine.fieldLineIndex % 2 == 1:
+              FBSignal = -0.1
+        commands.setWalkVelocity(FBSignal, ballSignal[1], turnDirection * pi / 70.0)
       
     elif self.myState == DribbleNode.MY_MOVING:
       print "dribble moving"
@@ -575,12 +613,18 @@ class DribbleNode(Node):
       
       ballSignal = self.ballSignal()
       
-      commands.setWalkVelocity(ballSignal[0], ballSignal[1], 0.0)
-    
-      line = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
-      if line.fieldLineIndex == 2 or line.fieldLineIndex == 3:
-        self.myState = self.MY_SUCCESS
-
+      if ballSignal == None:
+        return
+      
+      FBSignal = ballSignal[0]
+      whiteLine = core.world_objects.getObjPtr(core.WO_OPP_GOAL_LINE)
+      if whiteLine.fieldLineIndex != 0:
+        if whiteLine.ballBlobIndex >= 2500:
+          if whiteLine.fieldLineIndex % 2 == 1:
+            FBSignal = -0.1
+      
+      commands.setWalkVelocity(FBSignal, ballSignal[1], 0.0)
+      
       if self.movingCounter == DribbleNode.MY_MOVING_MAX:
         self.movingCounter = 0
         self.myState = self.MY_TURNING
