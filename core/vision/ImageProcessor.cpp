@@ -208,6 +208,7 @@ void ImageProcessor::getGroundLines() {
 
 	// white on right += 8
 	if (leftTotal + rightTotal > 0) {
+		line->fieldLineIndex += 16;
 		if (leftTotal == 0) {
 			line->fieldLineIndex += 8;
 			return;

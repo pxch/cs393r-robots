@@ -36,7 +36,7 @@ class GoalieNode(Node):
       ball = core.world_objects.getObjPtr(core.WO_BALL)
       vSq = ball.velX ** 2 + ball.velY ** 2
       print vSq
-      if vSq >= 2500.0 or ball.imageCenterY >= 90:
+      if vSq >= 2000.0 or ball.imageCenterY >= 90:
         self.myState = GoalieNode.MY_BLOCK_BALL
     
     if self.myState == GoalieNode.MY_BLOCK_BALL:
@@ -55,11 +55,15 @@ class GoalieNode(Node):
           else:
             commands.stand()
         else:
-          if whiteLine.fieldLineIndex >= 8:
-            turnAngle = -pi / 60
-            whiteLine.fieldLineIndex -= 8
+          if whiteLine.fieldLineIndex < 16:
+            turnAngle = 0.0
           else:
-            turnAngle = pi / 60
+            whiteLine.fieldLineIndex -= 16
+            if whiteLine.fieldLineIndex >= 8:
+              turnAngle = -pi / 60
+              whiteLine.fieldLineIndex -= 8
+            else:
+              turnAngle = pi / 60
           if whiteLine.fieldLineIndex == 0:
             commands.setWalkVelocity(0.2, 0.0, turnAngle)
           if whiteLine.fieldLineIndex == 1:
