@@ -435,9 +435,9 @@ class KickBallNode(Node):
     elif self.myState == KickBallNode.MY_READY:
       commands.stand()
       if ball.fromTopCamera:
-        yErr = 240 + 195 - ball.imageCenterY
+        yErr = 240 + 200 - ball.imageCenterY
       else:
-        yErr = 195 - ball.imageCenterY
+        yErr = 200 - ball.imageCenterY
       xErr = 195 - ball.imageCenterX
       
       if fabs(xErr) < 10.0 and fabs(yErr) < 5.0:
@@ -456,9 +456,9 @@ class KickBallNode(Node):
         return
       
       if ball.fromTopCamera:
-        yErr = 240 + 195 - ball.imageCenterY
+        yErr = 240 + 200 - ball.imageCenterY
       else:
-        yErr = 195 - ball.imageCenterY
+        yErr = 200 - ball.imageCenterY
       xErr = 195 - ball.imageCenterX
       
       if fabs(xErr) < 10.0 and fabs(yErr) < 5.0:
