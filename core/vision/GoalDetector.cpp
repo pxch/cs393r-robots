@@ -69,7 +69,7 @@ void GoalDetector::findGoal(float &visionRatio, int &goalX, int &goalY,
 			}
 		}
 	}
-	if (total > 2500) {
+	if (total >= 1000) {
 		seen = true;
 		goalX /= total, goalY /= total;
 		visionRatio = float(total) / float(iparams_.width)

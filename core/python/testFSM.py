@@ -279,6 +279,7 @@ class SearchGoalNode(Node):
   def reset(self):
     super(SearchGoalNode, self).reset()
     self.myState = SearchGoalNode.MY_START
+    self.turnDirection = None
   
   def __init__(self):
     super(SearchGoalNode, self).__init__()
@@ -442,9 +443,9 @@ class KickBallNode(Node):
         return
       
       if ball.fromTopCamera:
-        yErr = 240 + 195 - ball.imageCenterY
+        yErr = 240 + 200 - ball.imageCenterY
       else:
-        yErr = 195 - ball.imageCenterY
+        yErr = 200 - ball.imageCenterY
       xErr = 195 - ball.imageCenterX
       
       if fabs(xErr) < 10.0 and fabs(yErr) < 5.0:
@@ -498,7 +499,7 @@ class DribbleNode(Node):
   
   MY_BALL_LOST = 5
   
-  MY_MOVING_MAX = 50
+  MY_MOVING_MAX = 100
   
   def reset(self):
     super(DribbleNode, self).reset()
@@ -537,9 +538,9 @@ class DribbleNode(Node):
         
     xErr = 160.0 - ball.imageCenterX
     if ball.fromTopCamera:
-      yErr = 185.0 + 240.0 - ball.imageCenterY
+      yErr = 220.0 + 240.0 - ball.imageCenterY
     else:
-      yErr = 185.0 - ball.imageCenterY 
+      yErr = 220.0 - ball.imageCenterY 
     
     # Bang-Bang Control
     if xErr > 0:
@@ -547,12 +548,10 @@ class DribbleNode(Node):
     else:
       LRSignal = -0.2
      
-    if yErr > 10:
-      FBSignal = 0.2
-    elif yErr < -10:
-      FBSignal = -0.2
+    if yErr >= 0:
+      FBSignal = 0.3
     else:
-      FBSignal = 0.0
+      FBSignal = -0.1
     
     # PID Control
     
@@ -587,7 +586,7 @@ class DribbleNode(Node):
         print "GOAL NOT SEEN!!!"
       
       if fabs(goal.imageCenterX - 160.0) < 15.0:
-        if goal.radius > 0.2:
+        if goal.radius > 0.15:
           self.myState = DribbleNode.MY_SUCCESS
         else:
           self.myState = DribbleNode.MY_MOVING
@@ -627,6 +626,7 @@ class DribbleNode(Node):
       if whiteLine.fieldLineIndex != 0:
         if whiteLine.ballBlobIndex >= 5000:
           if whiteLine.fieldLineIndex % 2 == 1:
+            print "white seen"
             FBSignal = -0.1
       
       commands.setWalkVelocity(FBSignal, ballSignal[1], 0.0)
