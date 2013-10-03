@@ -424,7 +424,13 @@ class KickBallNode(Node):
   def run(self):
     core.speech.say("kicking the ball")
     ball = core.world_objects.getObjPtr(core.WO_BALL)
-    
+
+    if ball.fromTopCamera:
+      yErr = 240 + 195 - ball.imageCenterY
+    else:
+      yErr = 195 - ball.imageCenterY
+    xErr = 195 - ball.imageCenterX
+      
     if self.myState == KickBallNode.MY_SUCCESS:
       self.postSignal(KickBallNode.MY_SUCCESS)
       
@@ -434,11 +440,6 @@ class KickBallNode(Node):
     
     elif self.myState == KickBallNode.MY_READY:
       commands.stand()
-      if ball.fromTopCamera:
-        yErr = 240 + 200 - ball.imageCenterY
-      else:
-        yErr = 200 - ball.imageCenterY
-      xErr = 195 - ball.imageCenterX
       
       if fabs(xErr) < 10.0 and fabs(yErr) < 5.0:
         self.myState = KickBallNode.MY_KICK
@@ -454,12 +455,6 @@ class KickBallNode(Node):
         print "BALL NOT SEEN"
         self.postSignal(KickBallNode.MY_BALL_LOST)
         return
-      
-      if ball.fromTopCamera:
-        yErr = 240 + 200 - ball.imageCenterY
-      else:
-        yErr = 200 - ball.imageCenterY
-      xErr = 195 - ball.imageCenterX
       
       if fabs(xErr) < 10.0 and fabs(yErr) < 5.0:
         commands.stand()
