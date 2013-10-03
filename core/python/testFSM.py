@@ -36,7 +36,9 @@ class GoalieNode(Node):
       ball = core.world_objects.getObjPtr(core.WO_BALL)
       vSq = ball.velX ** 2 + ball.velY ** 2
       print vSq
-      if vSq >= 2000.0 or ball.imageCenterY >= 90:
+      #if fabs(ball.velX) >= 1000 or fabs(ball.velY) >= 1000:
+      if ball.imageCenterY >= 90:
+        core.speech.say("ball moves")
         self.myState = GoalieNode.MY_BLOCK_BALL
     
     if self.myState == GoalieNode.MY_BLOCK_BALL:
@@ -72,7 +74,7 @@ class GoalieNode(Node):
               LRSignal = -1.0
             else:
               LRSignal = 0.0
-            commands.setWalkVelocity(0.1, LRSignal, turnAngle)
+            commands.setWalkVelocity(-0.1, LRSignal, turnAngle)
           if whiteLine.fieldLineIndex == 1:
             if ball.imageCenterX < 155:
               print "BALL LEFT"
