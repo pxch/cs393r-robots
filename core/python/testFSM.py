@@ -586,14 +586,21 @@ class DribbleNode(Node):
       if not goal.seen:
         print "GOAL NOT SEEN!!!"
       
-      if fabs(goal.imageCenterX - 160.0) < 15.0:
-        if goal.radius > 0.2:
+      if goal.goalCenterDirection == 1:
+        goalCenterX = goal.lCenterX
+        goalCenterY = goal.lCenterY
+      else:
+        goalCenterX = goal.rCenterX
+        goalCenterY = goal.rCenterY
+        
+      if fabs(goalCenterX - 160.0) < 15.0:
+        if goal.radius > 0.15:
           self.myState = DribbleNode.MY_SUCCESS
         else:
           self.myState = DribbleNode.MY_MOVING
       
       else:
-        if goal.imageCenterX > 160.0:
+        if goalCenterX > 160.0:
           turnDirection = -1.0  # goal on right, turn right while going left
         else:
           turnDirection = 1.0
