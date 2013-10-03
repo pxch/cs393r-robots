@@ -603,7 +603,7 @@ class DribbleNode(Node):
         goalCenterX = goal.rCenterX
         
       if fabs(goalCenterX - 160.0) < 15.0:
-        if goal.radius > 0.15:
+        if goal.radius > 0.2:
           self.myState = DribbleNode.MY_SUCCESS
         else:
           self.myState = DribbleNode.MY_MOVING
