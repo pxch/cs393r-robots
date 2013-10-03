@@ -36,7 +36,7 @@ class GoalieNode(Node):
       ball = core.world_objects.getObjPtr(core.WO_BALL)
       vSq = ball.velX ** 2 + ball.velY ** 2
       print vSq
-      if vSq >= 2000.0 or ball.imageCenterY >= 90:
+      if ball.imageCenterY >= 90:
         self.myState = GoalieNode.MY_BLOCK_BALL
     
     if self.myState == GoalieNode.MY_BLOCK_BALL:
