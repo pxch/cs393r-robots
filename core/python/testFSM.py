@@ -371,7 +371,12 @@ class SearchGoalNode(Node):
       goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
       print "goal seen? ", goal.seen, "goal X: ", goal.imageCenterX
 
-      if goal.seen and goal.imageCenterX > 145 and goal.imageCenterX < 175:
+      if goal.goalCenterDirection == 1:
+        goalCenterX = goal.lCenterX
+      else:
+        goalCenterX = goal.rCenterX
+      
+      if goal.seen and goalCenterX > 145 and goalCenterX < 175:
         self.myState = SearchGoalNode.MY_SUCCESS
  
       else:
@@ -418,6 +423,7 @@ class KickBallNode(Node):
 
   def run(self):
     core.speech.say("kicking the ball")
+    ball = core.world_objects.getObjPtr(core.WO_BALL)
     
     if self.myState == KickBallNode.MY_SUCCESS:
       self.postSignal(KickBallNode.MY_SUCCESS)
@@ -428,13 +434,21 @@ class KickBallNode(Node):
     
     elif self.myState == KickBallNode.MY_READY:
       commands.stand()
-      self.myState = KickBallNode.MY_KICK
+      if ball.fromTopCamera:
+        yErr = 240 + 195 - ball.imageCenterY
+      else:
+        yErr = 195 - ball.imageCenterY
+      xErr = 195 - ball.imageCenterX
+      
+      if fabs(xErr) < 10.0 and fabs(yErr) < 5.0:
+        self.myState = KickBallNode.MY_KICK
+      else:
+        self.myState = KickBallNode.MY_GOTO_BALL
     
     elif self.myState == KickBallNode.MY_KICK:
       self.myState = KickBallNode.MY_SUCCESS
     
     elif self.myState == KickBallNode.MY_GOTO_BALL:
-      ball = core.world_objects.getObjPtr(core.WO_BALL)
       
       if not ball.seen:
         print "BALL NOT SEEN"
@@ -588,10 +602,8 @@ class DribbleNode(Node):
       
       if goal.goalCenterDirection == 1:
         goalCenterX = goal.lCenterX
-        goalCenterY = goal.lCenterY
       else:
         goalCenterX = goal.rCenterX
-        goalCenterY = goal.rCenterY
         
       if fabs(goalCenterX - 160.0) < 15.0:
         if goal.radius > 0.15:
