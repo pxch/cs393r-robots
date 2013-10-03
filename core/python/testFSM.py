@@ -372,7 +372,12 @@ class SearchGoalNode(Node):
       goal = core.world_objects.getObjPtr(core.WO_OPP_GOAL)
       print "goal seen? ", goal.seen, "goal X: ", goal.imageCenterX
 
-      if goal.seen and goal.imageCenterX > 145 and goal.imageCenterX < 175:
+      if goal.goalCenterDirection == 1:
+        goalCenterX = goal.lCenterX
+      else:
+        goalCenterX = goal.rCenterX
+      
+      if goal.seen and goalCenterX > 145 and goalCenterX < 175:
         self.myState = SearchGoalNode.MY_SUCCESS
  
       else:
@@ -419,7 +424,14 @@ class KickBallNode(Node):
 
   def run(self):
     core.speech.say("kicking the ball")
-    
+    ball = core.world_objects.getObjPtr(core.WO_BALL)
+
+    if ball.fromTopCamera:
+      yErr = 240 + 195 - ball.imageCenterY
+    else:
+      yErr = 195 - ball.imageCenterY
+    xErr = 195 - ball.imageCenterX
+      
     if self.myState == KickBallNode.MY_SUCCESS:
       self.postSignal(KickBallNode.MY_SUCCESS)
       
@@ -429,7 +441,11 @@ class KickBallNode(Node):
     
     elif self.myState == KickBallNode.MY_READY:
       commands.stand()
-      self.myState = KickBallNode.MY_KICK
+      
+      if fabs(xErr) < 10.0 and fabs(yErr) < 5.0:
+        self.myState = KickBallNode.MY_KICK
+      else:
+        self.myState = KickBallNode.MY_GOTO_BALL
     
     elif self.myState == KickBallNode.MY_KICK:
       self.myState = KickBallNode.MY_SUCCESS
@@ -441,12 +457,6 @@ class KickBallNode(Node):
         print "BALL NOT SEEN"
         self.postSignal(KickBallNode.MY_BALL_LOST)
         return
-      
-      if ball.fromTopCamera:
-        yErr = 240 + 200 - ball.imageCenterY
-      else:
-        yErr = 200 - ball.imageCenterY
-      xErr = 195 - ball.imageCenterX
       
       if fabs(xErr) < 10.0 and fabs(yErr) < 5.0:
         commands.stand()
@@ -499,7 +509,7 @@ class DribbleNode(Node):
   
   MY_BALL_LOST = 5
   
-  MY_MOVING_MAX = 100
+  MY_MOVING_MAX = 50
   
   def reset(self):
     super(DribbleNode, self).reset()
@@ -538,9 +548,9 @@ class DribbleNode(Node):
         
     xErr = 160.0 - ball.imageCenterX
     if ball.fromTopCamera:
-      yErr = 220.0 + 240.0 - ball.imageCenterY
+      yErr = 185.0 + 240.0 - ball.imageCenterY
     else:
-      yErr = 220.0 - ball.imageCenterY 
+      yErr = 185.0 - ball.imageCenterY 
     
     # Bang-Bang Control
     if xErr > 0:
@@ -548,10 +558,12 @@ class DribbleNode(Node):
     else:
       LRSignal = -0.2
      
-    if yErr >= 0:
-      FBSignal = 0.3
+    if yErr > 10:
+      FBSignal = 0.2
+    elif yErr < -10:
+      FBSignal = -0.2
     else:
-      FBSignal = -0.1
+      FBSignal = 0.0
     
     # PID Control
     
@@ -585,14 +597,19 @@ class DribbleNode(Node):
       if not goal.seen:
         print "GOAL NOT SEEN!!!"
       
-      if fabs(goal.imageCenterX - 160.0) < 15.0:
+      if goal.goalCenterDirection == 1:
+        goalCenterX = goal.lCenterX
+      else:
+        goalCenterX = goal.rCenterX
+        
+      if fabs(goalCenterX - 160.0) < 15.0:
         if goal.radius > 0.15:
           self.myState = DribbleNode.MY_SUCCESS
         else:
           self.myState = DribbleNode.MY_MOVING
       
       else:
-        if goal.imageCenterX > 160.0:
+        if goalCenterX > 160.0:
           turnDirection = -1.0  # goal on right, turn right while going left
         else:
           turnDirection = 1.0
@@ -626,7 +643,6 @@ class DribbleNode(Node):
       if whiteLine.fieldLineIndex != 0:
         if whiteLine.ballBlobIndex >= 5000:
           if whiteLine.fieldLineIndex % 2 == 1:
-            print "white seen"
             FBSignal = -0.1
       
       commands.setWalkVelocity(FBSignal, ballSignal[1], 0.0)
