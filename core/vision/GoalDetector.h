@@ -8,27 +8,17 @@
 #include <vision/Classifier.h>
 #include <vision/structures/FieldLine.h>
 
-class GoalDetector: public ObjectDetector {
-public:
-	GoalDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
-			BlobDetector*& blob_detector, LineDetector*& line_detector);
-	void init(TextLogger* tl) {
-		textlogger = tl;
-	}
-
-	FieldLine** yellowPosts; // Goals
-
-	int YellowPostCounter;
-
-	void detectGoal(Camera::Type const &cameraType);
-
-private:
-	TextLogger* textlogger;
-	Classifier* classifier_;
-	BlobDetector* blob_detector_;
-	LineDetector* line_detector_;
-
-	void findGoal(float &visionRatio, int &goalX, int &goalY, bool &seen);
+class GoalDetector : public ObjectDetector {
+ public:
+  GoalDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier, BlobDetector*& blob_detector, LineDetector*& line_detector);
+  void init(TextLogger* tl){textlogger = tl;};
+  FieldLine** yellowPosts; // Goals
+  int YellowPostCounter;
+ private:
+  TextLogger* textlogger;
+  Classifier* classifier_;
+  BlobDetector* blob_detector_;
+  LineDetector* line_detector_;
 };
 
 #endif
