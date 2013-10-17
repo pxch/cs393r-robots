@@ -38,7 +38,7 @@ void BlobDetector::detectBlob() {
 		//To do
 		int blobCount = 0;
 		int currentBlobIndex = 0;
-		for (int x = 0; x < horizontalPointCount[0]; ++x) {
+		for (uint32_t x = 0; x < horizontalPointCount[0]; ++x) {
 			pointIndex = x;
 			horizontalPoint[0][x].lbIndex = blobCount++;
 			newBlob = new Blob;
@@ -56,9 +56,9 @@ void BlobDetector::detectBlob() {
 			currentBlobs.push_back(*newBlob);
 		}
 		for (int y = 1; y < iparams_.height; ++y) {
-			for (int x = 0; x < horizontalPointCount[y]; ++x) {
+			for (uint32_t x = 0; x < horizontalPointCount[y]; ++x) {
 				pointIndex = y << 16 | x;
-				int xx = 0;
+				uint32_t xx = 0;
 				for (xx = 0; xx < horizontalPointCount[y - 1]; ++xx) {
 					if (IsOverlapped(horizontalPoint[y][x],
 							horizontalPoint[y - 1][xx])) {
@@ -93,8 +93,8 @@ void BlobDetector::detectBlob() {
 		// Merge Overlap Blobs
 		int indexA, indexB;
 		for (int y = 1; y < iparams_.height; ++y) {
-			for (int x = 0; x < horizontalPointCount[y]; ++x) {
-				for (int xx = 0; xx < horizontalPointCount[y - 1]; ++xx) {
+			for (uint32_t x = 0; x < horizontalPointCount[y]; ++x) {
+				for (uint32_t xx = 0; xx < horizontalPointCount[y - 1]; ++xx) {
 					indexA = horizontalPoint[y][x].lbIndex;
 					indexB = horizontalPoint[y - 1][xx].lbIndex;
 					if (IsOverlapped(horizontalPoint[y][x],
@@ -111,7 +111,7 @@ void BlobDetector::detectBlob() {
 		blobCount = 0;
 		Blob* curBlob = NULL;
 		VisionPoint* curPoint = NULL;
-		for (int i = 0; i < currentBlobs.size(); ++i) {
+		for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
 			if (currentBlobs[i].invalid == false) {
 				horizontalBlob[c].push_back(currentBlobs[i]);
 				++blobCount;
