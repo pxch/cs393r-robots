@@ -45,7 +45,7 @@ void BlobDetector::detectBlob() { //				Blob validBlob = currentBlobs[i];
 			horizontalPoint[0][x].lbIndex = blobCount++;
 
 			currentBlobs.push_back(
-					Blob(0, iparams_.width - 1, 0, iparams_.height - 1,
+					Blob(iparams_.width - 1, 0, iparams_.height - 1, 0,
 							pointIndex));
 
 //			newBlob = new Blob;
@@ -82,7 +82,7 @@ void BlobDetector::detectBlob() { //				Blob validBlob = currentBlobs[i];
 					horizontalPoint[y][x].lbIndex = blobCount++;
 
 					currentBlobs.push_back(
-							Blob(0, iparams_.width - 1, 0, iparams_.height - 1,
+							Blob(iparams_.width - 1, 0, iparams_.height - 1, 0,
 									pointIndex));
 
 //					newBlob = new Blob;
@@ -184,11 +184,7 @@ void BlobDetector::detectBlob() { //				Blob validBlob = currentBlobs[i];
 				horizontalBlob[c][blobCount - 1].dy =
 						horizontalBlob[c][blobCount - 1].yf
 								- horizontalBlob[c][blobCount - 1].yi + 1;
-				std::cout << c << "[ " << blobCount << " ]: "
-						<< horizontalBlob[c][blobCount - 1].xi << ", "
-						<< horizontalBlob[c][blobCount - 1].yi << ", "
-						<< horizontalBlob[c][blobCount - 1].xf << ", "
-						<< horizontalBlob[c][blobCount - 1].yf << std::endl;
+
 			}
 
 		}
