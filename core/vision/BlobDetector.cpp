@@ -119,7 +119,7 @@ void BlobDetector::detectBlob() {//				Blob validBlob = currentBlobs[i];
 		}
 
 // Delete Invalid Blob
-		blobSize = 0;
+		int blobSize = 0;
 		for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
 			if (currentBlobs[i].invalid == false) {
 				++ blobSize;
