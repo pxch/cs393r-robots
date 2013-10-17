@@ -33,6 +33,7 @@ class Classifier {
   void setStepScale(int hscale, int vscale);
   void getStepSize(int& hstep, int& vstep);
   void getStepScale(int& hscale, int& vscale);
+  void constructRuns();
  private:
   bool setImagePointers();
   const VisionBlocks& vblocks_;
