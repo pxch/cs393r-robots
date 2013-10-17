@@ -27,8 +27,8 @@ void BlobDetector::detectBlob() {
 	for (int c = 0; c < NUM_COLORS; c++) {
 		BlobCollection currentBlobs;
 
-		VisionPoint** horizontalPoint = classifier_->horizontalPoint[c];
-		uint32_t* horizontalPointCount = classifier_->horizontalPointCount[c];
+		VisionPoint** horizontalPoint = classifier_.horizontalPoint[c];
+		uint32_t* horizontalPointCount = classifier_.horizontalPointCount[c];
 
 		uint32_t pointIndex = 0;
 		int pointLine = 0;
