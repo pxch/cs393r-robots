@@ -170,7 +170,6 @@ void Classifier::constructRuns() {
 						horizontalPoint[i][j][runCount - 1].yi = j;
 						horizontalPoint[i][j][runCount - 1].yf = j;
 						horizontalPoint[i][j][runCount - 1].dy = 1;
-						horizontalPoint[i][j][runCount - 1].lbIndex = runCount - 1;
 						horizontalPoint[i][j][runCount - 1].isValid = true;
 					}
 				}
