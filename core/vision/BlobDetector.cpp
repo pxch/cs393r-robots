@@ -43,7 +43,7 @@ void BlobDetector::detectBlob() {
 			horizontalPoint[0][x].lbIndex = blobCount++;
 
 			currentBlobs.push_back(
-					Blob(0, iparams_.width - 1, 0, iparams_.height - 1, 1,
+					Blob(0, iparams_.width - 1, 0, iparams_.height - 1,
 							pointIndex));
 
 //			newBlob = new Blob;
@@ -81,7 +81,7 @@ void BlobDetector::detectBlob() {
 
 					currentBlobs.push_back(
 							Blob(0, iparams_.width - 1, 0, iparams_.height - 1,
-									1, pointIndex));
+									pointIndex));
 
 //					newBlob = new Blob;
 //					newBlob->lpCount = 1;
