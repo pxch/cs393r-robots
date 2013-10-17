@@ -14,6 +14,10 @@ bool BlobDetector::IsOverLapped(VisionPoint& a, VisionPoint& b) {
 	}
 }
 
+void BlobDetector::MergeBlob(int color, int indexA, int indexB) {
+
+}
+
 void BlobDetector::detectBlob() {
 	for (int c = 0; c < NUM_COLORS; c++) {
 		VisionPoint** horizontalPoint = classifier_->horizontalPoint[c];
@@ -36,7 +40,8 @@ void BlobDetector::detectBlob() {
 		for (int y = 1; y < iparams_.height; ++y) {
 			for (int x = 0; x < horizontalPointCount[y]; ++x) {
 				pointIndex = y << 16 | x;
-				for (int xx = 0; xx < horizontalPointCount[y - 1]; ++xx) {
+				int xx = 0;
+				for (xx = 0; xx < horizontalPointCount[y - 1]; ++xx) {
 					if (IsOverlapped(horizontalPoint[y][x],
 							horizontalPoint[y - 1][xx])) {
 						break;
@@ -53,7 +58,7 @@ void BlobDetector::detectBlob() {
 					newBlob = new Blob;
 					newBlob->lpCount = 1;
 					newBlob->lpIndex.push_back(pointIndex);
-					horintalBlob[c].push_back(*newBlob);
+					horizontalBlob[c].push_back(*newBlob);
 				}
 			}
 		}
@@ -66,7 +71,7 @@ void BlobDetector::detectBlob() {
 							horizontalPoint[y - 1][xx])
 							&& horizontalPoint[y][x].lbIndex
 									!= horizontalPoint[y - 1][xx].lbIndex) {
-
+						MergeBlob(c, horizontalPoint[y][x].lbIndex, horizontalPoint[y - 1][xx].lbIndex);
 					}
 				}
 			}
