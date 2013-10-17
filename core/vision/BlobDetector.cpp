@@ -142,26 +142,36 @@ void BlobDetector::detectBlob() {
 					yf_2 = horizontalPoint[pointLine][pointColumn].yf;
 
 					dx_2 = horizontalPoint[pointLine][pointColumn].dx;
-					dy_2 = horizontalPoint[pointLine][pointColumn].dy;
 
-					horizontalBlob[c][blobCount - 1].xi = xi_1 > xi_2 ? xi_2 : xi_1;
-					horizontalBlob[c][blobCount - 1].yi = yi_1 > yi_2 ? yi_2 : yi_1;
+					horizontalBlob[c][blobCount - 1].xi =
+							xi_1 > xi_2 ? xi_2 : xi_1;
+					horizontalBlob[c][blobCount - 1].yi =
+							yi_1 > yi_2 ? yi_2 : yi_1;
 
-					horizontalBlob[c][blobCount - 1].xf = xf_1 > xf_2 ? xf_1 : xf_2;
-					horizontalBlob[c][blobCount - 1].yf = yf_1 > yf_2 ? yf_1 : yf_2;
+					horizontalBlob[c][blobCount - 1].xf =
+							xf_1 > xf_2 ? xf_1 : xf_2;
+					horizontalBlob[c][blobCount - 1].yf =
+							yf_1 > yf_2 ? yf_1 : yf_2;
 
-					horizontalBlob[c][blobCount - 1].avgX += (xi_2 + xf_2) / 2 * dx_2;
+					horizontalBlob[c][blobCount - 1].avgX += (xi_2 + xf_2) / 2
+							* dx_2;
 
 					horizontalBlob[c][blobCount - 1].avgY += yi_2 * dx_2;
 
 					horizontalBlob[c][blobCount - 1].correctPixelCount += dx_2;
 				}
-				horizontalBlob[c][blobCount - 1].avgX /=
-						horizontalBlob[c][blobCount - 1].correctPixelCount;
-				horizontalBlob[c][blobCount - 1].avgY /=
-						horizontalBlob[c][blobCount - 1].correctPixelCount;
-				horizontalBlob[c][blobCount - 1].dx = horizontalBlob[c][blobCount - 1].xf - horizontalBlob[c][blobCount - 1].xi + 1;
-				horizontalBlob[c][blobCount - 1].dy = horizontalBlob[c][blobCount - 1].yf - horizontalBlob[c][blobCount - 1].yi + 1;
+				if (horizontalBlob[c][blobCount - 1].correctPixelCount > 0) {
+					horizontalBlob[c][blobCount - 1].avgX /=
+							horizontalBlob[c][blobCount - 1].correctPixelCount;
+					horizontalBlob[c][blobCount - 1].avgY /=
+							horizontalBlob[c][blobCount - 1].correctPixelCount;
+				}
+				horizontalBlob[c][blobCount - 1].dx =
+						horizontalBlob[c][blobCount - 1].xf
+								- horizontalBlob[c][blobCount - 1].xi + 1;
+				horizontalBlob[c][blobCount - 1].dy =
+						horizontalBlob[c][blobCount - 1].yf
+								- horizontalBlob[c][blobCount - 1].yi + 1;
 			}
 		}
 	}
