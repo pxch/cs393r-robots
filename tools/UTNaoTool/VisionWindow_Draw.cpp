@@ -656,23 +656,26 @@ void VisionWindow::drawHorzLinePoints(ImageWidget *image) {
 	 painter.drawLine(lp->xi, y, lp->xf, y);
 	 }
 	 }
+	 */
 
-	 // Draw blue post blobs
-	 pen = QPen(segCol[c_BLUE], 3);
-	 painter.setPen(pen);
-	 for (uint16_t i = 0; i < processor->blob_detector_->horizontalBlob[c_BLUE].size(); i++) {
-	 Blob *lb = &processor->blob_detector_->horizontalBlob[c_BLUE][i];
+	// Draw blue post blobs
+	pen = QPen(segCol[c_BLUE], 3);
+	painter.setPen(pen);
+	for (uint16_t i = 0;
+			i < processor->blob_detector_->horizontalBlob[c_BLUE].size(); i++) {
+		Blob *lb = &processor->blob_detector_->horizontalBlob[c_BLUE][i];
 
-	 VisionPoint *lpi = &processor->classifier_->horizontalPoint[c_BLUE]
-	 [lb->lpIndex[0] >> 16][lb->lpIndex[0] & 0xfffful];
-	 VisionPoint *lpf =
-	 &processor->classifier_->horizontalPoint[c_BLUE]
-	 [lb->lpIndex[lb->lpCount - 1] >> 16]
-	 [lb->lpIndex[lb->lpCount - 1] & 0xfffful];
-	 painter.drawLine((lpi->xi + lpi->xf) >> 1, lb->lpIndex[0] >> 16,
-	 (lpf->xi + lpf->xf) >> 1, lb->lpIndex[lb->lpCount - 1] >> 16);
-	 }
+		VisionPoint *lpi =
+				&processor->classifier_->horizontalPoint[c_BLUE][lb->lpIndex[0]
+						>> 16][lb->lpIndex[0] & 0xfffful];
+		VisionPoint *lpf =
+				&processor->classifier_->horizontalPoint[c_BLUE][lb->lpIndex[lb->lpCount
+						- 1] >> 16][lb->lpIndex[lb->lpCount - 1] & 0xfffful];
+		painter.drawLine((lpi->xi + lpi->xf) >> 1, lb->lpIndex[0] >> 16,
+				(lpf->xi + lpf->xf) >> 1, lb->lpIndex[lb->lpCount - 1] >> 16);
+	}
 
+	/*
 	 // Draw yellow line segments
 	 pen = QPen(segCol[c_YELLOW], 1);
 	 painter.setPen(pen);
@@ -682,22 +685,43 @@ void VisionWindow::drawHorzLinePoints(ImageWidget *image) {
 	 painter.drawLine(lp->xi, y, lp->xf, y);
 	 }
 	 }
+	 */
 
-	 // Draw yellow post blobs
-	 pen = QPen(segCol[c_YELLOW], 3);
-	 painter.setPen(pen);
-	 for (uint16_t i = 0; i < processor->blob_detector_->horizontalBlob[c_YELLOW].size(); i++) {
-	 Blob *lb = &processor->blob_detector_->horizontalBlob[c_YELLOW][i];
-	 VisionPoint *lpi = &processor->classifier_->horizontalPoint[c_YELLOW]
-	 [lb->lpIndex[0] >> 16][lb->lpIndex[0] & 0xfffful];
-	 VisionPoint *lpf =
-	 &processor->classifier_->horizontalPoint[c_YELLOW]
-	 [lb->lpIndex[lb->lpCount - 1] >> 16]
-	 [lb->lpIndex[lb->lpCount - 1] & 0xfffful];
-	 painter.drawLine((lpi->xi + lpi->xf) >> 1, lb->lpIndex[0] >> 16,
-	 (lpf->xi + lpf->xf) >> 1, lb->lpIndex[lb->lpCount - 1] >> 16);
-	 }
+	// Draw yellow post blobs
+	pen = QPen(segCol[c_YELLOW], 3);
+	painter.setPen(pen);
+	for (uint16_t i = 0;
+			i < processor->blob_detector_->horizontalBlob[c_YELLOW].size();
+			i++) {
+		Blob *lb = &processor->blob_detector_->horizontalBlob[c_YELLOW][i];
+		VisionPoint *lpi =
+				&processor->classifier_->horizontalPoint[c_YELLOW][lb->lpIndex[0]
+						>> 16][lb->lpIndex[0] & 0xfffful];
+		VisionPoint *lpf =
+				&processor->classifier_->horizontalPoint[c_YELLOW][lb->lpIndex[lb->lpCount
+						- 1] >> 16][lb->lpIndex[lb->lpCount - 1] & 0xfffful];
+		painter.drawLine((lpi->xi + lpi->xf) >> 1, lb->lpIndex[0] >> 16,
+				(lpf->xi + lpf->xf) >> 1, lb->lpIndex[lb->lpCount - 1] >> 16);
+	}
 
+	// Draw pink post blobs
+	pen = QPen(segCol[c_PINK], 3);
+	painter.setPen(pen);
+	for (uint16_t i = 0;
+			i < processor->blob_detector_->horizontalBlob[c_PINK].size();
+			i++) {
+		Blob *lb = &processor->blob_detector_->horizontalBlob[c_PINK][i];
+		VisionPoint *lpi =
+				&processor->classifier_->horizontalPoint[c_PINK][lb->lpIndex[0]
+						>> 16][lb->lpIndex[0] & 0xfffful];
+		VisionPoint *lpf =
+				&processor->classifier_->horizontalPoint[c_PINK][lb->lpIndex[lb->lpCount
+						- 1] >> 16][lb->lpIndex[lb->lpCount - 1] & 0xfffful];
+		painter.drawLine((lpi->xi + lpi->xf) >> 1, lb->lpIndex[0] >> 16,
+				(lpf->xi + lpf->xf) >> 1, lb->lpIndex[lb->lpCount - 1] >> 16);
+	}
+
+	/*
 	 // Draw orange line segments
 	 pen = QPen(segCol[c_ORANGE], 1);
 	 painter.setPen(pen);
@@ -731,8 +755,7 @@ void VisionWindow::drawHorzLinePoints(ImageWidget *image) {
 	pen = QPen(segCol[c_BLUE], 2);
 	painter.setPen(pen);
 	for (uint16_t i = 0;
-			i < processor->blob_detector_->horizontalBlob[c_BLUE].size();
-			i++) {
+			i < processor->blob_detector_->horizontalBlob[c_BLUE].size(); i++) {
 		Blob *bl = &processor->blob_detector_->horizontalBlob[c_BLUE][i];
 		painter.drawRect(bl->xi, bl->yi, bl->dx, bl->dy);
 	}
@@ -741,8 +764,7 @@ void VisionWindow::drawHorzLinePoints(ImageWidget *image) {
 	pen = QPen(segCol[c_PINK], 2);
 	painter.setPen(pen);
 	for (uint16_t i = 0;
-			i < processor->blob_detector_->horizontalBlob[c_PINK].size();
-			i++) {
+			i < processor->blob_detector_->horizontalBlob[c_PINK].size(); i++) {
 		Blob *bl = &processor->blob_detector_->horizontalBlob[c_PINK][i];
 		painter.drawRect(bl->xi, bl->yi, bl->dx, bl->dy);
 	}
