@@ -31,8 +31,8 @@ void BlobDetector::detectBlob() {
 		uint32_t* horizontalPointCount = classifier_->horizontalPointCount[c];
 
 		uint32_t pointIndex = 0;
-		int pointLine = 0;
-		int pointColumn = 0;
+		uint32_t pointLine = 0;
+		uint32_t pointColumn = 0;
 		Blob* newBlob;
 
 		//To do
@@ -109,38 +109,51 @@ void BlobDetector::detectBlob() {
 
 		// Delete Invalid Blob
 		blobCount = 0;
-		Blob* curBlob = NULL;
-		VisionPoint* curPoint = NULL;
 		for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
 			if (currentBlobs[i].invalid == false) {
 				horizontalBlob[c].push_back(currentBlobs[i]);
 				++blobCount;
-				curBlob = &horizontalBlob[c][blobCount - 1];
-				for (uint16_t j = 0; j < curBlob->lpCount; ++j) {
-					pointIndex = curBlob->lpIndex[j];
+				for (uint16_t j = 0;
+						j < horizontalBlob[c][blobCount - 1].lpCount; ++j) {
+					pointIndex = horizontalBlob[c][blobCount - 1].lpIndex[j];
 					pointLine = pointIndex >> 16;
-					pointColumn = pointIndex & 0x0000ffff;
-					curPoint = &horizontalPoint[pointLine][pointColumn];
-					curPoint->lbIndex = blobCount;
-					curBlob->xi =
-							curBlob->xi > curPoint->xi ?
-									curPoint->xi : curBlob->xi;
-					curBlob->yi =
-							curBlob->yi > curPoint->yi ?
-									curPoint->yi : curBlob->yi;
-					curBlob->xf =
-							curBlob->xf > curPoint->xf ?
-									curBlob->xf : curPoint->xf;
-					curBlob->yf =
-							curBlob->yf > curPoint->yf ?
-									curBlob->yf : curPoint->yf;
-					curBlob->avgX += (curPoint->xi + curPoint->xf) / 2
-							* curPoint->dx;
-					curBlob->avgY += curPoint->yi * curPoint->dy;
-					curBlob->correctPixelRatio += curPoint->dx;
+					pointColumn = pointIndex - pointLine;
+					horizontalPoint[pointLine][pointColumn].lbIndex = blobCount;
+					horizontalBlob[c][blobCount - 1].xi =
+							horizontalBlob[c][blobCount - 1].xi
+									> horizontalPoint[pointLine][pointColumn].xi ?
+									horizontalPoint[pointLine][pointColumn].xi :
+									horizontalBlob[c][blobCount - 1].xi;
+					horizontalBlob[c][blobCount - 1].yi =
+							horizontalBlob[c][blobCount - 1].yi
+									> horizontalPoint[pointLine][pointColumn].yi ?
+									horizontalPoint[pointLine][pointColumn].yi :
+									horizontalBlob[c][blobCount - 1].yi;
+					horizontalBlob[c][blobCount - 1].xf =
+							horizontalBlob[c][blobCount - 1].xf
+									> horizontalPoint[pointLine][pointColumn].xf ?
+									horizontalBlob[c][blobCount - 1].xf :
+									horizontalPoint[pointLine][pointColumn].xf;
+					horizontalBlob[c][blobCount - 1].yf =
+							horizontalBlob[c][blobCount - 1].yf
+									> horizontalPoint[pointLine][pointColumn].yf ?
+									horizontalBlob[c][blobCount - 1].yf :
+									horizontalPoint[pointLine][pointColumn].yf;
+					horizontalBlob[c][blobCount - 1].avgX +=
+							(horizontalPoint[pointLine][pointColumn].xi
+									+ horizontalPoint[pointLine][pointColumn].xf)
+									/ 2
+									* horizontalPoint[pointLine][pointColumn].dx;
+					horizontalBlob[c][blobCount - 1].avgY +=
+							horizontalPoint[pointLine][pointColumn].yi
+									* horizontalPoint[pointLine][pointColumn].dy;
+					horizontalBlob[c][blobCount - 1].correctPixelRatio +=
+							horizontalPoint[pointLine][pointColumn].dx;
 				}
-				curBlob->avgX /= curBlob->correctPixelRatio;
-				curBlob->avgY /= curBlob->correctPixelRatio;
+				horizontalBlob[c][blobCount - 1].avgX /=
+						horizontalBlob[c][blobCount - 1].correctPixelRatio;
+				horizontalBlob[c][blobCount - 1].avgY /=
+						horizontalBlob[c][blobCount - 1].correctPixelRatio;
 			}
 		}
 	}
