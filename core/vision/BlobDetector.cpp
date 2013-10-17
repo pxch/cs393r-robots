@@ -119,36 +119,31 @@ void BlobDetector::detectBlob() {
 					pointLine = pointIndex >> 16;
 					pointColumn = pointIndex - pointLine;
 					horizontalPoint[pointLine][pointColumn].lbIndex = blobCount;
-					horizontalBlob[c][blobCount - 1].xi =
-							horizontalBlob[c][blobCount - 1].xi
-									> horizontalPoint[pointLine][pointColumn].xi ?
-									horizontalPoint[pointLine][pointColumn].xi :
-									horizontalBlob[c][blobCount - 1].xi;
-					horizontalBlob[c][blobCount - 1].yi =
-							horizontalBlob[c][blobCount - 1].yi
-									> horizontalPoint[pointLine][pointColumn].yi ?
-									horizontalPoint[pointLine][pointColumn].yi :
-									horizontalBlob[c][blobCount - 1].yi;
-					horizontalBlob[c][blobCount - 1].xf =
-							horizontalBlob[c][blobCount - 1].xf
-									> horizontalPoint[pointLine][pointColumn].xf ?
-									horizontalBlob[c][blobCount - 1].xf :
-									horizontalPoint[pointLine][pointColumn].xf;
-					horizontalBlob[c][blobCount - 1].yf =
-							horizontalBlob[c][blobCount - 1].yf
-									> horizontalPoint[pointLine][pointColumn].yf ?
-									horizontalBlob[c][blobCount - 1].yf :
-									horizontalPoint[pointLine][pointColumn].yf;
-					horizontalBlob[c][blobCount - 1].avgX +=
-							(horizontalPoint[pointLine][pointColumn].xi
-									+ horizontalPoint[pointLine][pointColumn].xf)
-									/ 2
-									* horizontalPoint[pointLine][pointColumn].dx;
-					horizontalBlob[c][blobCount - 1].avgY +=
-							horizontalPoint[pointLine][pointColumn].yi
-									* horizontalPoint[pointLine][pointColumn].dy;
-					horizontalBlob[c][blobCount - 1].correctPixelRatio +=
-							horizontalPoint[pointLine][pointColumn].dx;
+
+					xi_1 = horizontalBlob[c][blobCount - 1].xi;
+					xf_1 = horizontalBlob[c][blobCount - 1].xf;
+					yi_1 = horizontalBlob[c][blobCount - 1].yi;
+					yf_1 = horizontalBlob[c][blobCount - 1].yf;
+
+					xi_2 = horizontalPoint[pointLine][pointColumn].xi;
+					xf_2 = horizontalPoint[pointLine][pointColumn].xf;
+					yi_2 = horizontalPoint[pointLine][pointColumn].yi;
+					yf_2 = horizontalPoint[pointLine][pointColumn].yf;
+
+					dx_2 = horizontalPoint[pointLine][pointColumn].dx;
+					dy_2 = horizontalPoint[pointLine][pointColumn].dy;
+
+					horizontalBlob[c][blobCount - 1].xi = xi_1 > xi_2 ? xi_2 : xi_1;
+					horizontalBlob[c][blobCount - 1].yi = yi_1 > yi_2 ? yi_2 : yi_1;
+
+					horizontalBlob[c][blobCount - 1].xf = xf_1 > xf_2 ? xf_1 : xf_2;
+					horizontalBlob[c][blobCount - 1].yf = yf_1 > yf_2 ? yf_1 : yf_2;
+
+					horizontalBlob[c][blobCount - 1].avgX += (xi_2 + xf_2) / 2 * dx_2;
+
+					horizontalBlob[c][blobCount - 1].avgY += yi_2 * dx_2;
+
+					horizontalBlob[c][blobCount - 1].correctPixelRatio += dx_2;
 				}
 				horizontalBlob[c][blobCount - 1].avgX /=
 						horizontalBlob[c][blobCount - 1].correctPixelRatio;
