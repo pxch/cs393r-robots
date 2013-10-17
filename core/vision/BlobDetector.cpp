@@ -25,7 +25,7 @@ void BlobDetector::MergeBlob(BlobCollection& blobs, int indexA, int indexB) {
 
 void BlobDetector::detectBlob() {//				Blob validBlob = currentBlobs[i];
 
-	for (int c = 0; c < NUM_COLORS; c++) {
+	for (int c = 4; c < 7; c++) {
 		BlobCollection currentBlobs;
 
 		VisionPoint** horizontalPoint = classifier_->horizontalPoint[c];

@@ -157,7 +157,7 @@ void Classifier::getStepScale(int& h, int& v) {
 void Classifier::constructRuns() {
 	bool isCurrentColor = false;
 	int runCount = 0;
-	for (int i = 0; i < NUM_COLORS; i++) {
+	for (int i = 4; i < 7; i++) {
 		for (int j = 0; j < iparams_.height; j++) {
 			isCurrentColor = false;
 			runCount = 0;
