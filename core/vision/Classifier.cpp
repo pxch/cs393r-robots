@@ -159,7 +159,7 @@ void Classifier::constructRuns() {
 	int runCount = 0;
 	for (int i = 0; i < NUM_COLORS; i++) {
 		for (int j = 0; j < iparams_.height; j++) {
-			horizontalPointCount[i][j] = -1
+			isCurrentColor = false;
 			runCount = 0;
 			for (int k = 0; k < iparams_.width; k++) {
 				if (getSegPixelAt(j, k) == i) {
@@ -181,6 +181,7 @@ void Classifier::constructRuns() {
 						horizontalPoint[i][j][runCount - 1].dy = k - horizontalPoint[i][j][runCount - 1].yi;
 					}
 				}
+				horizontalPointCount[i][j] = runCount;
 			}
 		}
 	}
