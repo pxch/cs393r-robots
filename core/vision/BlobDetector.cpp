@@ -6,7 +6,7 @@ BlobDetector::BlobDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier) :
 	verticalBlob.resize(NUM_COLORS);
 }
 
-bool IsIntersected(VisionPoint& a, VisionPoint& b) {
+bool IsOverLaped(VisionPoint& a, VisionPoint& b) {
 	if(a.xf < b.xi || b.xf < a.xi) {
 		return false;
 	}
@@ -38,7 +38,7 @@ void BlobDetector::detectBlob() {
 			for (int x = 0; x < horizontalPointCount[y]; ++ x) {
 				pointIndex = y << 16 | x;
 				for (int xx = 0; xx < horizontalPointCount[y-1]; ++ xx) {
-					if IsIntersected(horizontalPoint[y][x], horizontalPoint[y-1][xx]) {
+					if (IsOverlaped(horizontalPoint[y][x], horizontalPoint[y-1][xx])) {
 							break;
 					}
 				}
@@ -57,5 +57,7 @@ void BlobDetector::detectBlob() {
 				}
 			}
 		}
+
+		// Merge Overlap Blobs
 	}
 }
