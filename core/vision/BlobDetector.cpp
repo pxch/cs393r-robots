@@ -108,14 +108,14 @@ void BlobDetector::detectBlob() {
 		}
 
 		// Delete Invalid Blob
-		blobCount = 0;
-		Blob* curBlob = NULL;
-		VisionPoint* curPoint = NULL;
-		for (int i = 0; i < currentBlobs.size(); ++i) {
-			if (currentBlobs[i].invalid == false) {
-				horizontalBlob[c].push_back(currentBlobs[i]);
-				++blobCount;
-				curBlob = &horizontalBlob[c][blobCount - 1];
+//		blobCount = 0;
+//		Blob* curBlob = NULL;
+//		VisionPoint* curPoint = NULL;
+//		for (int i = 0; i < currentBlobs.size(); ++i) {
+//			if (currentBlobs[i].invalid == false) {
+//				horizontalBlob[c].push_back(currentBlobs[i]);
+//				++blobCount;
+//				curBlob = &horizontalBlob[c][blobCount - 1];
 //				for (uint16_t j = 0; j < curBlob->lpCount; ++j) {
 //					pointIndex = curBlob->lpIndex[j];
 //					pointLine = pointIndex >> 16;
@@ -141,7 +141,7 @@ void BlobDetector::detectBlob() {
 //				}
 //				curBlob->avgX /= curBlob->correctPixelRatio;
 //				curBlob->avgY /= curBlob->correctPixelRatio;
-			}
-		}
+//			}
+//		}
 	}
 }
