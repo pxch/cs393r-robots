@@ -98,6 +98,7 @@ void ImageProcessor::setCalibration(RobotCalibration calibration){
 void ImageProcessor::processFrame(){
   updateTransform();
   classifier_->classifyImage(color_table_);
+  classifier_->reset();
   classifier_->constructRuns();
 
   blob_detector_->detectBlob();

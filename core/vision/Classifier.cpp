@@ -22,7 +22,7 @@ Classifier::Classifier(const VisionBlocks& vblocks, const VisionParams& vparams,
 	}
 
 	horizontalPoint = new VisionPoint**[NUM_COLORS];
-	for (int i = 0; i < NUM_COLORS; i++) {
+	for (int i = 4; i < 7; i++) {
 		horizontalPoint[i] = new VisionPoint*[iparams_.height];
 		for (int j = 0; j < iparams_.height; j++) {
 			horizontalPoint[i][j] = new VisionPoint[iparams_.width];
@@ -30,15 +30,15 @@ Classifier::Classifier(const VisionBlocks& vblocks, const VisionParams& vparams,
 					iparams_.width * sizeof(struct VisionPoint));
 		}
 	}
-	verticalPoint = new VisionPoint**[NUM_COLORS];
-	for (int i = 0; i < NUM_COLORS; i++) {
-		verticalPoint[i] = new VisionPoint*[iparams_.width];
-		for (int j = 0; j < iparams_.width; j++) {
-			verticalPoint[i][j] = new VisionPoint[iparams_.height];
-			memset(verticalPoint[i][j], 0,
-					iparams_.height * sizeof(struct VisionPoint));
-		}
-	}
+//	verticalPoint = new VisionPoint**[NUM_COLORS];
+//	for (int i = 0; i < NUM_COLORS; i++) {
+//		verticalPoint[i] = new VisionPoint*[iparams_.width];
+//		for (int j = 0; j < iparams_.width; j++) {
+//			verticalPoint[i][j] = new VisionPoint[iparams_.height];
+//			memset(verticalPoint[i][j], 0,
+//					iparams_.height * sizeof(struct VisionPoint));
+//		}
+//	}
 }
 
 Classifier::~Classifier() {
@@ -152,6 +152,12 @@ void Classifier::getStepSize(int& h, int& v) {
 void Classifier::getStepScale(int& h, int& v) {
 	h = hscale_;
 	v = vscale_;
+}
+
+void Classifier::reset() {
+	for (int i = 0; i < NUM_COLORS; i++) {
+		memset(horizontalPointCount[i], 0, iparams_.height);
+	}
 }
 
 void Classifier::constructRuns() {
