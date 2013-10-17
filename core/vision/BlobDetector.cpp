@@ -109,6 +109,7 @@ void BlobDetector::detectBlob() {
 
 		// Delete Invalid Blob
 		blobCount = 0;
+		uint16_t xi_1, xi_2, xf_1, xf_2, yi_1, yi_2, yf_1, yf_2, dx_2, dy_2;
 		for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
 			if (currentBlobs[i].invalid == false) {
 				horizontalBlob[c].push_back(currentBlobs[i]);
