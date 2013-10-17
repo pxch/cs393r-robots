@@ -1,4 +1,5 @@
 #include <vision/BlobDetector.h>
+#include <iostream>
 
 BlobDetector::BlobDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier) :
 		DETECTOR_INITIALIZE, classifier_(classifier) {
@@ -23,7 +24,7 @@ void BlobDetector::MergeBlob(BlobCollection& blobs, int indexA, int indexB) {
 	blobs[indexA].invalid = true;
 }
 
-void BlobDetector::detectBlob() {//				Blob validBlob = currentBlobs[i];
+void BlobDetector::detectBlob() { //				Blob validBlob = currentBlobs[i];
 
 	for (int c = 4; c < 7; c++) {
 		BlobCollection currentBlobs;
@@ -122,7 +123,7 @@ void BlobDetector::detectBlob() {//				Blob validBlob = currentBlobs[i];
 		int blobSize = 0;
 		for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
 			if (currentBlobs[i].invalid == false) {
-				++ blobSize;
+				++blobSize;
 			}
 		}
 		horizontalBlob[c].resize(blobSize);
@@ -184,6 +185,11 @@ void BlobDetector::detectBlob() {//				Blob validBlob = currentBlobs[i];
 						horizontalBlob[c][blobCount - 1].yf
 								- horizontalBlob[c][blobCount - 1].yi + 1;
 			}
-		}
+			std::cout << Color[c] << "[ " << blobCount << " ]: "
+					<< horizontalBlob[c][blobCount - 1].xi << ", "
+					<< horizontalBlob[c][blobCount - 1].yi << ", "
+					<< horizontalBlob[c][blobCount - 1].xf << ", "
+					<< horizontalBlob[c][blobCount - 1].yf << std::endl;
 	}
+}
 }
