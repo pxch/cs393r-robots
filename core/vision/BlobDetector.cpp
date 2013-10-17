@@ -41,19 +41,24 @@ void BlobDetector::detectBlob() {
 		for (uint32_t x = 0; x < horizontalPointCount[0]; ++x) {
 			pointIndex = x;
 			horizontalPoint[0][x].lbIndex = blobCount++;
-			newBlob = new Blob;
-			newBlob->lpCount = 1;
-			newBlob->lpIndex[0] = pointIndex;
-			newBlob->invalid = false;
-			newBlob->xi = 0;
-			newBlob->yi = 0;
-			newBlob->xf = iparams_.width - 1;
-			newBlob->yf = iparams_.height - 1;
-			newBlob->avgX = 0;
-			newBlob->avgY = 0;
-			newBlob->correctPixelRatio = 0.0;
 
-			currentBlobs.push_back(newBlob);
+			currentBlobs.push_back(
+					Blob(0, iparams_.width - 1, 0, iparams_.height - 1, 1,
+							pointIndex));
+
+//			newBlob = new Blob;
+//			newBlob->lpCount = 1;
+//			newBlob->lpIndex[0] = pointIndex;
+//			newBlob->invalid = false;
+//			newBlob->xi = 0;
+//			newBlob->yi = 0;
+//			newBlob->xf = iparams_.width - 1;
+//			newBlob->yf = iparams_.height - 1;
+//			newBlob->avgX = 0;
+//			newBlob->avgY = 0;
+//			newBlob->correctPixelRatio = 0.0;
+//
+//			currentBlobs.push_back(newBlob);
 		}
 		for (int y = 1; y < iparams_.height; ++y) {
 			for (uint32_t x = 0; x < horizontalPointCount[y]; ++x) {
@@ -73,19 +78,24 @@ void BlobDetector::detectBlob() {
 							- 1] = pointIndex;
 				} else {
 					horizontalPoint[y][x].lbIndex = blobCount++;
-					newBlob = new Blob;
-					newBlob->lpCount = 1;
-					newBlob->lpIndex[0] = pointIndex;
-					newBlob->invalid = false;
-					newBlob->xi = 0;
-					newBlob->yi = 0;
-					newBlob->xf = iparams_.width - 1;
-					newBlob->yf = iparams_.height - 1;
-					newBlob->avgX = 0;
-					newBlob->avgY = 0;
-					newBlob->correctPixelRatio = 0.0;
 
-					currentBlobs.push_back(newBlob);
+					currentBlobs.push_back(
+							Blob(0, iparams_.width - 1, 0, iparams_.height - 1,
+									1, pointIndex));
+
+//					newBlob = new Blob;
+//					newBlob->lpCount = 1;
+//					newBlob->lpIndex[0] = pointIndex;
+//					newBlob->invalid = false;
+//					newBlob->xi = 0;
+//					newBlob->yi = 0;
+//					newBlob->xf = iparams_.width - 1;
+//					newBlob->yf = iparams_.height - 1;
+//					newBlob->avgX = 0;
+//					newBlob->avgY = 0;
+//					newBlob->correctPixelRatio = 0.0;
+//
+//					currentBlobs.push_back(newBlob);
 				}
 			}
 		}
@@ -107,7 +117,7 @@ void BlobDetector::detectBlob() {
 //			}
 //		}
 
-		// Delete Invalid Blob
+// Delete Invalid Blob
 //		blobCount = 0;
 //		uint16_t xi_1, xi_2, xf_1, xf_2, yi_1, yi_2, yf_1, yf_2, dx_2, dy_2;
 //		for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
