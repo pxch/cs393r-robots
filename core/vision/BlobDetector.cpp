@@ -184,12 +184,13 @@ void BlobDetector::detectBlob() { //				Blob validBlob = currentBlobs[i];
 				horizontalBlob[c][blobCount - 1].dy =
 						horizontalBlob[c][blobCount - 1].yf
 								- horizontalBlob[c][blobCount - 1].yi + 1;
+				std::cout << c << "[ " << blobCount << " ]: "
+						<< horizontalBlob[c][blobCount - 1].xi << ", "
+						<< horizontalBlob[c][blobCount - 1].yi << ", "
+						<< horizontalBlob[c][blobCount - 1].xf << ", "
+						<< horizontalBlob[c][blobCount - 1].yf << std::endl;
 			}
-			std::cout << c << "[ " << blobCount << " ]: "
-					<< horizontalBlob[c][blobCount - 1].xi << ", "
-					<< horizontalBlob[c][blobCount - 1].yi << ", "
-					<< horizontalBlob[c][blobCount - 1].xf << ", "
-					<< horizontalBlob[c][blobCount - 1].yf << std::endl;
+
 		}
 	}
 }
