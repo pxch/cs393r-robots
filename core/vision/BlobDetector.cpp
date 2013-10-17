@@ -27,8 +27,8 @@ void BlobDetector::detectBlob() {
 	for (int c = 0; c < NUM_COLORS; c++) {
 		BlobCollection currentBlobs;
 
-		VisionPoint** horizontalPoint = classifier_.horizontalPoint[c];
-		uint32_t* horizontalPointCount = classifier_.horizontalPointCount[c];
+		VisionPoint** horizontalPoint = classifier_->horizontalPoint[c];
+		uint32_t* horizontalPointCount = classifier_->horizontalPointCount[c];
 
 		uint32_t pointIndex = 0;
 		int pointLine = 0;
@@ -69,7 +69,8 @@ void BlobDetector::detectBlob() {
 					currentBlobIndex = horizontalPoint[y - 1][xx].lbIndex;
 					horizontalPoint[y][x].lbIndex = currentBlobIndex;
 					++currentBlobs[currentBlobIndex].lpCount;
-					currentBlobs[currentBlobIndex].lpIndex[currentBlobs[currentBlobIndex].lpCount - 1] = pointIndex;
+					currentBlobs[currentBlobIndex].lpIndex[currentBlobs[currentBlobIndex].lpCount
+							- 1] = pointIndex;
 				} else {
 					horizontalPoint[y][x].lbIndex = blobCount++;
 					newBlob = new Blob;
@@ -95,11 +96,12 @@ void BlobDetector::detectBlob() {
 			for (int x = 0; x < horizontalPointCount[y]; ++x) {
 				for (int xx = 0; xx < horizontalPointCount[y - 1]; ++xx) {
 					indexA = horizontalPoint[y][x].lbIndex;
-					indexB = horizontalPoint[y-1][xx].lbIndex;
+					indexB = horizontalPoint[y - 1][xx].lbIndex;
 					if (IsOverlapped(horizontalPoint[y][x],
-							horizontalPoint[y - 1][xx])
-							&& indexA != indexB) {
-						MergeBlob(currentBlobs, indexA > indexB? indexA : indexB, indexA > indexB? indexB : indexA);
+							horizontalPoint[y - 1][xx]) && indexA != indexB) {
+						MergeBlob(currentBlobs,
+								indexA > indexB ? indexA : indexB,
+								indexA > indexB ? indexB : indexA);
 					}
 				}
 			}
@@ -114,17 +116,26 @@ void BlobDetector::detectBlob() {
 				horizontalBlob[c].push_back(currentBlobs[i]);
 				++blobCount;
 				curBlob = &horizontalBlob[c][blobCount - 1];
-				for (uint16_t j = 0; j < curBlob->lpCount; ++ j) {
+				for (uint16_t j = 0; j < curBlob->lpCount; ++j) {
 					pointIndex = curBlob->lpIndex[j];
 					pointLine = pointIndex >> 16;
 					pointColumn = pointIndex & 0x0000ffff;
 					curPoint = &horizontalPoint[pointLine][pointColumn];
 					curPoint->lbIndex = blobCount;
-					curBlob->xi = curBlob->xi > curPoint->xi ? curPoint->xi : curBlob->xi;
-					curBlob->yi = curBlob->yi > curPoint->yi ? curPoint->yi : curBlob->yi;
-					curBlob->xf = curBlob->xf > curPoint->xf ? curBlob->xf : curPoint->xf;
-					curBlob->yf = curBlob->yf > curPoint->yf ? curBlob->yf : curPoint->yf;
-					curBlob->avgX += (curPoint->xi + curPoint->xf) / 2 * curPoint->dx;
+					curBlob->xi =
+							curBlob->xi > curPoint->xi ?
+									curPoint->xi : curBlob->xi;
+					curBlob->yi =
+							curBlob->yi > curPoint->yi ?
+									curPoint->yi : curBlob->yi;
+					curBlob->xf =
+							curBlob->xf > curPoint->xf ?
+									curBlob->xf : curPoint->xf;
+					curBlob->yf =
+							curBlob->yf > curPoint->yf ?
+									curBlob->yf : curPoint->yf;
+					curBlob->avgX += (curPoint->xi + curPoint->xf) / 2
+							* curPoint->dx;
 					curBlob->avgY += curPoint->yi * curPoint->dy;
 					curBlob->correctPixelRatio += curPoint->dx;
 				}
