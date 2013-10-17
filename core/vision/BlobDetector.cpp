@@ -23,7 +23,8 @@ void BlobDetector::MergeBlob(BlobCollection& blobs, int indexA, int indexB) {
 	blobs[indexA].invalid = true;
 }
 
-void BlobDetector::detectBlob() {
+void BlobDetector::detectBlob() {//				Blob validBlob = currentBlobs[i];
+
 	for (int c = 0; c < NUM_COLORS; c++) {
 		BlobCollection currentBlobs;
 
@@ -118,13 +119,21 @@ void BlobDetector::detectBlob() {
 		}
 
 // Delete Invalid Blob
+		blobSize = 0;
+		for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
+			if (currentBlobs[i].invalid == false) {
+				++ blobSize;
+			}
+		}
+		horizontalBlob[c].resize(blobSize);
 		blobCount = 0;
 		uint16_t xi_1, xi_2, xf_1, xf_2, yi_1, yi_2, yf_1, yf_2, dx_2, dy_2;
 		for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
 			if (currentBlobs[i].invalid == false) {
 //				Blob validBlob = currentBlobs[i];
-				horizontalBlob[c].push_back(Blob(currentBlobs[i]));
-				++blobCount;
+//				horizontalBlob[c].push_back(Blob(currentBlobs[i]));
+//				++blobCount;
+				horizontalBlob[c][blobCount++] = currentBlobs[i];
 				for (uint16_t j = 0;
 						j < horizontalBlob[c][blobCount - 1].lpCount; ++j) {
 					pointIndex = horizontalBlob[c][blobCount - 1].lpIndex[j];
