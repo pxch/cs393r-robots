@@ -162,7 +162,7 @@ void Classifier::constructRuns() {
 			isCurrentColor = false;
 			runCount = 0;
 			for (int k = 0; k < iparams_.width; k++) {
-				if (segImg_(j * iparams_.width + k) == i) {
+				if (segImg_[j * iparams_.width + k] == i) {
 					if (isCurrentColor = false) {
 						++runCount;
 						isCurrentColor = true;
