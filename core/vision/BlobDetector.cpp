@@ -9,5 +9,3 @@ BlobDetector::BlobDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier) :
 void BlobDetector::detectBlob() {
 
 }
-
-void
