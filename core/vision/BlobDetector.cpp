@@ -65,7 +65,7 @@ void BlobDetector::detectBlob() {
 						break;
 					}
 				}
-				if (xx < horizontalPointCount[y -horizontalBlob[c] 1]) {
+				if (xx < horizontalPointCount[y - 1]) {
 					currentBlobIndex = horizontalPoint[y - 1][xx].lbIndex;
 					horizontalPoint[y][x].lbIndex = currentBlobIndex;
 					++currentBlobs[currentBlobIndex].lpCount;
@@ -113,12 +113,12 @@ void BlobDetector::detectBlob() {
 			if (currentBlobs[i].invalid == false) {
 				horizontalBlob[c].push_back(currentBlobs[i]);
 				++blobCount;
-				curBlob = horizontalBlob[c][blobCount - 1];
+				curBlob = &horizontalBlob[c][blobCount - 1];
 				for (uint16_t j = 0; j < curBlob->lpCount; ++ j) {
 					pointIndex = curBlob->lpIndex[j];
 					pointLine = pointIndex >> 16;
 					pointColumn = pointIndex & 0x0000ffff;
-					curPoint = horizontalPoint[c][pointLine][pointColumn];
+					curPoint = &horizontalPoint[pointLine][pointColumn];
 					curPoint->lbIndex = blobCount;
 					curBlob->xi = curBlob->xi > curPoint->xi ? curPoint->xi : curBlob->xi;
 					curBlob->yi = curBlob->yi > curPoint->yi ? curPoint->yi : curBlob->yi;
