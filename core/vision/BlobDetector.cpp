@@ -101,66 +101,68 @@ void BlobDetector::detectBlob() {
 		}
 
 		// Merge Overlap Blobs
-//		int indexA, indexB;
-//		for (int y = 1; y < iparams_.height; ++y) {
-//			for (uint32_t x = 0; x < horizontalPointCount[y]; ++x) {
-//				for (uint32_t xx = 0; xx < horizontalPointCount[y - 1]; ++xx) {
-//					indexA = horizontalPoint[y][x].lbIndex;
-//					indexB = horizontalPoint[y - 1][xx].lbIndex;
-//					if (IsOverlapped(horizontalPoint[y][x],
-//							horizontalPoint[y - 1][xx]) && indexA != indexB) {
-//						MergeBlob(currentBlobs,
-//								indexA > indexB ? indexA : indexB,
-//								indexA > indexB ? indexB : indexA);
-//					}
-//				}
-//			}
-//		}
+		int indexA, indexB;
+		for (int y = 1; y < iparams_.height; ++y) {
+			for (uint32_t x = 0; x < horizontalPointCount[y]; ++x) {
+				for (uint32_t xx = 0; xx < horizontalPointCount[y - 1]; ++xx) {
+					indexA = horizontalPoint[y][x].lbIndex;
+					indexB = horizontalPoint[y - 1][xx].lbIndex;
+					if (IsOverlapped(horizontalPoint[y][x],
+							horizontalPoint[y - 1][xx]) && indexA != indexB) {
+						MergeBlob(currentBlobs,
+								indexA > indexB ? indexA : indexB,
+								indexA > indexB ? indexB : indexA);
+					}
+				}
+			}
+		}
 
 // Delete Invalid Blob
-//		blobCount = 0;
-//		uint16_t xi_1, xi_2, xf_1, xf_2, yi_1, yi_2, yf_1, yf_2, dx_2, dy_2;
-//		for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
-//			if (currentBlobs[i].invalid == false) {
-//				horizontalBlob[c].push_back(currentBlobs[i]);
-//				++blobCount;
-//				for (uint16_t j = 0;
-//						j < horizontalBlob[c][blobCount - 1].lpCount; ++j) {
-//					pointIndex = horizontalBlob[c][blobCount - 1].lpIndex[j];
-//					pointLine = pointIndex >> 16;
-//					pointColumn = pointIndex - pointLine;
-//					horizontalPoint[pointLine][pointColumn].lbIndex = blobCount;
-//
-//					xi_1 = horizontalBlob[c][blobCount - 1].xi;
-//					xf_1 = horizontalBlob[c][blobCount - 1].xf;
-//					yi_1 = horizontalBlob[c][blobCount - 1].yi;
-//					yf_1 = horizontalBlob[c][blobCount - 1].yf;
-//
-//					xi_2 = horizontalPoint[pointLine][pointColumn].xi;
-//					xf_2 = horizontalPoint[pointLine][pointColumn].xf;
-//					yi_2 = horizontalPoint[pointLine][pointColumn].yi;
-//					yf_2 = horizontalPoint[pointLine][pointColumn].yf;
-//
-//					dx_2 = horizontalPoint[pointLine][pointColumn].dx;
-//					dy_2 = horizontalPoint[pointLine][pointColumn].dy;
-//
-//					horizontalBlob[c][blobCount - 1].xi = xi_1 > xi_2 ? xi_2 : xi_1;
-//					horizontalBlob[c][blobCount - 1].yi = yi_1 > yi_2 ? yi_2 : yi_1;
-//
-//					horizontalBlob[c][blobCount - 1].xf = xf_1 > xf_2 ? xf_1 : xf_2;
-//					horizontalBlob[c][blobCount - 1].yf = yf_1 > yf_2 ? yf_1 : yf_2;
-//
-//					horizontalBlob[c][blobCount - 1].avgX += (xi_2 + xf_2) / 2 * dx_2;
-//
-//					horizontalBlob[c][blobCount - 1].avgY += yi_2 * dx_2;
-//
-//					horizontalBlob[c][blobCount - 1].correctPixelRatio += dx_2;
-//				}
-//				horizontalBlob[c][blobCount - 1].avgX /=
-//						horizontalBlob[c][blobCount - 1].correctPixelRatio;
-//				horizontalBlob[c][blobCount - 1].avgY /=
-//						horizontalBlob[c][blobCount - 1].correctPixelRatio;
-//			}
-//		}
+		blobCount = 0;
+		uint16_t xi_1, xi_2, xf_1, xf_2, yi_1, yi_2, yf_1, yf_2, dx_2, dy_2;
+		for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
+			if (currentBlobs[i].invalid == false) {
+				horizontalBlob[c].push_back(currentBlobs[i]);
+				++blobCount;
+				for (uint16_t j = 0;
+						j < horizontalBlob[c][blobCount - 1].lpCount; ++j) {
+					pointIndex = horizontalBlob[c][blobCount - 1].lpIndex[j];
+					pointLine = pointIndex >> 16;
+					pointColumn = pointIndex - pointLine;
+					horizontalPoint[pointLine][pointColumn].lbIndex = blobCount;
+
+					xi_1 = horizontalBlob[c][blobCount - 1].xi;
+					xf_1 = horizontalBlob[c][blobCount - 1].xf;
+					yi_1 = horizontalBlob[c][blobCount - 1].yi;
+					yf_1 = horizontalBlob[c][blobCount - 1].yf;
+
+					xi_2 = horizontalPoint[pointLine][pointColumn].xi;
+					xf_2 = horizontalPoint[pointLine][pointColumn].xf;
+					yi_2 = horizontalPoint[pointLine][pointColumn].yi;
+					yf_2 = horizontalPoint[pointLine][pointColumn].yf;
+
+					dx_2 = horizontalPoint[pointLine][pointColumn].dx;
+					dy_2 = horizontalPoint[pointLine][pointColumn].dy;
+
+					horizontalBlob[c][blobCount - 1].xi = xi_1 > xi_2 ? xi_2 : xi_1;
+					horizontalBlob[c][blobCount - 1].yi = yi_1 > yi_2 ? yi_2 : yi_1;
+
+					horizontalBlob[c][blobCount - 1].xf = xf_1 > xf_2 ? xf_1 : xf_2;
+					horizontalBlob[c][blobCount - 1].yf = yf_1 > yf_2 ? yf_1 : yf_2;
+
+					horizontalBlob[c][blobCount - 1].avgX += (xi_2 + xf_2) / 2 * dx_2;
+
+					horizontalBlob[c][blobCount - 1].avgY += yi_2 * dx_2;
+
+					horizontalBlob[c][blobCount - 1].correctPixelCount += dx_2;
+				}
+				horizontalBlob[c][blobCount - 1].avgX /=
+						horizontalBlob[c][blobCount - 1].correctPixelCount;
+				horizontalBlob[c][blobCount - 1].avgY /=
+						horizontalBlob[c][blobCount - 1].correctPixelCount;
+				horizontalBlob[c][blobCount - 1].dx = horizontalBlob[c][blobCount - 1].xf - horizontalBlob[c][blobCount - 1].xi + 1;
+				horizontalBlob[c][blobCount - 1].dy = horizontalBlob[c][blobCount - 1].yf - horizontalBlob[c][blobCount - 1].yi + 1;
+			}
+		}
 	}
 }
