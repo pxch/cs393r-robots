@@ -26,6 +26,8 @@ public:
 private:
 	Classifier*& classifier_;
 	TextLogger* textlogger;
+
+	bool IsOverlapped(VisionPoint& a, VisionPoint& b);
 };
 
 #endif
