@@ -116,31 +116,31 @@ void BlobDetector::detectBlob() {
 				horizontalBlob[c].push_back(currentBlobs[i]);
 				++blobCount;
 				curBlob = &horizontalBlob[c][blobCount - 1];
-				for (uint16_t j = 0; j < curBlob->lpCount; ++j) {
-					pointIndex = curBlob->lpIndex[j];
-					pointLine = pointIndex >> 16;
-					pointColumn = pointIndex & 0x0000ffff;
-					curPoint = &horizontalPoint[pointLine][pointColumn];
-					curPoint->lbIndex = blobCount;
-					curBlob->xi =
-							curBlob->xi > curPoint->xi ?
-									curPoint->xi : curBlob->xi;
-					curBlob->yi =
-							curBlob->yi > curPoint->yi ?
-									curPoint->yi : curBlob->yi;
-					curBlob->xf =
-							curBlob->xf > curPoint->xf ?
-									curBlob->xf : curPoint->xf;
-					curBlob->yf =
-							curBlob->yf > curPoint->yf ?
-									curBlob->yf : curPoint->yf;
-					curBlob->avgX += (curPoint->xi + curPoint->xf) / 2
-							* curPoint->dx;
-					curBlob->avgY += curPoint->yi * curPoint->dy;
-					curBlob->correctPixelRatio += curPoint->dx;
-				}
-				curBlob->avgX /= curBlob->correctPixelRatio;
-				curBlob->avgY /= curBlob->correctPixelRatio;
+//				for (uint16_t j = 0; j < curBlob->lpCount; ++j) {
+//					pointIndex = curBlob->lpIndex[j];
+//					pointLine = pointIndex >> 16;
+//					pointColumn = pointIndex & 0x0000ffff;
+//					curPoint = &horizontalPoint[pointLine][pointColumn];
+//					curPoint->lbIndex = blobCount;
+//					curBlob->xi =
+//							curBlob->xi > curPoint->xi ?
+//									curPoint->xi : curBlob->xi;
+//					curBlob->yi =
+//							curBlob->yi > curPoint->yi ?
+//									curPoint->yi : curBlob->yi;
+//					curBlob->xf =
+//							curBlob->xf > curPoint->xf ?
+//									curBlob->xf : curPoint->xf;
+//					curBlob->yf =
+//							curBlob->yf > curPoint->yf ?
+//									curBlob->yf : curPoint->yf;
+//					curBlob->avgX += (curPoint->xi + curPoint->xf) / 2
+//							* curPoint->dx;
+//					curBlob->avgY += curPoint->yi * curPoint->dy;
+//					curBlob->correctPixelRatio += curPoint->dx;
+//				}
+//				curBlob->avgX /= curBlob->correctPixelRatio;
+//				curBlob->avgY /= curBlob->correctPixelRatio;
 			}
 		}
 	}
