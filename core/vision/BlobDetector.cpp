@@ -53,7 +53,7 @@ void BlobDetector::detectBlob() {
 			newBlob->avgY = 0;
 			newBlob->correctPixelRatio = 0.0;
 
-			currentBlobs.push_back(*newBlob);
+			currentBlobs.push_back(newBlob);
 		}
 		for (int y = 1; y < iparams_.height; ++y) {
 			for (uint32_t x = 0; x < horizontalPointCount[y]; ++x) {
@@ -85,7 +85,7 @@ void BlobDetector::detectBlob() {
 					newBlob->avgY = 0;
 					newBlob->correctPixelRatio = 0.0;
 
-					currentBlobs.push_back(*newBlob);
+					currentBlobs.push_back(newBlob);
 				}
 			}
 		}
