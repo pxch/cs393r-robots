@@ -163,7 +163,7 @@ void Classifier::constructRuns() {
 			runCount = 0;
 			for (int k = 0; k < iparams_.width; k++) {
 				if (segImg_[j * iparams_.width + k] == i) {
-					if (isCurrentColor = false) {
+					if (isCurrentColor == false) {
 						++runCount;
 						isCurrentColor = true;
 						horizontalPoint[i][j][runCount - 1].xi = k;
@@ -174,7 +174,7 @@ void Classifier::constructRuns() {
 					}
 				}
 				else {
-					if (isCurrentColor = true) {
+					if (isCurrentColor == true) {
 						isCurrentColor = false;
 						horizontalPoint[i][j][runCount - 1].xf = k - 1;
 						horizontalPoint[i][j][runCount - 1].dx = k - horizontalPoint[i][j][runCount - 1].yi;
