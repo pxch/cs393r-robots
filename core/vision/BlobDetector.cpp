@@ -122,8 +122,8 @@ void BlobDetector::detectBlob() {
 		uint16_t xi_1, xi_2, xf_1, xf_2, yi_1, yi_2, yf_1, yf_2, dx_2, dy_2;
 		for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
 			if (currentBlobs[i].invalid == false) {
-				Blob validBlob = currentBlobs[i];
-				horizontalBlob[c].push_back(validBlob);
+//				Blob validBlob = currentBlobs[i];
+				horizontalBlob[c].push_back(Blob(currentBlobs[i]));
 				++blobCount;
 				for (uint16_t j = 0;
 						j < horizontalBlob[c][blobCount - 1].lpCount; ++j) {
