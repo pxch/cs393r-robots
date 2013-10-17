@@ -26,7 +26,7 @@ Classifier::Classifier(const VisionBlocks& vblocks, const VisionParams& vparams,
 		horizontalPoint[i] = new VisionPoint*[iparams_.height];
 		for (int j = 0; j < iparams_.height; i++) {
 			horizontalPoint[i][j] = new VisionPoint[iparams_.width];
-			memset(HorizontalPoint[i][j], 0, iparams_.width * sizeof(struct VisionPoint));
+			memset(horizontalPoint[i][j], 0, iparams_.width * sizeof(struct VisionPoint));
 		}
 	}
 	verticalPoint = new VisionPoint**[NUM_COLORS];
@@ -34,7 +34,7 @@ Classifier::Classifier(const VisionBlocks& vblocks, const VisionParams& vparams,
 		verticalPoint[i] = new VisionPoint*[iparams_.width];
 		for (int j = 0; j < iparams_.width; i++) {
 			verticalPoint[i][j] = new VisionPoint[iparams_.height];
-			memset(HorizontalPoint[i][j], 0, iparams_.height * sizeof(struct VisionPoint));
+			memset(verticalPoint[i][j], 0, iparams_.height * sizeof(struct VisionPoint));
 		}
 	}
 }
