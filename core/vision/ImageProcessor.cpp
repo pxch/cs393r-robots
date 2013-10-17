@@ -100,7 +100,7 @@ void ImageProcessor::processFrame(){
   classifier_->classifyImage(color_table_);
   classifier_->constructRuns();
 
-//  blob_detector_->detectBlob();
+  blob_detector_->detectBlob();
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
