@@ -127,8 +127,9 @@ void BlobDetector::detectBlob() {
 				for (uint16_t j = 0;
 						j < horizontalBlob[c][blobCount - 1].lpCount; ++j) {
 					pointIndex = horizontalBlob[c][blobCount - 1].lpIndex[j];
-					pointLine = pointIndex >> 16;
-					pointColumn = pointIndex - pointLine << 16;
+					pointLine = (pointIndex >> 16) & 0x0000ffff;
+					pointColumn = pointIndex & 0x0000ffff;
+
 					horizontalPoint[pointLine][pointColumn].lbIndex = blobCount;
 
 					xi_1 = horizontalBlob[c][blobCount - 1].xi;
