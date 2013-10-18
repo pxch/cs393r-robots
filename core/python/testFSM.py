@@ -25,11 +25,11 @@ class TestMachine(StateMachine):
 class WalkWithTurningNode(Node):
   def run(self):
     commands.setWalkVelocity(0.8, 0, 0)
-    angle = -pi / 3
-    commands.setHeadPan(angle, 5)
-    if abs(percepts.joint_angles[core.HeadYaw]) > pi / 6:
-      angle = -angle
-      commands.setHeadPan(angle, 5)
+    commands.setHeadPan(-pi / 3, 5)
+    if percepts.joint_angles[core.HeadYaw] < - pi / 6:
+      commands.setHeadPan(pi / 3, 5)
+    elif percepts.joint_angles[core.HeadYaw] > pi / 6:
+      commands.setHeadPan(-pi / 3, 5)
     
     if self.getTime() > 30.0:
       commands.stand()
