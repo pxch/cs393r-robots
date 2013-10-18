@@ -24,11 +24,8 @@ class TestMachine(StateMachine):
 class WalkWithTurningNode(Node):
   def run(self):
     commands.setWalkVelocity(.5, 0, 0)
-    commands.setHeadPan(-pi / 6, 5.0, True)
-    commands.setHeadPan(pi / 3, 10.0, True)
-    commands.setHeadPan(-pi / 6, 5.0, True)
     
-    if self.getTime() > 20.0:
+    if self.getTime() > 30.0:
       commands.stand()
       self.postSuccess()
       
