@@ -85,7 +85,7 @@ void BeaconDetector::detectBeacon() {
 		//Detect PINK_YELLOW
 		for (unsigned int j = 0;
 				j < blob_detector_->horizontalBlob[c_YELLOW].size(); ++j) {
-			yellowBlob = blob_detector_->horizontalBlob[c_YELLOW][j]
+			yellowBlob = blob_detector_->horizontalBlob[c_YELLOW][j];
 			if (isVerticalConnected(pinkBlob, yellowBlob)) {
 				bool flag = true;
 				for (unsigned int ii = 0;
@@ -144,7 +144,7 @@ void BeaconDetector::detectBeacon() {
 		//Detect PINK_BLUE
 		for (unsigned int j = 0;
 				j < blob_detector_->horizontalBlob[c_BLUE].size(); ++j) {
-			blueBlob = blob_detector_->horizontalBlob[c_BLUE][j]
+			blueBlob = blob_detector_->horizontalBlob[c_BLUE][j];
 			if (isVerticalConnected(pinkBlob, blueBlob)) {
 				bool flag = true;
 				for (unsigned int ii = 0;
