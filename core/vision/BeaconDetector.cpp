@@ -63,9 +63,11 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 	else
 		beacon->fromTopCamera = false;
 
+	beacon->distance = CameraMatrix::getWorldDistanceByHeight(float(beacon->height) / 2, 200);
+
 	std::cout << "Width: " << beacon->width << ", Height: " << beacon->height
 			<< ", imageCenterX: " << beacon->imageCenterX << ", imageCenterY: "
-			<< beacon->imageCenterY << std::endl;
+			<< beacon->imageCenterY << ", distance: " << beacon->distance << std::endl;
 }
 
 void BeaconDetector::detectBeacon() {

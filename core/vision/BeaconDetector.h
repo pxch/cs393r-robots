@@ -7,6 +7,7 @@
 #include <vision/ObjectDetector.h>
 #include <vision/Classifier.h>
 #include <vision/structures/BallCandidate.h>
+#include <vision/CameraMatrix.h>
 
 class BeaconDetector: public ObjectDetector {
 public:
