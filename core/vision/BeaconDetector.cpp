@@ -20,14 +20,19 @@ bool BeaconDetector::isVerticalConnected(Blob& blob1, Blob& blob2) {
 	int vertical_dist = 0;
 	float horizontal_inter = 0.0;
 
+	if (float(blob1.dx + blob1.dy) / float(blob2.dx + blob2.dy) > 1.25 || float(blob1.dx + blob1.dy) / float(blob2.dx + blob2.dy) < 0.8)
+		return false;
+
 	vertical_dist =
 			blob1.yf > blob2.yi ? blob1.yf - blob2.yi : blob2.yi - blob1.yf;
-	if (abs(blob1.xi - blob2.xf) > abs(blob1.xf - blob2.xi)) {
-		horizontal_inter = float(abs(blob1.xf - blob2.xi))
-				/ float(abs(blob1.xi - blob2.xf));
+	if (blob1.xf <= blob2.xi || blob2.xf <= blob1.xi)
+		return false;
+	if (abs(int(blob1.xi) - int(blob2.xf)) > abs(int(blob1.xf) - int(blob2.xi))) {
+		horizontal_inter = float(abs(int(blob1.xf) - int(blob2.xi)))
+				/ float(blob1.dx);
 	} else {
-		horizontal_inter = float(abs(blob1.xi - blob2.xf))
-				/ float(abs(blob1.xf - blob2.xi));
+		horizontal_inter = float(abs(int(blob1.xi) - int(blob2.xf)))
+				/ float(blob1.dx);
 	}
 
 	if (vertical_dist <= vertical_dist_thres
@@ -44,8 +49,8 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 	else
 		beacon->width = abs(blob1.xf - blob2.xi);
 	beacon->height = blob2.yf - blob1.yi;
-	beacon->imageCenterX = (float(blob1.avgX) + float(blob2.avgX)) / 2;
-	beacon->imageCenterY = (float(blob1.avgY) + float(blob2.avgY)) / 2;
+	beacon->imageCenterX = (float(blob1.xi) + float(blob2.xf)) / 2;
+	beacon->imageCenterY = (float(blob1.yi) + float(blob2.yf)) / 2;
 	if (camera_ == Camera::TOP)
 		beacon->fromTopCamera = true;
 	else
@@ -57,8 +62,6 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 }
 
 void BeaconDetector::detectBeacon() {
-	std::cout << "detectBeacon!" << std::endl;
-
 	WorldObject* beacon_p_y =
 			&vblocks_.world_object->objects_[WO_BEACON_PINK_YELLOW];
 	WorldObject* beacon_y_p =
