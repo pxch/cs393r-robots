@@ -56,7 +56,7 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 		beacon->fromTopCamera = false;
 
 	std::cout << beacon->width << ", " << beacon->height << ","
-			<< beacon->imageCenterX << "," << imageCenterY << std::endl;
+			<< beacon->imageCenterX << "," << beacon->imageCenterY << std::endl;
 }
 
 void BeaconDetector::detectBeacon() {
