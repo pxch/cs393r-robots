@@ -164,7 +164,7 @@ void BlobDetector::formBlobs(int color) {
 	int blobSize = 0;
 
 	for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
-		if (currentBlobs[i].correctPixelCount < 100) {
+		if (currentBlobs[i].dx < 20 || currentBlobs[i].dy < 20) {
 			currentBlobs[i].invalid = true;
 		} else if (currentBlobs[i].invalid == false) {
 			++blobSize;
