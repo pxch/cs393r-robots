@@ -178,6 +178,11 @@ void Classifier::constructRuns() {
 						horizontalPoint[i][j][runCount - 1].dy = 1;
 						horizontalPoint[i][j][runCount - 1].isValid = true;
 					}
+					else if (k == iparams_.width - 1) {
+						isCurrentColor = false;
+						horizontalPoint[i][j][runCount - 1].xf = k;
+						horizontalPoint[i][j][runCount - 1].dx = k + 1 - horizontalPoint[i][j][runCount - 1].xi;
+					}
 				}
 				else {
 					if (isCurrentColor == true) {
@@ -186,8 +191,8 @@ void Classifier::constructRuns() {
 						horizontalPoint[i][j][runCount - 1].dx = k - horizontalPoint[i][j][runCount - 1].xi;
 					}
 				}
-				horizontalPointCount[i][j] = runCount;
 			}
+			horizontalPointCount[i][j] = runCount;
 		}
 	}
 }

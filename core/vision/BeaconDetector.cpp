@@ -85,6 +85,8 @@ void BeaconDetector::detectBeacon(WorldObject* beacon, int color1, int color2,
 				for (unsigned int ii = 0;
 						ii < blob_detector_->horizontalBlob[c_PINK].size();
 						++ii) {
+					if (color2 == c_PINK && j == ii)
+						continue;
 					if (isVerticalConnected(blob2,
 							blob_detector_->horizontalBlob[c_PINK][ii])) {
 						flag = false;
@@ -96,6 +98,8 @@ void BeaconDetector::detectBeacon(WorldObject* beacon, int color1, int color2,
 				for (unsigned int ii = 0;
 						ii < blob_detector_->horizontalBlob[c_BLUE].size();
 						++ii) {
+					if (color2 == c_BLUE && j == ii)
+						continue;
 					if (isVerticalConnected(blob2,
 							blob_detector_->horizontalBlob[c_BLUE][ii])) {
 						flag = false;
@@ -107,6 +111,8 @@ void BeaconDetector::detectBeacon(WorldObject* beacon, int color1, int color2,
 				for (unsigned int ii = 0;
 						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
 						++ii) {
+					if (color2 == c_YELLOW && j == ii)
+						continue;
 					if (isVerticalConnected(blob2,
 							blob_detector_->horizontalBlob[c_YELLOW][ii])) {
 						flag = false;
@@ -120,6 +126,8 @@ void BeaconDetector::detectBeacon(WorldObject* beacon, int color1, int color2,
 				for (unsigned int ii = 0;
 						ii < blob_detector_->horizontalBlob[c_PINK].size();
 						++ii) {
+					if (color1 == c_PINK && i == ii)
+						continue;
 					if (isVerticalConnected(
 							blob_detector_->horizontalBlob[c_PINK][ii],
 							blob1)) {
@@ -132,6 +140,8 @@ void BeaconDetector::detectBeacon(WorldObject* beacon, int color1, int color2,
 				for (unsigned int ii = 0;
 						ii < blob_detector_->horizontalBlob[c_BLUE].size();
 						++ii) {
+					if (color1 == c_BLUE && i == ii)
+						continue;
 					if (isVerticalConnected(
 							blob_detector_->horizontalBlob[c_BLUE][ii],
 							blob1)) {
@@ -144,6 +154,8 @@ void BeaconDetector::detectBeacon(WorldObject* beacon, int color1, int color2,
 				for (unsigned int ii = 0;
 						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
 						++ii) {
+					if (color1 == c_YELLOW && i == ii)
+						continue;
 					if (isVerticalConnected(
 							blob_detector_->horizontalBlob[c_YELLOW][ii],
 							blob1)) {
