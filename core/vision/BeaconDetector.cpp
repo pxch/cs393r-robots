@@ -28,6 +28,10 @@ bool BeaconDetector::isVerticalConnected(Blob& blob1, Blob& blob2) {
 		horizontal_inter = float(abs(blob1.xi - blob2.xf))
 				/ float(abs(blob1.xf - blob2.xi));
 	}
+
+	std::cout << "Judge if connected: vertical_dist = " << vertical_dist
+			<< ", horizontal_inter_thres = " << horizontal_inter << std::endl;
+
 	if (vertical_dist <= vertical_dist_thres
 			&& horizontal_inter >= horizontal_inter_thres)
 		return true;
