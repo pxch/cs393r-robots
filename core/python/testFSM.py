@@ -26,11 +26,15 @@ class WalkWithTurningNode(Node):
   def run(self):
     print "My head yaw value is %f!" % percepts.joint_angles[core.HeadYaw]
     commands.setWalkVelocity(0.6, 0, 0)
-    commands.setHeadPan(-pi / 3, 5)
-    if percepts.joint_angles[core.HeadYaw] < - pi / 6:
-      commands.setHeadPan(pi / 3, 5)
-    elif percepts.joint_angles[core.HeadYaw] > pi / 6:
+    flag = 0
+    if flag == 0:
       commands.setHeadPan(-pi / 3, 5)
+      if percepts.joint_angles[core.HeadYaw] < - pi / 6:
+        flag = 1
+    elif flag == 1:
+      commands.setHeadPan(pi / 3, 5)
+      if percepts.joint_angles[core.HeadYaw] > pi / 6:
+        flag = 0
     
     if self.getTime() > 30.0:
       commands.stand()
