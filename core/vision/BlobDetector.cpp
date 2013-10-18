@@ -49,7 +49,7 @@ void BlobDetector::addPointToBlob(VisionPoint& point, uint32_t pointIndex,
 		blob.dy = blob.yf - blob.yi;
 	}
 	point.lbIndex = blobIndex;
-	blob.lpIndex[lpCount++] = pointIndex;
+	blob.lpIndex[blob.lpCount++] = pointIndex;
 	uint16_t currentPixelCount = blob.correctPixelCount + point.dx;
 	if (currentPixelCount > 0) {
 		blob.avgX = (blob.avgX * blob.correctPixelCount
@@ -77,7 +77,7 @@ void BlobDetector::formBlobs(int color) {
 	for (uint32_t x = 0; x < horizontalPointCount[0]; ++x) {
 		pointIndex = x;
 
-		currentBlobs.push_back(new Blob);
+		currentBlobs.push_back(Blob blob);
 		addPointToBlob(horizontalPoint[0][x], pointIndex,
 				currentBlobs[blobIndex], blobIndex);
 		++blobIndex;
@@ -114,7 +114,7 @@ void BlobDetector::formBlobs(int color) {
 //						- 1] = pointIndex;
 				blobIndex = horizontalPoint[y - 1][xx].lbIndex;
 				addPointToBlob(horizontalPoint[y][x], pointIndex,
-						currentBlob[blobIndex], blobIndex);
+						currentBlobs[blobIndex], blobIndex);
 			} else {
 //				horizontalPoint[y][x].lbIndex = blobCount++;
 
@@ -136,9 +136,9 @@ void BlobDetector::formBlobs(int color) {
 //
 //					currentBlobs.push_back(newBlob);
 				blobIndex = currentBlob.size();
-				currentBlob.push_back(new Blob);
+				currentBlobs.push_back(Blob blob);
 				addPointToBlob(horizontalPoint[y][x], pointIndex,
-						currentBlob[blobIndex], blobIndex);
+						currentBlobs[blobIndex], blobIndex);
 			}
 		}
 	}
@@ -174,16 +174,16 @@ void BlobDetector::formBlobs(int color) {
 	// Delete Invalid Blob
 	horizontalBlob[color].resize(blobSize);
 
-	blobCount = 0;
+	blobIndex = 0;
 	uint16_t xi_1, xi_2, xf_1, xf_2, yi_1, yi_2, yf_1, yf_2, dx_2, dy_2;
 	for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
 		if (currentBlobs[i].invalid == false) {
 //				Blob validBlob = currentBlobs[i];
 //				horizontalBlob[c].push_back(Blob(currentBlobs[i]));
 //				++blobCount;
-			horizontalBlob[color][blobCount++] = currentBlobs[i];
+			horizontalBlob[color][blobIndex++] = currentBlobs[i];
 			for (uint16_t j = 0;
-					j < horizontalBlob[color][blobCount - 1].lpCount; ++j) {
+					j < horizontalBlob[color][blobIndex - 1].lpCount; ++j) {
 //				pointIndex = horizontalBlob[color][blobCount - 1].lpIndex[j];
 //				pointLine = pointIndex >> 16;
 //				pointColumn = pointIndex & 0xfffful;
@@ -231,11 +231,11 @@ void BlobDetector::formBlobs(int color) {
 //			horizontalBlob[color][blobCount - 1].dy =
 //					horizontalBlob[color][blobCount - 1].yf
 //							- horizontalBlob[color][blobCount - 1].yi + 1;
-			std::cout << c << "[ " << blobCount << " ]: "
-					<< horizontalBlob[color][blobCount - 1].xi << ", "
-					<< horizontalBlob[color][blobCount - 1].yi << ", "
-					<< horizontalBlob[color][blobCount - 1].xf << ", "
-					<< horizontalBlob[color][blobCount - 1].yf << std::endl;
+			std::cout << color << "[ " << blobIndex << " ]: "
+					<< horizontalBlob[color][blobIndex - 1].xi << ", "
+					<< horizontalBlob[color][blobIndex - 1].yi << ", "
+					<< horizontalBlob[color][blobIndex - 1].xf << ", "
+					<< horizontalBlob[color][blobIndex - 1].yf << std::endl;
 		}
 	}
 }

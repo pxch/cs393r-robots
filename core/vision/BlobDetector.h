@@ -28,7 +28,7 @@ private:
 	TextLogger* textlogger;
 
 	bool isOverlapped(VisionPoint& a, VisionPoint& b);
-	void mergeBlob(BlobCollection& blobs, int indexA, int indexB);
+	void mergeBlob(BlobCollection& blobs, int color, int indexA, int indexB);
 	void addPointToBlob(VisionPoint& point, uint32_t pointIndex, Blob& blob, uint16_t blobIndex);
 };
 

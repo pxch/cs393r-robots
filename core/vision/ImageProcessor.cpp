@@ -101,7 +101,9 @@ void ImageProcessor::processFrame(){
   classifier_->reset();
   classifier_->constructRuns();
 
-  blob_detector_->detectBlob();
+  blob_detector_->formBlobs(c_PINK);
+  blob_detector_->formBlobs(c_BLUE);
+  blob_detector_->formBlobs(c_YELLOW);
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
