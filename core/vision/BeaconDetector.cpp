@@ -44,21 +44,16 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 	else
 		beacon->width = abs(blob1.xf - blob2.xi);
 	beacon->height = blob2.yf - blob1.yi;
-	beacon->imageCenterX = float(
-			blob1.correctPixelCount * blob1.avgX
-					+ blob2.correctPixelCount * blob2.avgX)
-			/ (blob1.correctPixelCount + blob2.correctPixelCount);
-	beacon->imageCenterY = float(
-			blob1.correctPixelCount * blob1.avgY
-					+ blob2.correctPixelCount * blob2.avgY)
-			/ (blob1.correctPixelCount + blob2.correctPixelCount);
+	beacon->imageCenterX = (float(blob1.avgX) + float(blob2.avgX)) / 2;
+	beacon->imageCenterY = (float(blob1.avgY) + float(blob2.avgY)) / 2;
 	if (camera_ == Camera::TOP)
 		beacon->fromTopCamera = true;
 	else
 		beacon->fromTopCamera = false;
 
-	std::cout << beacon->width << ", " << beacon->height << ","
-			<< beacon->imageCenterX << "," << beacon->imageCenterY << std::endl;
+	std::cout << "Width: " << beacon->width << ", Height: " << beacon->height
+			<< ", imageCenterX: " << beacon->imageCenterX << ", imageCenterY: "
+			<< beacon->imageCenterY << std::endl;
 }
 
 void BeaconDetector::detectBeacon() {
