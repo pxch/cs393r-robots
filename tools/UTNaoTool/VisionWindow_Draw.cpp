@@ -577,7 +577,7 @@ void VisionWindow::drawVertLinePoints(ImageWidget *image) {
 	}
 
 	// Draw blue blobs;
-	painter.setPen(QPen(segCol[c_BLUE], 2););
+	painter.setPen(QPen(segCol[c_BLUE], 2));
 	for (uint16_t i = 0;
 			i < processor->blob_detector_->horizontalBlob[c_BLUE].size(); i++) {
 		Blob *bl = &processor->blob_detector_->horizontalBlob[c_BLUE][i];
