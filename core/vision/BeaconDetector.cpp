@@ -90,6 +90,7 @@ void BeaconDetector::detectBeacon() {
 		//Detect PINK_YELLOW
 		for (unsigned int j = 0;
 				j < blob_detector_->horizontalBlob[c_YELLOW].size(); ++j) {
+			yellowBlob = blob_detector_->horizontalBlob[c_YELLOW][j]
 			if (isVerticalConnected(pinkBlob, yellowBlob)) {
 				std::cout << "Pink is connected to Yellow." << std::endl;
 				bool flag = true;
