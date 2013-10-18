@@ -23,10 +23,10 @@ class TestMachine(StateMachine):
 #     self._adt(sit, C, finish)
 
 class WalkWithTurningNode(Node):
+  flag = 0
   def run(self):
     print "My head yaw value is %f!" % percepts.joint_angles[core.HeadYaw]
-    commands.setWalkVelocity(0.6, 0, 0)
-    flag = 0
+    commands.setWalkVelocity(0.5, 0, 0)
     if flag == 0:
       commands.setHeadPan(-pi / 3, 5)
       if percepts.joint_angles[core.HeadYaw] < - pi / 6:
