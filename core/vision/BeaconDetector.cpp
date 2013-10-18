@@ -75,6 +75,10 @@ void BeaconDetector::detectBeacon(WorldObject* beacon, int color1, int color2,
 			blob2 = blob_detector_->horizontalBlob[color2][j];
 
 			if (isVerticalConnected(blob1, blob2)) {
+				std::cout << "------------------------------" << std::endl;
+				std::cout << "Beacon_" << color1_str << "_" << color2_str << "connected. Waiting for further check."<< std::endl;
+				std::cout << "------------------------------" << std::endl;
+
 				bool flag = true;
 
 				//Check blob2
