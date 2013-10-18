@@ -77,7 +77,7 @@ void BlobDetector::formBlobs(int color) {
 	for (uint32_t x = 0; x < horizontalPointCount[0]; ++x) {
 		pointIndex = x;
 
-		currentBlobs.push_back(Blob);
+		currentBlobs.push_back(Blob());
 		addPointToBlob(horizontalPoint[0][x], pointIndex,
 				currentBlobs[blobIndex], blobIndex);
 		++blobIndex;
@@ -136,7 +136,7 @@ void BlobDetector::formBlobs(int color) {
 //
 //					currentBlobs.push_back(newBlob);
 				blobIndex = currentBlobs.size();
-				currentBlobs.push_back(Blob);
+				currentBlobs.push_back(Blob());
 				addPointToBlob(horizontalPoint[y][x], pointIndex,
 						currentBlobs[blobIndex], blobIndex);
 			}
