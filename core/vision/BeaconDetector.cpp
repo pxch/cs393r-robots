@@ -9,7 +9,7 @@ BeaconDetector::BeaconDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 }
 
 bool BeaconDetector::isVerticalConnected(Blob& blob1, Blob& blob2) {
-	if (camera_ == CAMERA::TOP)
+	if (camera_ == Camera::TOP)
 		int vertical_dist_thres = 10;
 	else
 		int vertical_dist_thres = 5;
@@ -34,24 +34,24 @@ bool BeaconDetector::isVerticalConnected(Blob& blob1, Blob& blob2) {
 }
 
 void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
-	beacon.seen = true;
+	beacon->seen = true;
 	if (abs(blob1.xi - blob2.xf) > abs(blob1.xf - blob2.xi))
-		beacon.width = abs(blob1.xi - blob2.xf);
+		beacon->width = abs(blob1.xi - blob2.xf);
 	else
-		beacon.width = abs(blob1.xf - blob2.xi);
-	beacon.height = blob2.yf - blob1.yi;
-	beacon.imageCenterX = float(
+		beacon->width = abs(blob1.xf - blob2.xi);
+	beacon->height = blob2.yf - blob1.yi;
+	beacon->imageCenterX = float(
 			blob1.correctPixelCount * blob1.avgX
 					+ blob2.correctPixelCount * blob2.avgX)
 			/ (blob1.correctPixelCount + blob2.correctPixelCount);
-	beacon.imageCenterY = float(
+	beacon->imageCenterY = float(
 			blob1.correctPixelCount * blob1.avgY
 					+ blob2.correctPixelCount * blob2.avgY)
 			/ (blob1.correctPixelCount + blob2.correctPixelCount);
-	if (camera_ == CAMERA::TOP)
-		beacon.fromTopCamera = true;
+	if (camera_ == Camera::TOP)
+		beacon->fromTopCamera = true;
 	else
-		beacon.fromTopCamera = false;
+		beacon->fromTopCamera = false;
 }
 
 void BeaconDetector::detectBeacon() {
