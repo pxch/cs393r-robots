@@ -34,6 +34,13 @@ struct Blob {
 		correctPixelRatio = 0;
 		invalid = false;
 	}
+
+	float getRectRatio() {
+		if (dx < dy)
+			return float(dy) / float(dx);
+		else
+			return float(dx) / float(dy);
+	}
 };
 
 bool sortBlobAreaPredicate(Blob* left, Blob* right);

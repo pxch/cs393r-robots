@@ -55,7 +55,8 @@ void BlobDetector::addPointToBlob(VisionPoint& point, uint32_t pointIndex,
 				/ currentPixelCount;
 	}
 	blob.correctPixelCount = currentPixelCount;
-	blob.correctPixelRatio = float(blob.correctPixelCount) / (float(blob.dx) * float(blob.dy));
+	blob.correctPixelRatio = float(blob.correctPixelCount)
+			/ (float(blob.dx) * float(blob.dy));
 }
 
 void BlobDetector::formBlobs(int color) {
@@ -125,7 +126,8 @@ void BlobDetector::formBlobs(int color) {
 	int blobSize = 0;
 
 	for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
-		if (currentBlobs[i].dx < 10 || currentBlobs[i].dy < 10 || currentBlobs[i].correctPixelRatio < 0.5) {
+		if (currentBlobs[i].dx < 10 || currentBlobs[i].dy < 10
+				|| currentBlobs[i].correctPixelRatio < 0.5 || currentBlobs[i].getRectRatio() > 1.5) {
 			currentBlobs[i].invalid = true;
 		} else if (currentBlobs[i].invalid == false) {
 			++blobSize;
@@ -155,8 +157,10 @@ void BlobDetector::formBlobs(int color) {
 					<< horizontalBlob[color][blobIndex - 1].yf << ", "
 					<< horizontalBlob[color][blobIndex - 1].dx << ", "
 					<< horizontalBlob[color][blobIndex - 1].dy << ", "
-					<< horizontalBlob[color][blobIndex - 1].correctPixelCount << ", "
-					<< horizontalBlob[color][blobIndex - 1].correctPixelRatio << std::endl;
+					<< horizontalBlob[color][blobIndex - 1].correctPixelCount
+					<< ", "
+					<< horizontalBlob[color][blobIndex - 1].correctPixelRatio
+					<< std::endl;
 		}
 	}
 }

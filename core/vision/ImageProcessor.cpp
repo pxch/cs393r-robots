@@ -10,6 +10,7 @@ ImageProcessor::ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams
   line_detector_ = new LineDetector(DETECTOR_PASS_ARGS, classifier_, blob_detector_);
   goal_detector_ = new GoalDetector(DETECTOR_PASS_ARGS, classifier_, blob_detector_, line_detector_);
   ball_detector_ = new BallDetector(DETECTOR_PASS_ARGS, classifier_, blob_detector_);
+  beacon_detector_ = new BeaconDetector(DETECTOR_PASS_ARGS, classifier_, blob_detector_);
   robot_detector_ = new RobotDetector(DETECTOR_PASS_ARGS, classifier_, blob_detector_);
   cross_detector_ = new CrossDetector(DETECTOR_PASS_ARGS, classifier_, blob_detector_);
 }
@@ -22,6 +23,7 @@ void ImageProcessor::init(TextLogger* tl){
   line_detector_->init(tl);
   goal_detector_->init(tl);
   ball_detector_->init(tl);
+  beacon_detector_->init(tl);
   robot_detector_->init(tl);
   cross_detector_->init(tl);
 }
@@ -104,6 +106,8 @@ void ImageProcessor::processFrame(){
   blob_detector_->formBlobs(c_PINK);
   blob_detector_->formBlobs(c_BLUE);
   blob_detector_->formBlobs(c_YELLOW);
+
+  beacon_detector_->detectBeacon();
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {

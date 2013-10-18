@@ -10,6 +10,7 @@
 #include <vision/LineDetector.h>
 #include <vision/GoalDetector.h>
 #include <vision/BallDetector.h>
+#include <vision/BeaconDetector.h>
 #include <vision/RobotDetector.h>
 #include <vision/CrossDetector.h>
 #include <vision/Classifier.h>
@@ -27,6 +28,7 @@ class ImageProcessor {
     LineDetector* line_detector_;
     GoalDetector* goal_detector_;
     BallDetector* ball_detector_;
+    BeaconDetector* beacon_detector_;
     BlobDetector* blob_detector_;
     RobotDetector* robot_detector_;
     CrossDetector* cross_detector_;
