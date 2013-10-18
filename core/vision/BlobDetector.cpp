@@ -136,7 +136,7 @@ void BlobDetector::formBlobs(int color) {
 	horizontalBlob[color].resize(blobSize);
 
 	blobIndex = 0;
-	uint16_t xi_1, xi_2, xf_1, xf_2, yi_1, yi_2, yf_1, yf_2, dx_2, dy_2;
+
 	for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
 		if (currentBlobs[i].invalid == false) {
 
@@ -153,6 +153,9 @@ void BlobDetector::formBlobs(int color) {
 					<< horizontalBlob[color][blobIndex - 1].yi << ", "
 					<< horizontalBlob[color][blobIndex - 1].xf << ", "
 					<< horizontalBlob[color][blobIndex - 1].yf << ", "
+					<< horizontalBlob[color][blobIndex - 1].dx << ", "
+					<< horizontalBlob[color][blobIndex - 1].dy << ", "
+					<< horizontalBlob[color][blobIndex - 1].correctPixelCount << ", "
 					<< horizontalBlob[color][blobIndex - 1].correctPixelRatio << std::endl;
 		}
 	}
