@@ -16,7 +16,12 @@ void BeaconDetector::detectBeacon() {
 	WorldObject* beacon_p_b = &vblocks_.world_object->objects_[WO_BEACON_PINK_BLUE];
 	WorldObject* beacon_b_p = &vblocks_.world_object->objects_[WO_BEACON_BLUE_PINK];
 
-	for(int i = 0; i < blob_detector_->horizontalBlob[c_PINK].size(), ++i) {
+	Blob pinkBlob, yellowBlob, blueBlob;
 
+	for(int i = 0; i < blob_detector_->horizontalBlob[c_PINK].size(), ++i) {
+		pinkBlob = blob_detector_->horizontalBlob[c_PINK][i];
+		for (int j = 0; j < blob_detector_->horizontalBlob[c_YELLOW].size(), ++j) {
+			yellowBlob = blob_detector_->horizontalBlob[c_YELLOW][j];
+		}
 	}
 }
