@@ -14,8 +14,12 @@ public:
 	void init(TextLogger* tl) {
 		textlogger = tl;
 	}
-	;
+
 	void detectBeacon();
+
+	bool isVerticalConnected(Blob& blob1, Blob& blob2);
+
+	void formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2);
 
 private:
 	TextLogger* textlogger;
