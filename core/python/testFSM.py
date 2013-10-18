@@ -1,6 +1,7 @@
 from state import * 
 import commands, core, util, pose
 import time
+from math import pi
 
 class TestMachine(StateMachine):
   def setup(self):
