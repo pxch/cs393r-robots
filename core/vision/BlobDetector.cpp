@@ -42,8 +42,8 @@ void BlobDetector::addPointToBlob(VisionPoint& point, uint32_t pointIndex,
 		blob.yi = blob.yi > point.yi ? point.yi : blob.yi;
 		blob.xf = blob.xf > point.xf ? blob.xf : point.xf;
 		blob.yf = blob.yf > point.yf ? blob.yf : point.yf;
-		blob.dx = blob.xf - blob.xi;
-		blob.dy = blob.yf - blob.yi;
+		blob.dx = blob.xf - blob.xi + 1;
+		blob.dy = blob.yf - blob.yi + 1;
 	}
 	point.lbIndex = blobIndex;
 	blob.lpIndex[blob.lpCount++] = pointIndex;
