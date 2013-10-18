@@ -126,8 +126,11 @@ void BlobDetector::formBlobs(int color) {
 	int blobSize = 0;
 
 	for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
-		if (currentBlobs[i].dx < 10 || currentBlobs[i].dy < 10
-				|| currentBlobs[i].correctPixelRatio < 0.5 || currentBlobs[i].getRectRatio() > 1.25) {
+		if ((currentBlobs[i].dx < 10 && currentBlobs[i].dy < 10)
+				|| currentBlobs[i].correctPixelRatio < 0.5
+				|| float(currentBlobs[i].dx) / float(currentBlobs[i].dy) < 0.8
+				|| float(currentBlobs[i].dy) / float(currentBlobs[i].dx)
+						< 0.6) {
 			currentBlobs[i].invalid = true;
 		} else if (currentBlobs[i].invalid == false) {
 			++blobSize;
@@ -150,18 +153,18 @@ void BlobDetector::formBlobs(int color) {
 
 			}
 			/*
-			std::cout << color << "[ " << blobIndex << " ]: "
-					<< horizontalBlob[color][blobIndex - 1].xi << ", "
-					<< horizontalBlob[color][blobIndex - 1].yi << ", "
-					<< horizontalBlob[color][blobIndex - 1].xf << ", "
-					<< horizontalBlob[color][blobIndex - 1].yf << ", "
-					<< horizontalBlob[color][blobIndex - 1].dx << ", "
-					<< horizontalBlob[color][blobIndex - 1].dy << ", "
-					<< horizontalBlob[color][blobIndex - 1].correctPixelCount
-					<< ", "
-					<< horizontalBlob[color][blobIndex - 1].correctPixelRatio
-					<< std::endl;
-			*/
+			 std::cout << color << "[ " << blobIndex << " ]: "
+			 << horizontalBlob[color][blobIndex - 1].xi << ", "
+			 << horizontalBlob[color][blobIndex - 1].yi << ", "
+			 << horizontalBlob[color][blobIndex - 1].xf << ", "
+			 << horizontalBlob[color][blobIndex - 1].yf << ", "
+			 << horizontalBlob[color][blobIndex - 1].dx << ", "
+			 << horizontalBlob[color][blobIndex - 1].dy << ", "
+			 << horizontalBlob[color][blobIndex - 1].correctPixelCount
+			 << ", "
+			 << horizontalBlob[color][blobIndex - 1].correctPixelRatio
+			 << std::endl;
+			 */
 		}
 	}
 }

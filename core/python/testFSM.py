@@ -39,7 +39,7 @@ class WalkWithTurningNode(Node):
       if percepts.joint_angles[core.HeadYaw] > pi / 6:
         self.flag = 0
     
-    if self.getTime() > 30.0:
+    if self.getTime() > 20.0:
       commands.stand()
       self.postSuccess()
       
