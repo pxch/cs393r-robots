@@ -26,7 +26,7 @@ void BlobDetector::mergeBlob(BlobCollection& blobs, int color, int indexA,
 		uint32_t pointIndex = blobs[indexA].lpIndex[i];
 		addPointToBlob(
 				classifier_->horizontalPoint[color][pointIndex >> 16][pointIndex
-						& 0xfffful], pointIndex, blobs[indexB], indexB)
+						& 0xfffful], pointIndex, blobs[indexB], indexB);
 	}
 	blobs[indexA].invalid = true;
 }
@@ -77,7 +77,7 @@ void BlobDetector::formBlobs(int color) {
 	for (uint32_t x = 0; x < horizontalPointCount[0]; ++x) {
 		pointIndex = x;
 
-		currentBlobs.push_back(Blob blob);
+		currentBlobs.push_back(Blob);
 		addPointToBlob(horizontalPoint[0][x], pointIndex,
 				currentBlobs[blobIndex], blobIndex);
 		++blobIndex;
@@ -135,8 +135,8 @@ void BlobDetector::formBlobs(int color) {
 //					newBlob->correctPixelRatio = 0.0;
 //
 //					currentBlobs.push_back(newBlob);
-				blobIndex = currentBlob.size();
-				currentBlobs.push_back(Blob blob);
+				blobIndex = currentBlobs.size();
+				currentBlobs.push_back(Blob);
 				addPointToBlob(horizontalPoint[y][x], pointIndex,
 						currentBlobs[blobIndex], blobIndex);
 			}
@@ -188,7 +188,7 @@ void BlobDetector::formBlobs(int color) {
 //				pointLine = pointIndex >> 16;
 //				pointColumn = pointIndex & 0xfffful;
 
-				horizontalPoint[pointLine][pointColumn].lbIndex = blobCount;
+				horizontalPoint[pointLine][pointColumn].lbIndex = blobIndex;
 
 //				xi_1 = horizontalBlob[color][blobCount - 1].xi;
 //				xf_1 = horizontalBlob[color][blobCount - 1].xf;
