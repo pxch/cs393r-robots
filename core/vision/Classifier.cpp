@@ -183,7 +183,7 @@ void Classifier::constructRuns() {
 					if (isCurrentColor == true) {
 						isCurrentColor = false;
 						horizontalPoint[i][j][runCount - 1].xf = k - 1;
-						horizontalPoint[i][j][runCount - 1].dx = k - horizontalPoint[i][j][runCount - 1].yi;
+						horizontalPoint[i][j][runCount - 1].dx = k - horizontalPoint[i][j][runCount - 1].xi;
 					}
 				}
 				horizontalPointCount[i][j] = runCount;
