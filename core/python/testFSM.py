@@ -29,7 +29,6 @@ class WalkWithTurningNode(Node):
     self.flag = 0
     
   def run(self):
-    print "My head yaw value is %f!" % percepts.joint_angles[core.HeadYaw]
     commands.setWalkVelocity(0.2, 0, 0)
     if self.flag == 0:
       commands.setHeadPan(-pi / 4, 20)
