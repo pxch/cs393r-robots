@@ -8,15 +8,29 @@ class TestMachine(StateMachine):
     finish = Node()
     sit = SitNode()
     stand = StandNode()
-    choose = ChooseNode()
+#     choose = ChooseNode()
     self._adt(start, N, stand)
-    self._adt(stand, C, choose)
-    self._adt(choose, S(Choices.Forward), WalkNode(), S, choose)
-    self._adt(choose, S(Choices.Left), TurnLeftNode(), S, choose)
-    self._adt(choose, S(Choices.Right), TurnRightNode(), S, choose)
-    self._adt(choose, I(4), SpeakNode('completed'), S, sit)
+    self._adt(stand, C, WalkWithTurningNode(), S, sit)
     self._adt(sit, C, finish)
+    
+#     self._adt(stand, C, choose)
+#     self._adt(choose, S(Choices.Forward), WalkNode(), S, choose)
+#     self._adt(choose, S(Choices.Left), TurnLeftNode(), S, choose)
+#     self._adt(choose, S(Choices.Right), TurnRightNode(), S, choose)
+#     self._adt(choose, I(4), SpeakNode('completed'), S, sit)
+#     self._adt(sit, C, finish)
 
+class WalkWithTurningNode(Node):
+  def run(self):
+    commands.setWalkVelocity(.5, 0, 0)
+    commands.setHeadPan(-pi / 6, 5.0, True)
+    commands.setHeadPan(pi / 3, 10.0, True)
+    commands.setHeadPan(-pi / 6, 5.0, True)
+    
+    if self.getTime() > 20.0:
+      commands.stand()
+      self.postSuccess()
+      
 
 def rand():
   t = int(time.time() * 1000) % 1000
