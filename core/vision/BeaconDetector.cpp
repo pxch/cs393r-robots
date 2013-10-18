@@ -60,6 +60,8 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 }
 
 void BeaconDetector::detectBeacon() {
+	std::cout << "detectBeacon!" << std::endl;
+
 	WorldObject* beacon_p_y =
 			&vblocks_.world_object->objects_[WO_BEACON_PINK_YELLOW];
 	WorldObject* beacon_y_p =
