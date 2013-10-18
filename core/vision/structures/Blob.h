@@ -22,17 +22,17 @@ struct Blob {
 	bool invalid;
 
 	Blob() :
-			lpIndex(MAX_BLOB_VISIONPOINTS, 0), xi(0), xf(0), yi(0), yf(0), lpCount(
-					0), avgX(0), avgY(0), correctPixelCount(0), correctPixelRatio(
-					0.0), invalid(false) {
-	}
-
-	Blob(uint16_t xxi, uint16_t xxf, uint16_t yyi, uint16_t yyf,
-			uint32_t pIndex0) :
-			lpIndex(MAX_BLOB_VISIONPOINTS, 0), xi(xxi), xf(xxf), yi(yyi), yf(
-					yyf), lpCount(1), avgX(0), avgY(0), correctPixelCount(0), correctPixelRatio(
-					0.0), invalid(false) {
-		lpIndex[0] = pIndex0;
+			lpIndex(MAX_BLOB_VISIONPOINTS, 0) {
+		xi = 0;
+		xf = 0;
+		yi = 0;
+		yf = 0;
+		lpCount = 0;
+		avgX = 0;
+		avgY = 0;
+		correctPixelCount = 0;
+		correctPixelRatio = 0;
+		invalid = false;
 	}
 };
 
