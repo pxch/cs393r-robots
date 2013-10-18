@@ -21,14 +21,15 @@ public:
 	;
 	std::vector<BlobCollection> horizontalBlob, verticalBlob;
 
-	void detectBlob();
+	void formBlobs(int color);
 
 private:
 	Classifier*& classifier_;
 	TextLogger* textlogger;
 
-	bool IsOverlapped(VisionPoint& a, VisionPoint& b);
-	void MergeBlob(BlobCollection& blobs, int indexA, int indexB);
+	bool isOverlapped(VisionPoint& a, VisionPoint& b);
+	void mergeBlob(BlobCollection& blobs, int indexA, int indexB);
+	void addPointToBlob(VisionPoint& point, uint32_t pointIndex, Blob& blob, uint16_t blobIndex);
 };
 
 #endif

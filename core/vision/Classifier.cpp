@@ -22,7 +22,7 @@ Classifier::Classifier(const VisionBlocks& vblocks, const VisionParams& vparams,
 	}
 
 	horizontalPoint = new VisionPoint**[NUM_COLORS];
-	for (int i = 4; i < 7; i++) {
+	for (int i = 0; i < NUM_COLORS; i++) {
 		horizontalPoint[i] = new VisionPoint*[iparams_.height];
 		for (int j = 0; j < iparams_.height; j++) {
 			horizontalPoint[i][j] = new VisionPoint[iparams_.width];
@@ -163,7 +163,7 @@ void Classifier::reset() {
 void Classifier::constructRuns() {
 	bool isCurrentColor = false;
 	int runCount = 0;
-	for (int i = 4; i < 7; i++) {
+	for (int i = 0; i < NUM_COLORS; i++) {
 		for (int j = 0; j < iparams_.height; j++) {
 			isCurrentColor = false;
 			runCount = 0;
