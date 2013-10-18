@@ -20,7 +20,7 @@ bool BeaconDetector::isVerticalConnected(Blob& blob1, Blob& blob2) {
 	int vertical_dist = 0;
 	float horizontal_inter = 0.0;
 
-	vertical_dist = abs(blob1.yf - blob2.yi);
+	vertical_dist = abs(int(blob1.yf) - int(blob2.yi));
 	if (abs(blob1.xi - blob2.xf) > abs(blob1.xf - blob2.xi)) {
 		horizontal_inter = float(abs(blob1.xf - blob2.xi))
 				/ float(abs(blob1.xi - blob2.xf));
