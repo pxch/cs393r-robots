@@ -12,7 +12,7 @@ class TestMachine(StateMachine):
     stand = StandNode()
 #     choose = ChooseNode()
     self._adt(start, N, stand)
-    self._adt(stand, C, WalkWithTurningNode(), S, sit)
+    self._adt(stand, C, TurnHeadNode(pi/6), S, WalkWithTurningNode(), S, sit)
     self._adt(sit, C, finish)
     
 #     self._adt(stand, C, choose)
@@ -29,21 +29,42 @@ class WalkWithTurningNode(Node):
     
   def run(self):
     print "My head yaw value is %f!" % percepts.joint_angles[core.HeadYaw]
-    commands.setWalkVelocity(0.3, 0, 0)
-    if self.flag == 0:
-      commands.setHeadPan(-pi / 3, 20)
-      if percepts.joint_angles[core.HeadYaw] < - pi / 6:
-        self.flag = 1
-    elif self.flag == 1:
-      commands.setHeadPan(pi / 3, 20)
-      if percepts.joint_angles[core.HeadYaw] > pi / 6:
-        self.flag = 0
+    commands.setWalkVelocity(0.2, 0, 0)
+#    if self.flag == 0:
+#      commands.setHeadPan(-pi / 3, 20)
+#      if percepts.joint_angles[core.HeadYaw] < - pi / 6:
+#        self.flag = 1
+#    elif self.flag == 1:
+#      commands.setHeadPan(pi / 3, 20)
+#      if percepts.joint_angles[core.HeadYaw] > pi / 6:
+#        self.flag = 0
     
+    commands.setHeadPan(-pi / 6, 20)
+
     if self.getTime() > 20.0:
       commands.stand()
       self.postSuccess()
-      
 
+class TiltHeadNode(Node):
+  def __init__(self, tilt):
+    super(TiltHeadNode, self).__init__()
+    self.tilt = tilt
+  
+  def run(self):
+    commands.setHeadTilt(self.tilt)
+    if self.getTime() > 2.0:
+      self.postSuccess()
+
+class TurnHeadNode(Node):
+  def __init__(self, turn):
+    super(TurnHeadNode, self).__init__()
+    self.turn = turn
+
+  def run(self):
+    commands.setHeadPan(self.turn, 2.0)
+    if self.getTime() > 2.0:
+      self.postSuccess()
+      
 def rand():
   t = int(time.time() * 1000) % 1000
   return t
