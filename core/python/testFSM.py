@@ -2,6 +2,7 @@ from state import *
 import commands, core, util, pose
 import time
 from math import pi
+import percepts
 
 class TestMachine(StateMachine):
   def setup(self):
@@ -23,7 +24,10 @@ class TestMachine(StateMachine):
 
 class WalkWithTurningNode(Node):
   def run(self):
-    commands.setWalkVelocity(.5, 0, 0)
+    commands.setWalkVelocity(0.8, 0, 0)
+    commands.setHeadPan(-pi/2, 5)
+    if abs(percepts.joint_angles(core.HeadYaw)) > pi / 6:
+      commands.setHeadPan(-percepts.joint_angles(core.HeadYaw), 5)
     
     if self.getTime() > 30.0:
       commands.stand()
