@@ -20,14 +20,16 @@ bool BeaconDetector::isVerticalConnected(Blob& blob1, Blob& blob2) {
 	int vertical_dist = 0;
 	float horizontal_inter = 0.0;
 
-	if (float(blob1.dx + blob1.dy) / float(blob2.dx + blob2.dy) > 1.25 || float(blob1.dx + blob1.dy) / float(blob2.dx + blob2.dy) < 0.8)
+	if (float(blob1.dx + blob1.dy) / float(blob2.dx + blob2.dy) > 1.25
+			|| float(blob1.dx + blob1.dy) / float(blob2.dx + blob2.dy) < 0.8)
 		return false;
 
 	vertical_dist =
 			blob1.yf > blob2.yi ? blob1.yf - blob2.yi : blob2.yi - blob1.yf;
 	if (blob1.xf <= blob2.xi || blob2.xf <= blob1.xi)
 		return false;
-	if (abs(int(blob1.xi) - int(blob2.xf)) > abs(int(blob1.xf) - int(blob2.xi))) {
+	if (abs(int(blob1.xi) - int(blob2.xf))
+			> abs(int(blob1.xf) - int(blob2.xi))) {
 		horizontal_inter = float(abs(int(blob1.xf) - int(blob2.xi)))
 				/ float(blob1.dx);
 	} else {
@@ -61,6 +63,105 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 			<< beacon->imageCenterY << std::endl;
 }
 
+void BeaconDetector::detectBeacon(WorldObject* beacon, int color1, int color2,
+		std::string color1_str, std::string color2_str) {
+	Blob blob1, blob2;
+	for (unsigned int i = 0; i < blob_detector_->horizontalBlob[color1].size();
+			++i) {
+		blob1 = blob_detector_->horizontalBlob[color1][i];
+
+		for (unsigned int j = 0;
+				j < blob_detector_->horizontalBlob[color2].size(); ++j) {
+			blob2 = blob_detector_->horizontalBlob[color2][j];
+
+			if (isVerticalConnected(blob1, blob2)) {
+				bool flag = true;
+
+				//Check blob2
+				for (unsigned int ii = 0;
+						ii < blob_detector_->horizontalBlob[c_PINK].size();
+						++ii) {
+					if (isVerticalConnected(blob2,
+							blob_detector_->horizontalBlob[c_PINK][ii])) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag == false)
+					break;
+				for (unsigned int ii = 0;
+						ii < blob_detector_->horizontalBlob[c_BLUE].size();
+						++ii) {
+					if (isVerticalConnected(blob2,
+							blob_detector_->horizontalBlob[c_BLUE][ii])) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag == false)
+					break;
+				for (unsigned int ii = 0;
+						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
+						++ii) {
+					if (isVerticalConnected(blob2,
+							blob_detector_->horizontalBlob[c_YELLOW][ii])) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag == false)
+					break;
+
+				//Check blob1
+				for (unsigned int ii = 0;
+						ii < blob_detector_->horizontalBlob[c_PINK].size();
+						++ii) {
+					if (isVerticalConnected(
+							blob_detector_->horizontalBlob[c_PINK][ii],
+							blob1)) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag == false)
+					break;
+				for (unsigned int ii = 0;
+						ii < blob_detector_->horizontalBlob[c_BLUE].size();
+						++ii) {
+					if (isVerticalConnected(
+							blob_detector_->horizontalBlob[c_BLUE][ii],
+							blob1)) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag == false)
+					break;
+				for (unsigned int ii = 0;
+						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
+						++ii) {
+					if (isVerticalConnected(
+							blob_detector_->horizontalBlob[c_YELLOW][ii],
+							blob1)) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag == false)
+					break;
+
+				//Pass all check, find beacon
+				if (flag == true) {
+					std::cout << "------------------------------" << std::endl;
+					std::cout << "Find Beacon_" << color1_str << "_" << color2_str << std::endl;
+					formBeacon(beacon, blob1, blob2);
+					std::cout << "------------------------------" << std::endl;
+				}
+			}
+		}
+	}
+}
+
 void BeaconDetector::detectBeacon() {
 	WorldObject* beacon_p_y =
 			&vblocks_.world_object->objects_[WO_BEACON_PINK_YELLOW];
@@ -75,384 +176,391 @@ void BeaconDetector::detectBeacon() {
 	WorldObject* beacon_b_p =
 			&vblocks_.world_object->objects_[WO_BEACON_BLUE_PINK];
 
-	Blob pinkBlob, yellowBlob, blueBlob;
+	detectBeacon(beacon_p_y, c_PINK, c_YELLOW, "PINK", "YELLOW");
+	detectBeacon(beacon_y_p, c_YELLOW, c_PINK, "YELLOW", "PINK");
+	detectBeacon(beacon_b_y, c_BLUE, c_YELLOW, "BLUE", "YELLOW");
+	detectBeacon(beacon_y_b, c_YELLOW, c_BLUE, "YELLOW", "BLUE");
+	detectBeacon(beacon_p_b, c_PINK, c_BLUE, "PINK", "BLUE");
+	detectBeacon(beacon_b_p, c_BLUE, c_PINK, "BLUE", "PINK");
 
-	for (unsigned int i = 0; i < blob_detector_->horizontalBlob[c_PINK].size();
-			++i) {
-		pinkBlob = blob_detector_->horizontalBlob[c_PINK][i];
-		//Detect PINK_YELLOW
-		for (unsigned int j = 0;
-				j < blob_detector_->horizontalBlob[c_YELLOW].size(); ++j) {
-			yellowBlob = blob_detector_->horizontalBlob[c_YELLOW][j];
-			if (isVerticalConnected(pinkBlob, yellowBlob)) {
-				bool flag = true;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_PINK].size();
-						++ii) {
-					if (isVerticalConnected(yellowBlob,
-							blob_detector_->horizontalBlob[c_PINK][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_BLUE].size();
-						++ii) {
-					if (isVerticalConnected(yellowBlob,
-							blob_detector_->horizontalBlob[c_BLUE][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_YELLOW][ii],
-							pinkBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_BLUE].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_BLUE][ii],
-							pinkBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				if (flag == true) {
-					std::cout << "------------------------------" << std::endl;
-					std::cout << "Find Beacon_Pink_Yellow" << std::endl;
-					formBeacon(beacon_p_y, pinkBlob, yellowBlob);
-					std::cout << "------------------------------" << std::endl;
-				}
-			}
-		}
-
-		//Detect PINK_BLUE
-		for (unsigned int j = 0;
-				j < blob_detector_->horizontalBlob[c_BLUE].size(); ++j) {
-			blueBlob = blob_detector_->horizontalBlob[c_BLUE][j];
-			if (isVerticalConnected(pinkBlob, blueBlob)) {
-				bool flag = true;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_PINK].size();
-						++ii) {
-					if (isVerticalConnected(blueBlob,
-							blob_detector_->horizontalBlob[c_PINK][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
-						++ii) {
-					if (isVerticalConnected(blueBlob,
-							blob_detector_->horizontalBlob[c_YELLOW][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_YELLOW][ii],
-							pinkBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_BLUE].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_BLUE][ii],
-							pinkBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				if (flag == true) {
-					std::cout << "------------------------------" << std::endl;
-					std::cout << "Find Beacon_Pink_Blue" << std::endl;
-					formBeacon(beacon_p_b, pinkBlob, blueBlob);
-					std::cout << "------------------------------" << std::endl;
-				}
-			}
-		}
-
-	}
-
-	for (unsigned int i = 0; i < blob_detector_->horizontalBlob[c_BLUE].size();
-			++i) {
-		blueBlob = blob_detector_->horizontalBlob[c_BLUE][i];
-		//Detect BLUE_YELLOW
-		for (unsigned int j = 0;
-				j < blob_detector_->horizontalBlob[c_YELLOW].size(); ++j) {
-			yellowBlob = blob_detector_->horizontalBlob[c_YELLOW][j];
-			if (isVerticalConnected(blueBlob, yellowBlob)) {
-				bool flag = true;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_PINK].size();
-						++ii) {
-					if (isVerticalConnected(yellowBlob,
-							blob_detector_->horizontalBlob[c_PINK][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_BLUE].size();
-						++ii) {
-					if (isVerticalConnected(yellowBlob,
-							blob_detector_->horizontalBlob[c_BLUE][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_YELLOW][ii],
-							blueBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_PINK].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_PINK][ii],
-							blueBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				if (flag == true) {
-					std::cout << "------------------------------" << std::endl;
-					std::cout << "Find Beacon_BLUE_Yellow" << std::endl;
-					formBeacon(beacon_b_y, blueBlob, yellowBlob);
-					std::cout << "------------------------------" << std::endl;
-				}
-			}
-		}
-
-		//Detect BLUE_PINK
-		for (unsigned int j = 0;
-				j < blob_detector_->horizontalBlob[c_PINK].size(); ++j) {
-			pinkBlob = blob_detector_->horizontalBlob[c_PINK][j];
-			if (isVerticalConnected(blueBlob, pinkBlob)) {
-				bool flag = true;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
-						++ii) {
-					if (isVerticalConnected(pinkBlob,
-							blob_detector_->horizontalBlob[c_YELLOW][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_BLUE].size();
-						++ii) {
-					if (isVerticalConnected(pinkBlob,
-							blob_detector_->horizontalBlob[c_BLUE][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_YELLOW][ii],
-							blueBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_PINK].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_PINK][ii],
-							blueBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				if (flag == true) {
-					std::cout << "------------------------------" << std::endl;
-					std::cout << "Find Beacon_BLUE_PINK" << std::endl;
-					formBeacon(beacon_b_p, blueBlob, pinkBlob);
-					std::cout << "------------------------------" << std::endl;
-				}
-			}
-		}
-	}
-
-	for (unsigned int i = 0; i < blob_detector_->horizontalBlob[c_YELLOW].size();
-			++i) {
-		yellowBlob = blob_detector_->horizontalBlob[c_YELLOW][i];
-		//Detect YELLOW_PINK
-		for (unsigned int j = 0;
-				j < blob_detector_->horizontalBlob[c_PINK].size(); ++j) {
-			pinkBlob = blob_detector_->horizontalBlob[c_PINK][j];
-			if (isVerticalConnected(yellowBlob, pinkBlob)) {
-				bool flag = true;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
-						++ii) {
-					if (isVerticalConnected(pinkBlob,
-							blob_detector_->horizontalBlob[c_YELLOW][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_BLUE].size();
-						++ii) {
-					if (isVerticalConnected(pinkBlob,
-							blob_detector_->horizontalBlob[c_BLUE][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_PINK].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_PINK][ii],
-							yellowBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_BLUE].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_BLUE][ii],
-							yellowBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				if (flag == true) {
-					std::cout << "------------------------------" << std::endl;
-					std::cout << "Find Beacon_YELLOW_PINK" << std::endl;
-					formBeacon(beacon_y_p, yellowBlob, pinkBlob);
-					std::cout << "------------------------------" << std::endl;
-				}
-			}
-		}
-
-		//Detect YELLOW_BLUE
-		for (unsigned int j = 0;
-				j < blob_detector_->horizontalBlob[c_BLUE].size(); ++j) {
-			blueBlob = blob_detector_->horizontalBlob[c_BLUE][j];
-			if (isVerticalConnected(yellowBlob, blueBlob)) {
-				bool flag = true;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
-						++ii) {
-					if (isVerticalConnected(blueBlob,
-							blob_detector_->horizontalBlob[c_YELLOW][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_PINK].size();
-						++ii) {
-					if (isVerticalConnected(blueBlob,
-							blob_detector_->horizontalBlob[c_PINK][ii])) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_PINK].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_PINK][ii],
-							yellowBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				for (unsigned int ii = 0;
-						ii < blob_detector_->horizontalBlob[c_BLUE].size();
-						++ii) {
-					if (isVerticalConnected(
-							blob_detector_->horizontalBlob[c_BLUE][ii],
-							yellowBlob)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag == false)
-					break;
-				if (flag == true) {
-					std::cout << "------------------------------" << std::endl;
-					std::cout << "Find Beacon_YELLOW_BLUE" << std::endl;
-					formBeacon(beacon_y_b, yellowBlob, blueBlob);
-					std::cout << "------------------------------" << std::endl;
-				}
-			}
-		}
-	}
+//	Blob pinkBlob, yellowBlob, blueBlob;
+//
+//	for (unsigned int i = 0; i < blob_detector_->horizontalBlob[c_PINK].size();
+//			++i) {
+//		pinkBlob = blob_detector_->horizontalBlob[c_PINK][i];
+//		//Detect PINK_YELLOW
+//		for (unsigned int j = 0;
+//				j < blob_detector_->horizontalBlob[c_YELLOW].size(); ++j) {
+//			yellowBlob = blob_detector_->horizontalBlob[c_YELLOW][j];
+//			if (isVerticalConnected(pinkBlob, yellowBlob)) {
+//				bool flag = true;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_PINK].size();
+//						++ii) {
+//					if (isVerticalConnected(yellowBlob,
+//							blob_detector_->horizontalBlob[c_PINK][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_BLUE].size();
+//						++ii) {
+//					if (isVerticalConnected(yellowBlob,
+//							blob_detector_->horizontalBlob[c_BLUE][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_YELLOW][ii],
+//							pinkBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_BLUE].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_BLUE][ii],
+//							pinkBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				if (flag == true) {
+//					std::cout << "------------------------------" << std::endl;
+//					std::cout << "Find Beacon_Pink_Yellow" << std::endl;
+//					formBeacon(beacon_p_y, pinkBlob, yellowBlob);
+//					std::cout << "------------------------------" << std::endl;
+//				}
+//			}
+//		}
+//
+//		//Detect PINK_BLUE
+//		for (unsigned int j = 0;
+//				j < blob_detector_->horizontalBlob[c_BLUE].size(); ++j) {
+//			blueBlob = blob_detector_->horizontalBlob[c_BLUE][j];
+//			if (isVerticalConnected(pinkBlob, blueBlob)) {
+//				bool flag = true;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_PINK].size();
+//						++ii) {
+//					if (isVerticalConnected(blueBlob,
+//							blob_detector_->horizontalBlob[c_PINK][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
+//						++ii) {
+//					if (isVerticalConnected(blueBlob,
+//							blob_detector_->horizontalBlob[c_YELLOW][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_YELLOW][ii],
+//							pinkBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_BLUE].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_BLUE][ii],
+//							pinkBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				if (flag == true) {
+//					std::cout << "------------------------------" << std::endl;
+//					std::cout << "Find Beacon_Pink_Blue" << std::endl;
+//					formBeacon(beacon_p_b, pinkBlob, blueBlob);
+//					std::cout << "------------------------------" << std::endl;
+//				}
+//			}
+//		}
+//
+//	}
+//
+//	for (unsigned int i = 0; i < blob_detector_->horizontalBlob[c_BLUE].size();
+//			++i) {
+//		blueBlob = blob_detector_->horizontalBlob[c_BLUE][i];
+//		//Detect BLUE_YELLOW
+//		for (unsigned int j = 0;
+//				j < blob_detector_->horizontalBlob[c_YELLOW].size(); ++j) {
+//			yellowBlob = blob_detector_->horizontalBlob[c_YELLOW][j];
+//			if (isVerticalConnected(blueBlob, yellowBlob)) {
+//				bool flag = true;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_PINK].size();
+//						++ii) {
+//					if (isVerticalConnected(yellowBlob,
+//							blob_detector_->horizontalBlob[c_PINK][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_BLUE].size();
+//						++ii) {
+//					if (isVerticalConnected(yellowBlob,
+//							blob_detector_->horizontalBlob[c_BLUE][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_YELLOW][ii],
+//							blueBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_PINK].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_PINK][ii],
+//							blueBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				if (flag == true) {
+//					std::cout << "------------------------------" << std::endl;
+//					std::cout << "Find Beacon_BLUE_Yellow" << std::endl;
+//					formBeacon(beacon_b_y, blueBlob, yellowBlob);
+//					std::cout << "------------------------------" << std::endl;
+//				}
+//			}
+//		}
+//
+//		//Detect BLUE_PINK
+//		for (unsigned int j = 0;
+//				j < blob_detector_->horizontalBlob[c_PINK].size(); ++j) {
+//			pinkBlob = blob_detector_->horizontalBlob[c_PINK][j];
+//			if (isVerticalConnected(blueBlob, pinkBlob)) {
+//				bool flag = true;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
+//						++ii) {
+//					if (isVerticalConnected(pinkBlob,
+//							blob_detector_->horizontalBlob[c_YELLOW][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_BLUE].size();
+//						++ii) {
+//					if (isVerticalConnected(pinkBlob,
+//							blob_detector_->horizontalBlob[c_BLUE][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_YELLOW][ii],
+//							blueBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_PINK].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_PINK][ii],
+//							blueBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				if (flag == true) {
+//					std::cout << "------------------------------" << std::endl;
+//					std::cout << "Find Beacon_BLUE_PINK" << std::endl;
+//					formBeacon(beacon_b_p, blueBlob, pinkBlob);
+//					std::cout << "------------------------------" << std::endl;
+//				}
+//			}
+//		}
+//	}
+//
+//	for (unsigned int i = 0;
+//			i < blob_detector_->horizontalBlob[c_YELLOW].size(); ++i) {
+//		yellowBlob = blob_detector_->horizontalBlob[c_YELLOW][i];
+//		//Detect YELLOW_PINK
+//		for (unsigned int j = 0;
+//				j < blob_detector_->horizontalBlob[c_PINK].size(); ++j) {
+//			pinkBlob = blob_detector_->horizontalBlob[c_PINK][j];
+//			if (isVerticalConnected(yellowBlob, pinkBlob)) {
+//				bool flag = true;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
+//						++ii) {
+//					if (isVerticalConnected(pinkBlob,
+//							blob_detector_->horizontalBlob[c_YELLOW][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_BLUE].size();
+//						++ii) {
+//					if (isVerticalConnected(pinkBlob,
+//							blob_detector_->horizontalBlob[c_BLUE][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_PINK].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_PINK][ii],
+//							yellowBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_BLUE].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_BLUE][ii],
+//							yellowBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				if (flag == true) {
+//					std::cout << "------------------------------" << std::endl;
+//					std::cout << "Find Beacon_YELLOW_PINK" << std::endl;
+//					formBeacon(beacon_y_p, yellowBlob, pinkBlob);
+//					std::cout << "------------------------------" << std::endl;
+//				}
+//			}
+//		}
+//
+//		//Detect YELLOW_BLUE
+//		for (unsigned int j = 0;
+//				j < blob_detector_->horizontalBlob[c_BLUE].size(); ++j) {
+//			blueBlob = blob_detector_->horizontalBlob[c_BLUE][j];
+//			if (isVerticalConnected(yellowBlob, blueBlob)) {
+//				bool flag = true;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_YELLOW].size();
+//						++ii) {
+//					if (isVerticalConnected(blueBlob,
+//							blob_detector_->horizontalBlob[c_YELLOW][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_PINK].size();
+//						++ii) {
+//					if (isVerticalConnected(blueBlob,
+//							blob_detector_->horizontalBlob[c_PINK][ii])) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_PINK].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_PINK][ii],
+//							yellowBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				for (unsigned int ii = 0;
+//						ii < blob_detector_->horizontalBlob[c_BLUE].size();
+//						++ii) {
+//					if (isVerticalConnected(
+//							blob_detector_->horizontalBlob[c_BLUE][ii],
+//							yellowBlob)) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag == false)
+//					break;
+//				if (flag == true) {
+//					std::cout << "------------------------------" << std::endl;
+//					std::cout << "Find Beacon_YELLOW_BLUE" << std::endl;
+//					formBeacon(beacon_y_b, yellowBlob, blueBlob);
+//					std::cout << "------------------------------" << std::endl;
+//				}
+//			}
+//		}
+//	}
 }

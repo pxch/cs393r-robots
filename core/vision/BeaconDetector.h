@@ -1,6 +1,7 @@
 #ifndef BEACONDETECTOR_H
 #define BEACONDETECTOR_H
 
+#include <string>
 #include <memory/TextLogger.h>
 #include <vision/BlobDetector.h>
 #include <vision/ObjectDetector.h>
@@ -25,6 +26,10 @@ private:
 	TextLogger* textlogger;
 	Classifier* classifier_;
 	BlobDetector* blob_detector_;
+
+	void detectBeacon(WorldObject* beacon, int color1, int color2,
+			std::string color1_str, std::string color2_str);
+
 };
 
 #endif
