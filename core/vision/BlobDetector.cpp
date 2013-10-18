@@ -55,7 +55,7 @@ void BlobDetector::addPointToBlob(VisionPoint& point, uint32_t pointIndex,
 				/ currentPixelCount;
 	}
 	blob.correctPixelCount = currentPixelCount;
-	blob.correctPixelRatio = float(blob.correctPixelCount) / float(blob.dx * blob.dy);
+	blob.correctPixelRatio = float(blob.correctPixelCount) / (float(blob.dx) * float(blob.dy));
 }
 
 void BlobDetector::formBlobs(int color) {
