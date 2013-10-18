@@ -10,12 +10,16 @@ BeaconDetector::BeaconDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
 }
 
 bool BeaconDetector::isVerticalConnected(Blob& blob1, Blob& blob2) {
-	int vertical_dist_thres = 0;
-	if (camera_ == Camera::TOP)
-		vertical_dist_thres = 30;
+//	int vertical_dist_thres = 0;
+//	if (camera_ == Camera::TOP)
+//		vertical_dist_thres = 30;
+//	else
+//		vertical_dist_thres = 15;
+	if (blob1.dy < blob2.dy)
+		vertical_dist_thres = blob1.dy >> 2;
 	else
-		vertical_dist_thres = 15;
-//	int vertical_dist_thres = blob1.dy < blob2.dy ? float(blob1.dy) / 3 : float(blob2.dy) / 3;
+		vertical_dist_thres = blob2.dy >> 2;
+
 	float horizontal_inter_thres = 0.5;
 
 	int vertical_dist = 0;
