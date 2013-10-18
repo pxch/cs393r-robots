@@ -130,8 +130,10 @@ void BeaconDetector::detectBeacon() {
 				if (flag == false)
 					break;
 				if (flag == true) {
-					formBeacon(beacon_p_y, pinkBlob, yellowBlob);
+					std::cout << "------------------------------" << std::endl;
 					std::cout << "Find Beacon_Pink_Yellow" << std::endl;
+					formBeacon(beacon_p_y, pinkBlob, yellowBlob);
+					std::cout << "------------------------------" << std::endl;
 				}
 			}
 		}
@@ -189,8 +191,10 @@ void BeaconDetector::detectBeacon() {
 				if (flag == false)
 					break;
 				if (flag == true) {
-					formBeacon(beacon_p_y, pinkBlob, blueBlob);
+					std::cout << "------------------------------" << std::endl;
 					std::cout << "Find Beacon_Pink_Blue" << std::endl;
+					formBeacon(beacon_p_b, pinkBlob, blueBlob);
+					std::cout << "------------------------------" << std::endl;
 				}
 			}
 		}

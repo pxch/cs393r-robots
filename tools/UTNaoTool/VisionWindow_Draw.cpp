@@ -568,8 +568,7 @@ void VisionWindow::drawVertLinePoints(ImageWidget *image) {
   */
 
 	// Draw yellow blobs;
-	pen = QPen(segCol[c_YELLOW], 2);
-	painter.setPen(pen);
+	painter.setPen(QPen(segCol[c_YELLOW], 2));
 	for (uint16_t i = 0;
 			i < processor->blob_detector_->horizontalBlob[c_YELLOW].size();
 			i++) {
@@ -578,8 +577,7 @@ void VisionWindow::drawVertLinePoints(ImageWidget *image) {
 	}
 
 	// Draw blue blobs;
-	pen = QPen(segCol[c_BLUE], 2);
-	painter.setPen(pen);
+	painter.setPen(QPen(segCol[c_BLUE], 2););
 	for (uint16_t i = 0;
 			i < processor->blob_detector_->horizontalBlob[c_BLUE].size(); i++) {
 		Blob *bl = &processor->blob_detector_->horizontalBlob[c_BLUE][i];
@@ -587,8 +585,7 @@ void VisionWindow::drawVertLinePoints(ImageWidget *image) {
 	}
 
 	// Draw pink blobs;
-	pen = QPen(segCol[c_PINK], 2);
-	painter.setPen(pen);
+	painter.setPen(QPen(segCol[c_PINK], 2));
 	for (uint16_t i = 0;
 			i < processor->blob_detector_->horizontalBlob[c_PINK].size(); i++) {
 		Blob *bl = &processor->blob_detector_->horizontalBlob[c_PINK][i];
