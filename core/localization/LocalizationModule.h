@@ -21,31 +21,41 @@
 #define DELTA_DIST 10
 #define DELTA_ANG (DEG_T_RAD * 45)
 
-class LocalizationModule: public Module  {
- public:
-  void specifyMemoryDependency();
-  void specifyMemoryBlocks();
-  void initSpecificModule();
-  void processFrame();
- private:
-  void updatePose();
-  void updateParticlesFromOdometry();
-  void resetParticles();
-  void setParticleProbabilities(float newProb);
-  void randomWalkParticles();
-  void copyParticles();
-  Particle particles_[NUM_PARTICLES];
-  WorldObjectBlock* worldObjects;
-  LocalizationBlock* localizationMem;
-  TeamPacketsBlock* teamPacketsMem;
-  FrameInfoBlock* frameInfo;
-  OdometryBlock* odometry;
-  RobotStateBlock* robotState;
-  GameStateBlock* gameState;
-  JointBlock* jointAngles;
-  BehaviorBlock* behaviorMem;
-  ProcessedSonarBlock* processedSonar;
-  DelayedLocalizationBlock* delayedLocalization;
+class LocalizationModule: public Module {
+public:
+	void specifyMemoryDependency();
+	void specifyMemoryBlocks();
+	void initSpecificModule();
+	void processFrame();
+private:
+	void updatePose();
+	void updateParticlesFromOdometry();
+	void resetParticles();
+	void setParticleProbabilities(float newProb);
+	void randomWalkParticles();
+	void copyParticles();
+
+	void updateParticlesFromSensor();
+	void updateParticlesFromBeacon(WorldObject* beacon, Point2D beaconLoc);
+
+	void resamplingParticles();
+	int sampleIndexFromRandom(float random);
+
+	Particle particles_[NUM_PARTICLES];
+
+	Particle previous_particles_[NUM_PARTICLES];
+
+	WorldObjectBlock* worldObjects;
+	LocalizationBlock* localizationMem;
+	TeamPacketsBlock* teamPacketsMem;
+	FrameInfoBlock* frameInfo;
+	OdometryBlock* odometry;
+	RobotStateBlock* robotState;
+	GameStateBlock* gameState;
+	JointBlock* jointAngles;
+	BehaviorBlock* behaviorMem;
+	ProcessedSonarBlock* processedSonar;
+	DelayedLocalizationBlock* delayedLocalization;
 };
 
 #endif
