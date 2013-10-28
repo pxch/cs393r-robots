@@ -1,8 +1,6 @@
 from state import * 
 import commands, core, util, pose
 import time
-from math import pi
-import percepts
 
 class TestMachine(StateMachine):
   def setup(self):
@@ -10,61 +8,16 @@ class TestMachine(StateMachine):
     finish = Node()
     sit = SitNode()
     stand = StandNode()
-#     choose = ChooseNode()
+    choose = ChooseNode()
     self._adt(start, N, stand)
-#     self._adt(stand, C, TiltHeadNode(-20.5))
-    self._adt(stand, C, TurnHeadNode(pi/4), S, WalkWithTurningNode(), S, sit)
+    self._adt(stand, C, choose)
+    self._adt(choose, S(Choices.Forward), WalkNode(), S, choose)
+    self._adt(choose, S(Choices.Left), TurnLeftNode(), S, choose)
+    self._adt(choose, S(Choices.Right), TurnRightNode(), S, choose)
+    self._adt(choose, I(4), SpeakNode('completed'), S, sit)
     self._adt(sit, C, finish)
-    
-#     self._adt(stand, C, choose)
-#     self._adt(choose, S(Choices.Forward), WalkNode(), S, choose)
-#     self._adt(choose, S(Choices.Left), TurnLeftNode(), S, choose)
-#     self._adt(choose, S(Choices.Right), TurnRightNode(), S, choose)
-#     self._adt(choose, I(4), SpeakNode('completed'), S, sit)
-#     self._adt(sit, C, finish)
 
-class WalkWithTurningNode(Node):
-  def __init__(self):
-    super(WalkWithTurningNode, self).__init__()
-    self.flag = 0
-    
-  def run(self):
-    commands.setWalkVelocity(0.2, 0, 0)
-    if self.flag == 0:
-      commands.setHeadPan(-pi / 4, 20)
-      if percepts.joint_angles[core.HeadYaw] < - pi / 6:
-        self.flag = 1
-    elif self.flag == 1:
-      commands.setHeadPan(pi / 4, 20)
-      if percepts.joint_angles[core.HeadYaw] > pi / 6:
-        self.flag = 0
-    
-#     commands.setHeadPan(-pi / 6, 20)
 
-    if self.getTime() > 30.0:
-      commands.stand()
-      self.postSuccess()
-
-class TiltHeadNode(Node):
-  def __init__(self, tilt):
-    super(TiltHeadNode, self).__init__()
-    self.tilt = tilt
-  
-  def run(self):
-    commands.setHeadTilt(self.tilt)
-    if self.getTime() > 2.0:
-      self.postSuccess()
-
-class TurnHeadNode(Node):
-  def __init__(self, turn):
-    super(TurnHeadNode, self).__init__()
-    self.turn = turn
-
-  def run(self):
-    commands.setHeadPan(self.turn, 2.0)
-    if self.getTime() > 2.0:
-      self.postSuccess()
-      
 def rand():
   t = int(time.time() * 1000) % 1000
   return t
