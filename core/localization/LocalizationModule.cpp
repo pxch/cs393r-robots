@@ -79,21 +79,20 @@ void LocalizationModule::updateParticlesFromSensor() {
 			&worldObjects->objects_[WO_BEACON_BLUE_PINK];
 
 	if (beacon_p_y->seen)
-		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[7]);
+		updateParticlesFromBeacon(beacon_p_y);
 	if (beacon_y_p->seen)
-		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[8]);
+		updateParticlesFromBeacon(beacon_y_p);
 	if (beacon_b_y->seen)
-		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[9]);
+		updateParticlesFromBeacon(beacon_b_y);
 	if (beacon_y_b->seen)
-		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[10]);
+		updateParticlesFromBeacon(beacon_y_b);
 	if (beacon_p_b->seen)
-		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[11]);
+		updateParticlesFromBeacon(beacon_p_b);
 	if (beacon_b_p->seen)
-		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[12]);
+		updateParticlesFromBeacon(beacon_b_p);
 }
 
-void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon,
-		Point2D beaconLoc) {
+void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 
 	float prob_seq[NUM_PARTICLES] = { 0.0 };
 	float prob_mean = 0.0;

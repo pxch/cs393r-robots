@@ -36,7 +36,7 @@ private:
 	void copyParticles();
 
 	void updateParticlesFromSensor();
-	void updateParticlesFromBeacon(WorldObject* beacon, Point2D beaconLoc);
+	void updateParticlesFromBeacon(WorldObject* beacon);
 
 	void resamplingParticles();
 	int sampleIndexFromRandom(float random);
