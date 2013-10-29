@@ -75,17 +75,17 @@ void LocalizationModule::updateParticlesFromSensor() {
 	WorldObject* beacon_b_p =
 			&worldObjects->objects_[WO_BEACON_BLUE_PINK];
 
-	if (beacon_p_y.seen)
+	if (beacon_p_y->seen)
 		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[7]);
-	if (beacon_y_p.seen)
+	if (beacon_y_p->seen)
 		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[8]);
-	if (beacon_b_y.seen)
+	if (beacon_b_y->seen)
 		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[9]);
-	if (beacon_y_b.seen)
+	if (beacon_y_b->seen)
 		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[10]);
-	if (beacon_p_b.seen)
+	if (beacon_p_b->seen)
 		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[11]);
-	if (beacon_b_p.seen)
+	if (beacon_b_p->seen)
 		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[12]);
 }
 
