@@ -12,8 +12,8 @@ class TestMachine(StateMachine):
     stand = StandNode()
 #     choose = ChooseNode()
     self._adt(start, N, stand)
-#     self._adt(stand, C, TiltHeadNode(-20.5))
-    self._adt(stand, C, TurnHeadNode(pi/4), S, WalkWithTurningNode(), S, sit)
+    self._adt(stand, C, TiltHeadNode(-20.5))
+#    self._adt(stand, C, TurnHeadNode(pi/4), S, WalkWithTurningNode(), S, sit)
     self._adt(sit, C, finish)
     
 #     self._adt(stand, C, choose)
