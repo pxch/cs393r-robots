@@ -71,6 +71,13 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 			<< ", imageCenterX: " << beacon->imageCenterX << ", imageCenterY: "
 			<< beacon->imageCenterY << ", distance: " << beacon->distance
 			<< std::endl;
+
+	Position p = cmatrix_.getWorldPositionByDirectDistance(beacon->imageCenterX,
+			beacon->imageCenterY, beacon->distance);
+	float distance = cmatrix_.groundDistance(p);
+	float bearing = cmatrix_.bearing(p);
+	beacon->visionDistance = distance;
+	beacon->visionBearing = bearing;
 }
 
 void BeaconDetector::detectBeacon() {

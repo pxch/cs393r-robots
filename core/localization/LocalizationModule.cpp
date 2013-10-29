@@ -63,17 +63,17 @@ void LocalizationModule::processFrame() {
 
 void LocalizationModule::updateParticlesFromSensor() {
 	WorldObject* beacon_p_y =
-			&vblocks_.world_object->objects_[WO_BEACON_PINK_YELLOW];
+			&worldObjects->objects_[WO_BEACON_PINK_YELLOW];
 	WorldObject* beacon_y_p =
-			&vblocks_.world_object->objects_[WO_BEACON_YELLOW_PINK];
+			&worldObjects->objects_[WO_BEACON_YELLOW_PINK];
 	WorldObject* beacon_b_y =
-			&vblocks_.world_object->objects_[WO_BEACON_BLUE_YELLOW];
+			&worldObjects->objects_[WO_BEACON_BLUE_YELLOW];
 	WorldObject* beacon_y_b =
-			&vblocks_.world_object->objects_[WO_BEACON_YELLOW_BLUE];
+			&worldObjects->objects_[WO_BEACON_YELLOW_BLUE];
 	WorldObject* beacon_p_b =
-			&vblocks_.world_object->objects_[WO_BEACON_PINK_BLUE];
+			&worldObjects->objects_[WO_BEACON_PINK_BLUE];
 	WorldObject* beacon_b_p =
-			&vblocks_.world_object->objects_[WO_BEACON_BLUE_PINK];
+			&worldObjects->objects_[WO_BEACON_BLUE_PINK];
 
 	if (beacon_p_y.seen)
 		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[7]);
@@ -91,12 +91,6 @@ void LocalizationModule::updateParticlesFromSensor() {
 
 void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon,
 		Point2D beaconLoc) {
-	Position p = cmatrix_.getWorldPositionByDirectDistance(beacon->imageCenterX,
-			beacon->imageCenterY, beacon->distance);
-	float distance = cmatrix_.groundDistance(p);
-	float bearing = cmatrix_.bearing(p);
-	beacon->visionDistance = distance;
-	beacon->visionBearing = bearing;
 
 	float prob_seq[NUM_PARTICLES] = { 0.0 };
 	float prob_mean = 0.0;
@@ -118,9 +112,9 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon,
 	float bearingBias = 0.0;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
-		Particle& p = particle_[i];
-		distanceBias = abs(distance - p.loc.getDistanceTo(beaconLoc));
-		bearingBias = abs(bearing - p.loc.getBearingTo(beaconLoc, theta));
+		Particle& p = particles_[i];
+		distanceBias = abs(beacon->visionDistance - p.loc.getDistanceTo(beacon->loc));
+		bearingBias = abs(beacon->visionBearing - p.loc.getBearingTo(beacon->loc, p.theta));
 
 		float prob_multiplier = exp(
 				-0.5 * (distanceBias * distanceBias + bearingBias * bearingBias)
