@@ -62,41 +62,83 @@ void LocalizationModule::processFrame() {
 }
 
 void LocalizationModule::updateParticlesFromSensor() {
-    WorldObject* beacon_p_y =
-                    &vblocks_.world_object->objects_[WO_BEACON_PINK_YELLOW];
-    WorldObject* beacon_y_p =
-                    &vblocks_.world_object->objects_[WO_BEACON_YELLOW_PINK];
-    WorldObject* beacon_b_y =
-                    &vblocks_.world_object->objects_[WO_BEACON_BLUE_YELLOW];
-    WorldObject* beacon_y_b =
-                    &vblocks_.world_object->objects_[WO_BEACON_YELLOW_BLUE];
-    WorldObject* beacon_p_b =
-                    &vblocks_.world_object->objects_[WO_BEACON_PINK_BLUE];
-    WorldObject* beacon_b_p =
-                    &vblocks_.world_object->objects_[WO_BEACON_BLUE_PINK];
+	WorldObject* beacon_p_y =
+			&vblocks_.world_object->objects_[WO_BEACON_PINK_YELLOW];
+	WorldObject* beacon_y_p =
+			&vblocks_.world_object->objects_[WO_BEACON_YELLOW_PINK];
+	WorldObject* beacon_b_y =
+			&vblocks_.world_object->objects_[WO_BEACON_BLUE_YELLOW];
+	WorldObject* beacon_y_b =
+			&vblocks_.world_object->objects_[WO_BEACON_YELLOW_BLUE];
+	WorldObject* beacon_p_b =
+			&vblocks_.world_object->objects_[WO_BEACON_PINK_BLUE];
+	WorldObject* beacon_b_p =
+			&vblocks_.world_object->objects_[WO_BEACON_BLUE_PINK];
 
-    if (beacon_p_y.seen)
-    	updateParticlesFromBeacon(beacon_p_y, landmarkLocation[7]);
-    if (beacon_y_p.seen)
-    	updateParticlesFromBeacon(beacon_p_y, landmarkLocation[8]);
-    if (beacon_b_y.seen)
-    	updateParticlesFromBeacon(beacon_p_y, landmarkLocation[9]);
-    if (beacon_y_b.seen)
-    	updateParticlesFromBeacon(beacon_p_y, landmarkLocation[10]);
-    if (beacon_p_b.seen)
-    	updateParticlesFromBeacon(beacon_p_y, landmarkLocation[11]);
-    if (beacon_b_p.seen)
-    	updateParticlesFromBeacon(beacon_p_y, landmarkLocation[12]);
+	if (beacon_p_y.seen)
+		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[7]);
+	if (beacon_y_p.seen)
+		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[8]);
+	if (beacon_b_y.seen)
+		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[9]);
+	if (beacon_y_b.seen)
+		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[10]);
+	if (beacon_p_b.seen)
+		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[11]);
+	if (beacon_b_p.seen)
+		updateParticlesFromBeacon(beacon_p_y, landmarkLocation[12]);
 }
 
-void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon, Point2D beaconLoc) {
+void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon,
+		Point2D beaconLoc) {
+	Position p = cmatrix_.getWorldPositionByDirectDistance(beacon->imageCenterX,
+			beacon->imageCenterY, beacon->distance);
+	float distance = cmatrix_.groundDistance(p);
+	float bearing = cmatrix_.bearing(p);
+	beacon->visionDistance = distance;
+	beacon->visionBearing = bearing;
 
+	float prob_seq[NUM_PARTICLES] = { 0.0 };
+	float prob_mean = 0.0;
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		prob_seq[i] = particles_[i].prob;
+		prob_mean += prob_seq[i];
+	}
+	prob_mean /= NUM_PARTICLES;
+	float prob_se = 0.0;
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		prob_se += (prob_seq[i] - prob_mean) * (prob_seq[i] - prob_mean);
+	}
+	prob_se /= NUM_PARTICLES;
+	prob_se = sqrt(prob_se);
+
+	float normalization = prob_se;
+
+	float distanceBias = 0.0;
+	float bearingBias = 0.0;
+
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		Particle& p = particle_[i];
+		distanceBias = abs(distance - p.loc.getDistanceTo(beaconLoc));
+		bearingBias = abs(bearing - p.loc.getBearingTo(beaconLoc, theta));
+
+		float prob_multiplier = exp(
+				-0.5 * (distanceBias * distanceBias + bearingBias * bearingBias)
+						/ normalization);
+		p.prob = p.prob * prob_multiplier;
+	}
 }
 
 void LocalizationModule::resamplingParticles() {
+	float sumProb = 0.0;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		previous_particles_[i] = particles_[i];
+		sumProb += particles_[i].prob;
 	}
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		previous_particles_[i].prob /= sumProb;
+	}
+
 	int current_index = 0;
 	int previous_index = -1;
 	while (current_index < NUM_PARTICLES) {
@@ -182,4 +224,19 @@ void LocalizationModule::randomWalkParticles() {
 void LocalizationModule::updatePose() {
 	WorldObject& self = worldObjects->objects_[robotState->WO_SELF];
 	// Compute a weighted average of the particles to fill in your location
+
+	Point2D robotLoc(0.0, 0.0);
+	AngRad robotOrient = 0.0;
+
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		Particle& p = particles_[i];
+		robotLoc += p.loc * p.prob;
+		robotOrient += p.theta * p.prob;
+	}
+
+	robotLoc /= NUM_PARTICLES;
+	robotOrient /= NUM_PARTICLES;
+
+	self.loc = robotLoc;
+	self.orientation = robotOrient;
 }
