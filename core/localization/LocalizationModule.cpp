@@ -42,6 +42,9 @@ void LocalizationModule::initSpecificModule() {
 void LocalizationModule::processFrame() {
 	int frameID = frameInfo->frame_id;
 
+	if (frameID ==1)
+		resetParticles();
+
 	// 1. Update particles from observations
 	updateParticlesFromOdometry();
 	updateParticlesFromSensor();
