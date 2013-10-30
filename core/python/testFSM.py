@@ -32,8 +32,7 @@ class TestMachine5(StateMachine):
     scan = ScanNode()
     walk = WalkNode()
     walk1 = towardsToCenterNode()
-    self._adt(start, N, stand)
-    self._adt(stand, C, scan)
+    self._adt(start, N, scan)
     self._adt(scan, C, sit)
     self._adt(sit, C, finish)
 
