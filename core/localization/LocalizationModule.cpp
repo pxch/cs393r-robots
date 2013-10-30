@@ -68,6 +68,23 @@ void LocalizationModule::processFrame() {
 void LocalizationModule::updateParticlesFromSensor() {
 	std::cout << "Updating Particles From Sensor..." << std::endl;
 
+	// Reset Beacon Location in each Frame
+    for (int i = 0; i < NUM_LANDMARKS; i++) {
+      WorldObject *wo = &worldObjects->objects_[i + LANDMARK_OFFSET];
+      wo->loc = landmarkLocation[i];
+
+      // set heights
+      if (wo->isGoal()){
+        wo->upperHeight = GOAL_HEIGHT;
+        wo->lowerHeight = 0;
+        wo->elevation = (wo->upperHeight + wo->lowerHeight) / 2;
+      } else {
+        wo->upperHeight = 0;
+        wo->lowerHeight = 0;
+        wo->elevation = 0;
+      }
+    }
+
 	WorldObject* beacon_p_y = &worldObjects->objects_[WO_BEACON_PINK_YELLOW];
 	WorldObject* beacon_y_p = &worldObjects->objects_[WO_BEACON_YELLOW_PINK];
 	WorldObject* beacon_b_y = &worldObjects->objects_[WO_BEACON_BLUE_YELLOW];
