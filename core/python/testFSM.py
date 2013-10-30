@@ -1,8 +1,9 @@
 from state import * 
 import commands, core, util, pose
 import time
+import state, percepts
 from math import pi
-from head import Scan
+import head
 
 class TestMachine(StateMachine):
   def setup(self):
@@ -28,14 +29,48 @@ class TestMachine5(StateMachine):
     finish = Node()
     sit = SitNode()
     stand = StandNode()
-    scan = Scan(2.0, 3.0, 30)
+    scan = ScanNode(2.0, 3.0, 30)
     walk = WalkNode()
     walk1 = towardsToCenterNode()
     self._adt(start, N, stand)
     self._adt(stand, C, scan)
-    self._adt(scan, C, sit)
+    self._adt(scan, S, sit)
     self._adt(sit, C, finish)
 
+
+class ScanNode(Node):
+  def __init__(self, maxPan = 2.0, period = 3.0, numSweeps = 1, direction = 1):
+    super(ScanNode, self).__init__()
+    self.maxPan = maxPan
+    self.period = period
+    self.numSweeps = numSweeps
+    self.direction = direction
+    self.intDirection = direction
+    self.sweepCounter = 0
+    self.state = state.SimpleStateMachine(['firstScan', 'nextScans'])
+
+  def run(self):
+    numSteps = self.period / DiscreteScan.stepTime + 1
+    stepSize = (2 * self.maxPan / numSteps) * 1.05
+
+    st = self.state
+
+    if st.inState(st.firstScan):
+      self.intDirection = self.direction
+      self.subtask = DiscreteScan(dest = self.direction * self.maxPan, stepSize = stepSize)
+      st.transition(st.nextScans)
+      return
+
+    if st.inState(st.nextScans) and self.subtask.finished():
+      self.sweepCounter += 1
+      self.intDirection *= -1
+      core.behavior_mem.completeBallSearchTime = core.vision_frame_info.seconds_since_start
+      self.subtask = DiscreteScan(dest = self.intDirection * self.maxPan, stepSize = stepSize, skipFirstPause = True)
+      return
+
+    if self.sweepCounter > self.numSweeps:
+      self.finish()
+      self.postSuccess()
 
 class towardsToCenterNode(Node):
   def __init__(self):
