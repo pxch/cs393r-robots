@@ -235,6 +235,13 @@ void LocalizationModule::resamplingParticles() {
 	std::cout << std::endl;
 	std::cout << "------------------------------------------------"
 			<< std::endl;
+
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		std::cout << "[Particle " << i << "]: " << particles_[i].loc.x << ", "
+				<< particles_[i].loc.y << std::endl;
+	}
+	std::cout << "------------------------------------------------"
+			<< std::endl;
 }
 
 int LocalizationModule::sampleIndexFromRandom(float random) {
@@ -321,6 +328,14 @@ void LocalizationModule::randomWalkParticles() {
 		part2.move(-dPos * p2Ratio, p2AngleRatio * -dAng);
 
 	}
+	std::cout << "------------------------------------------------"
+			<< std::endl;
+
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		std::cout << "[Particle " << i << "]: " << particles_[i].loc.x << ", "
+				<< particles_[i].loc.y << std::endl;
+	}
+
 	std::cout << "------------------------------------------------"
 			<< std::endl;
 }
