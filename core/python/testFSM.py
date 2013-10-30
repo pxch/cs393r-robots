@@ -2,6 +2,7 @@ from state import *
 import commands, core, util, pose
 import time
 from math import pi
+from head import Scan
 
 class TestMachine(StateMachine):
   def setup(self):
@@ -27,11 +28,12 @@ class TestMachine5(StateMachine):
     finish = Node()
     sit = SitNode()
     stand = StandNode()
+    scan = Scan(2.0, 3.0, 30)
     walk = WalkNode()
     walk1 = towardsToCenterNode()
     self._adt(start, N, stand)
-    self._adt(stand, C, walk)
-    self._adt(walk, C, sit)
+    self._adt(stand, C, scan)
+    self._adt(scan, C, sit)
     self._adt(sit, C, finish)
 
 
