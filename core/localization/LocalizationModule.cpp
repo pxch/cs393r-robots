@@ -69,21 +69,21 @@ void LocalizationModule::updateParticlesFromSensor() {
 	std::cout << "Updating Particles From Sensor..." << std::endl;
 
 	// Reset Beacon Location in each Frame
-    for (int i = 0; i < NUM_LANDMARKS; i++) {
-      WorldObject *wo = &worldObjects->objects_[i + LANDMARK_OFFSET];
-      wo->loc = landmarkLocation[i];
+	for (int i = 0; i < NUM_LANDMARKS; i++) {
+		WorldObject *wo = &worldObjects->objects_[i + LANDMARK_OFFSET];
+		wo->loc = landmarkLocation[i];
 
-      // set heights
-      if (wo->isGoal()){
-        wo->upperHeight = GOAL_HEIGHT;
-        wo->lowerHeight = 0;
-        wo->elevation = (wo->upperHeight + wo->lowerHeight) / 2;
-      } else {
-        wo->upperHeight = 0;
-        wo->lowerHeight = 0;
-        wo->elevation = 0;
-      }
-    }
+		// set heights
+		if (wo->isGoal()) {
+			wo->upperHeight = GOAL_HEIGHT;
+			wo->lowerHeight = 0;
+			wo->elevation = (wo->upperHeight + wo->lowerHeight) / 2;
+		} else {
+			wo->upperHeight = 0;
+			wo->lowerHeight = 0;
+			wo->elevation = 0;
+		}
+	}
 
 	WorldObject* beacon_p_y = &worldObjects->objects_[WO_BEACON_PINK_YELLOW];
 	WorldObject* beacon_y_p = &worldObjects->objects_[WO_BEACON_YELLOW_PINK];
@@ -93,52 +93,52 @@ void LocalizationModule::updateParticlesFromSensor() {
 	WorldObject* beacon_b_p = &worldObjects->objects_[WO_BEACON_BLUE_PINK];
 
 	if (beacon_p_y->seen) {
-		std::cout << "------------------------------------------------"
-				<< std::endl;
-		std::cout << "Updating Particles from Beacon_Pink_Yellow" << std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
+//		std::cout << "Updating Particles from Beacon_Pink_Yellow" << std::endl;
 		updateParticlesFromBeacon(beacon_p_y);
-		std::cout << "------------------------------------------------"
-				<< std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
 	}
 	if (beacon_y_p->seen) {
-		std::cout << "------------------------------------------------"
-				<< std::endl;
-		std::cout << "Updating Particles from Beacon_Yellow_Pink" << std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
+//		std::cout << "Updating Particles from Beacon_Yellow_Pink" << std::endl;
 		updateParticlesFromBeacon(beacon_y_p);
-		std::cout << "------------------------------------------------"
-				<< std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
 	}
 	if (beacon_b_y->seen) {
-		std::cout << "------------------------------------------------"
-				<< std::endl;
-		std::cout << "Updating Particles from Beacon_Blue_Yellow" << std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
+//		std::cout << "Updating Particles from Beacon_Blue_Yellow" << std::endl;
 		updateParticlesFromBeacon(beacon_b_y);
-		std::cout << "------------------------------------------------"
-				<< std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
 	}
 	if (beacon_y_b->seen) {
-		std::cout << "------------------------------------------------"
-				<< std::endl;
-		std::cout << "Updating Particles from Beacon_Yellow_Blue" << std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
+//		std::cout << "Updating Particles from Beacon_Yellow_Blue" << std::endl;
 		updateParticlesFromBeacon(beacon_y_b);
-		std::cout << "------------------------------------------------"
-				<< std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
 	}
 	if (beacon_p_b->seen) {
-		std::cout << "------------------------------------------------"
-				<< std::endl;
-		std::cout << "Updating Particles from Beacon_Pink_Blue" << std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
+//		std::cout << "Updating Particles from Beacon_Pink_Blue" << std::endl;
 		updateParticlesFromBeacon(beacon_p_b);
-		std::cout << "------------------------------------------------"
-				<< std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
 	}
 	if (beacon_b_p->seen) {
-		std::cout << "------------------------------------------------"
-				<< std::endl;
-		std::cout << "Updating Particles from Beacon_Blue_Pink" << std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
+//		std::cout << "Updating Particles from Beacon_Blue_Pink" << std::endl;
 		updateParticlesFromBeacon(beacon_b_p);
-		std::cout << "------------------------------------------------"
-				<< std::endl;
+//		std::cout << "------------------------------------------------"
+//				<< std::endl;
 	}
 }
 
@@ -177,27 +177,27 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		distanceBias = abs(beacon->visionDistance - particleDistance);
 		bearingBias = abs(beacon->visionBearing - particleBearing);
 
-		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
-				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
-				<< ", " << p.theta * 180 / M_PI << std::endl;
-		std::cout << "Particle Parameter: " << particleDistance << ", "
-				<< particleBearing * 180 / M_PI << std::endl;
-		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
-				<< beacon->visionBearing * 180 / M_PI << std::endl;
+//		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
+//				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
+//				<< ", " << p.theta * 180 / M_PI << std::endl;
+//		std::cout << "Particle Parameter: " << particleDistance << ", "
+//				<< particleBearing * 180 / M_PI << std::endl;
+//		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
+//				<< beacon->visionBearing * 180 / M_PI << std::endl;
 
 		float prob_multiplier = exp(
 				-0.5 * (distanceBias * distanceBias + bearingBias * bearingBias)
 						/ normalization);
 		p.prob = p.prob * prob_multiplier;
 
-		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
+//		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
 	}
 
 	float sumProb = 0.0;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		sumProb += particles_[i].prob;
 	}
-	std::cout << "Prob Normalization: " << sumProb << std::endl;
+//	std::cout << "Prob Normalization: " << sumProb << std::endl;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		particles_[i].prob /= sumProb;
 	}
@@ -277,12 +277,12 @@ void LocalizationModule::resetParticles() {
 		p.placeRandomly();
 	}
 
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		std::cout << "[Particle " << i << ": " << particles_[i].loc.x << ", "
-				<< particles_[i].loc.y << "], ";
-	}
-
-	std::cout << std::endl << "Particles been reset..." << std::endl;
+//	for (int i = 0; i < NUM_PARTICLES; i++) {
+//		std::cout << "[Particle " << i << ": " << particles_[i].loc.x << ", "
+//				<< particles_[i].loc.y << "], ";
+//	}
+//
+//	std::cout << std::endl << "Particles been reset..." << std::endl;
 }
 
 void LocalizationModule::setParticleProbabilities(float newProb) {
@@ -293,7 +293,8 @@ void LocalizationModule::setParticleProbabilities(float newProb) {
 }
 
 void LocalizationModule::randomWalkParticles() {
-
+	std::cout << "------------------------------------------------"
+			<< std::endl;
 	std::cout << "Performing Random Walk on All Particles..." << std::endl;
 	// loop through half, moving each pair of particles opposite directions
 
@@ -304,6 +305,10 @@ void LocalizationModule::randomWalkParticles() {
 		Vector2D dPos(DELTA_DIST * (2.0 * drand48() - 1),
 				DELTA_DIST * (2.0 * drand48() - 1));
 		AngRad dAng = DELTA_ANG * (2.0 * drand48() - 1);
+
+		std::cout << "Particle Index: [" << i << ", " << i + NUM_PARTICLES / 2
+				<< "]: dPos = (" << dPos[0] << ", " << dPos[1] << "), dAng = "
+				<< dAng << std::endl;
 
 		// move them in opposite directions on this vector, based on their prob
 		float p1Ratio = 1.0 - part1.prob;
@@ -316,6 +321,8 @@ void LocalizationModule::randomWalkParticles() {
 		part2.move(-dPos * p2Ratio, p2AngleRatio * -dAng);
 
 	}
+	std::cout << "------------------------------------------------"
+			<< std::endl;
 }
 
 void LocalizationModule::updatePose() {
