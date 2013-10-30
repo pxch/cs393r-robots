@@ -183,20 +183,20 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		distanceBias = abs(beacon->visionDistance - particleDistance);
 		bearingBias = abs(beacon->visionBearing - particleBearing);
 
-		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
-				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
-				<< ", " << p.theta * 180 / M_PI << std::endl;
-		std::cout << "Particle Parameter: " << particleDistance << ", "
-				<< particleBearing * 180 / M_PI << std::endl;
-		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
-				<< beacon->visionBearing * 180 / M_PI << std::endl;
+//		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
+//				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
+//				<< ", " << p.theta * 180 / M_PI << std::endl;
+//		std::cout << "Particle Parameter: " << particleDistance << ", "
+//				<< particleBearing * 180 / M_PI << std::endl;
+//		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
+//				<< beacon->visionBearing * 180 / M_PI << std::endl;
 
 		float prob_multiplier = exp(
 				-0.5 * (distanceBias * distanceBias) / normalDistance
 						- 0.5 * (bearingBias * bearingBias) / normalBearing);
 		p.prob = p.prob * prob_multiplier;
 
-		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
+//		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
 	}
 
 	float sumProb = 0.0;
@@ -219,7 +219,7 @@ void LocalizationModule::resamplingParticles() {
 		previous_particles_[i] = particles_[i];
 		sumProb += particles_[i].prob;
 	}
-	std::cout << "Prob Normalization: " << sumProb << std::endl;
+//	std::cout << "Prob Normalization: " << sumProb << std::endl;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		previous_particles_[i].prob /= sumProb;
 	}
@@ -232,20 +232,20 @@ void LocalizationModule::resamplingParticles() {
 		if (previous_index == -1)
 			continue;
 		else {
-			std::cout << "(" << random << ", " << previous_index << "), ";
+//			std::cout << "(" << random << ", " << previous_index << "), ";
 			particles_[current_index] = previous_particles_[previous_index];
 			particles_[current_index].prob = 1.0;
 			current_index++;
 		}
 	}
-	std::cout << std::endl;
-	std::cout << "------------------------------------------------"
-			<< std::endl;
-
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		std::cout << "[Particle " << i << "]: " << particles_[i].loc.x << ", "
-				<< particles_[i].loc.y << std::endl;
-	}
+//	std::cout << std::endl;
+//	std::cout << "------------------------------------------------"
+//			<< std::endl;
+//
+//	for (int i = 0; i < NUM_PARTICLES; i++) {
+//		std::cout << "[Particle " << i << "]: " << particles_[i].loc.x << ", "
+//				<< particles_[i].loc.y << std::endl;
+//	}
 	std::cout << "------------------------------------------------"
 			<< std::endl;
 }
@@ -319,9 +319,9 @@ void LocalizationModule::randomWalkParticles() {
 				DELTA_DIST * (2.0 * drand48() - 1));
 		AngRad dAng = DELTA_ANG * (2.0 * drand48() - 1);
 
-		std::cout << "Particle Index: [" << i << ", " << i + NUM_PARTICLES / 2
-				<< "]: dPos = (" << dPos.x << ", " << dPos.y << "), dAng = "
-				<< dAng * 180 / M_PI << std::endl;
+//		std::cout << "Particle Index: [" << i << ", " << i + NUM_PARTICLES / 2
+//				<< "]: dPos = (" << dPos.x << ", " << dPos.y << "), dAng = "
+//				<< dAng * 180 / M_PI << std::endl;
 
 		// move them in opposite directions on this vector, based on their prob
 //		float p1Ratio = 1.0 - part1.prob;
@@ -337,13 +337,13 @@ void LocalizationModule::randomWalkParticles() {
 		part2.move(-dPos * p2Ratio, p2AngleRatio * -dAng);
 
 	}
-	std::cout << "------------------------------------------------"
-			<< std::endl;
-
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		std::cout << "[Particle " << i << "]: " << particles_[i].loc.x << ", "
-				<< particles_[i].loc.y << std::endl;
-	}
+//	std::cout << "------------------------------------------------"
+//			<< std::endl;
+//
+//	for (int i = 0; i < NUM_PARTICLES; i++) {
+//		std::cout << "[Particle " << i << "]: " << particles_[i].loc.x << ", "
+//				<< particles_[i].loc.y << std::endl;
+//	}
 
 	std::cout << "------------------------------------------------"
 			<< std::endl;
