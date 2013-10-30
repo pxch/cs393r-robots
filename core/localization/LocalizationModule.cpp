@@ -57,14 +57,14 @@ void LocalizationModule::processFrame() {
 	updateParticlesFromSensor();
 
 	// 2. If this is a resampling frame, resample
-	if (frameID % RESAMPLE_FREQ == 0)
+//	if (frameID % RESAMPLE_FREQ == 0)
 		resamplingParticles();
 
 	// 3. Update the robot's pose
 	updatePose();
 
 	// 4. If this is a random walk frame, random walk
-	if (frameID % RANDOM_WALK_FREQ == 0)
+//	if (frameID % RANDOM_WALK_FREQ == 0)
 		randomWalkParticles();
 
 	// 5. Copy particles to localization memory:
@@ -132,6 +132,7 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 }
 
 void LocalizationModule::resamplingParticles() {
+	std::cout << "Resampling Particles..." << std::endl;
 	float sumProb = 0.0;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		previous_particles_[i] = particles_[i];
