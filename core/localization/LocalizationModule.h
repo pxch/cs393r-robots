@@ -15,11 +15,11 @@
 #include <memory/DelayedLocalizationBlock.h>
 #include <localization/Particle.h>
 
-#define RESAMPLE_FREQ 3
-#define RANDOM_WALK_FREQ 3
+#define RESAMPLE_FREQ 2
+#define RANDOM_WALK_FREQ 1
 #define DEGRADE_FACTOR 0.99
 #define DELTA_DIST 10
-#define DELTA_ANG (DEG_T_RAD * 45)
+#define DELTA_ANG (DEG_T_RAD * 15)
 
 class LocalizationModule: public Module {
 public:

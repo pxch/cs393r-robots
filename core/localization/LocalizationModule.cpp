@@ -39,7 +39,7 @@ void LocalizationModule::initSpecificModule() {
 	}
 	copyParticles();
 
-	innerFrameIndex = 0;
+	innerFrameIndex = 1;
 	resetParticles();
 }
 
@@ -165,6 +165,9 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 
 	float normalDistance = beacon->visionDistance * beacon->visionDistance;
 	float normalBearing = beacon->visionBearing * beacon->visionBearing;
+	
+//	float normalDistance = beacon->visionDistance * beacon->visionDistance;
+//	float normalBearing = M_PI * M_PI;
 
 	float distanceBias = 0.0;
 	float bearingBias = 0.0;
@@ -225,7 +228,7 @@ void LocalizationModule::resamplingParticles() {
 	int previous_index = -1;
 	while (current_index < NUM_PARTICLES) {
 		double random = drand48();
-		int previous_index = sampleIndexFromRandom(random);
+		previous_index = sampleIndexFromRandom(random);
 		if (previous_index == -1)
 			continue;
 		else {
