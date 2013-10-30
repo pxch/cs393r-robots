@@ -140,7 +140,7 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		Particle& p = particles_[i];
 		particleDistance = p.loc.getDistanceTo(beacon->loc);
-		particleBearing = p.loc.getBearingto(beacon->loc, p.theta);
+		particleBearing = p.loc.getBearingTo(beacon->loc, p.theta);
 
 		distanceBias = abs(beacon->visionDistance - particleDistance);
 		bearingBias = abs(beacon->visionBearing - particleBearing);
