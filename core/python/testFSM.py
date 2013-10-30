@@ -1,6 +1,7 @@
 from state import * 
 import commands, core, util, pose
 import time
+from math import pi
 
 class TestMachine(StateMachine):
   def setup(self):
@@ -17,6 +18,79 @@ class TestMachine(StateMachine):
     self._adt(choose, I(4), SpeakNode('completed'), S, sit)
     self._adt(sit, C, finish)
 
+
+#######################################assignment4###########################
+
+class TestMachine4(StateMachine):  #detect ball
+  def setup(self):
+    start = Node()
+    finish = Node()
+    sit = SitNode()
+    turnleft = HeadTurnLeftNode()
+    turnright = HeadTurnRightNode()
+    turn = HeadTurnNode()
+
+    detectBeacons = DetectBeaconsNode()
+    self._adt(start, N, detectBeacons)
+    self._adt(detectBeacons, S, sit)
+    self._adt(sit, C, finish)
+
+
+class DetectBeaconsNode(Node):
+  def __init__(self):
+    super(DetectBeaconsNode, self).__init__()
+    self._time = 0
+  
+  def run(self):
+    self._time = self._time + 1
+    commands.setWalkVelocity(0.1, 0, 0)  #turn left
+
+    if self._time%12 >= 0 and self._time%12 < 6:
+      commands.setHeadPan(1, 6.0)
+
+    else:
+      commands.setHeadPan(-1, 6.0)
+    
+    if self.getTime() > 40.0:
+      self.postSuccess()
+
+
+#######################################assignment5##########################
+class TestMachine5(StateMachine):
+  def setup(self):
+    start = Node()
+    finish = Node()
+    sit = SitNode()
+    stand = StandNode()
+    walk = WalkNode()
+    walk1 = towardsToCenterNode()
+    self._adt(start, N, stand)
+    self._adt(stand, C, walk)
+    self._adt(walk, C, sit)
+    self._adt(sit, C, finish)
+
+class towardsToCenterNode(Node):
+  def __init__(self):
+    super(towardsToCenterNode, self).__init__()
+
+  def run(self):
+    robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
+    
+    if robot.loc.x == 0 and robot.loc.y == 0:
+      self.postCompleted()
+    else: 
+      commands.setWalkVelocity(0.2, 0, robot.orientation)
+
+class WalkNode(Node):
+  def run(self):
+    commands.setWalkVelocity(.5, 0, -pi/12)
+    if self.getTime() > 30.0:
+      commands.stand()
+      self.postSuccess()
+
+
+
+################################################################################	
 
 def rand():
   t = int(time.time() * 1000) % 1000
