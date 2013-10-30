@@ -67,10 +67,10 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 	beacon->distance = cameraMatrix.getWorldDistanceByHeight(beacon->height,
 			200);
 
-	std::cout << "Width: " << beacon->width << ", Height: " << beacon->height
-			<< ", imageCenterX: " << beacon->imageCenterX << ", imageCenterY: "
-			<< beacon->imageCenterY << ", distance: " << beacon->distance
-			<< std::endl;
+//	std::cout << "Width: " << beacon->width << ", Height: " << beacon->height
+//			<< ", imageCenterX: " << beacon->imageCenterX << ", imageCenterY: "
+//			<< beacon->imageCenterY << ", distance: " << beacon->distance
+//			<< std::endl;
 
 	Position p = cmatrix_.getWorldPositionByDirectDistance(beacon->imageCenterX,
 			beacon->imageCenterY, beacon->distance);
@@ -78,6 +78,8 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 	float bearing = cmatrix_.bearing(p);
 	beacon->visionDistance = distance;
 	beacon->visionBearing = bearing;
+
+	std::cout << "VisionDistance: " << distance << ", VisionBearing: " << bearing << std::endl;
 }
 
 void BeaconDetector::detectBeacon() {
@@ -114,9 +116,10 @@ void BeaconDetector::detectBeacon(WorldObject* beacon, int color1, int color2,
 			blob2 = blob_detector_->horizontalBlob[color2][j];
 
 			if (isVerticalConnected(blob1, blob2)) {
-//                              std::cout << "------------------------------" << std::endl;
-//                              std::cout << "Beacon_" << color1_str << "_" << color2_str << "connected. Waiting for further check."<< std::endl;
-//                              std::cout << "------------------------------" << std::endl;
+//				std::cout << "------------------------------" << std::endl;
+//				std::cout << "Beacon_" << color1_str << "_" << color2_str
+//						<< "connected. Waiting for further check." << std::endl;
+//				std::cout << "------------------------------" << std::endl;
 
 				bool flag = true;
 
