@@ -34,6 +34,7 @@ class TestMachine5(StateMachine):
     self._adt(walk, C, sit)
     self._adt(sit, C, finish)
 
+
 class towardsToCenterNode(Node):
   def __init__(self):
     super(towardsToCenterNode, self).__init__()
@@ -41,30 +42,42 @@ class towardsToCenterNode(Node):
   def run(self):
     robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
     
-    if robot.loc.x == 0 and robot.loc.y == 0:
+    if abs(robot.loc.x) < 50 and abs(robot.loc.y) < 50:
       self.postCompleted()
-    elif robot.loc.x > 0:
-      while robot.orientation < 170 or robot.orientation > 190:
-	commands.setWalkVelocity(0, 0, .25)  #turn left
-      while robot.loc.x > 2:
-	commands.setWalkVelocity(0.5, 0, 0) 
-      if robot.loc.y > 0:
-	while robot.orientation < 260:
-	  commands.setWalkVelocity(0, 0, .25)  #turn left
-	while robot.loc.y > 2:
-	  commands.setWalkVelocity(0.5, 0, 0) 	
-      if robot.loc.y < 0:
-	while robot.orientation < 80:
-	  commands.setWalkVelocity(0, 0, -.25)  #turn left
-	while robot.loc.y > 2:
-	  commands.setWalkVelocity(0.5, 0, 0)
-    
 
-      commands.setWalkVelocity(0.1, 0, robot.orientation)
+    elif robot.loc.x >=0 and robot.loc.y >=0:
+      if abs(tan(robot.orientation) - y/x) < 0.1 and robot.orientation >= 180 and robot.orientation <= 270:
+        commands.setWalkVelocity(0.5, 0, 0) 	      
+      else:
+	commands.setWalkVelocity(0, 0, -0.25)
+
+    elif robot.loc.x <= 0 and robot.loc.y >= 0:
+      if abs(tan(robot.orientation) - y/x) < 0.1 and robot.orientation >= 270 and robot.orientation <= 360:
+        commands.setWalkVelocity(0.5, 0, 0) 	      
+      else:
+	commands.setWalkVelocity(0, 0, -0.25)
+
+    elif robot.loc.x <= 0 and robot.loc.y <= 0:
+      if abs(tan(robot.orientation) - y/x) < 0.1 and robot.orientation >= 0 and robot.orientation <= 90:
+        commands.setWalkVelocity(0.5, 0, 0) 	      
+      else:
+	commands.setWalkVelocity(0, 0, -0.25)
+
+    elif robot.loc.x >= 0 and robot.loc.y <= 0:
+      if abs(tan(robot.orientation) - y/x) < 0.1 and robot.orientation >= 90 and robot.orientation <= 180:
+        commands.setWalkVelocity(0.5, 0, 0) 	      
+      else:
+	commands.setWalkVelocity(0, 0, -0.25)
+
 
 class WalkNode(Node):
   def run(self):
-    commands.setWalkVelocity(.5, 0, -pi/2)
+    robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
+    print robot.loc.x
+    print robot.loc.y
+    print robot.orientation
+    print "one"
+   
     if self.getTime() > 30.0:
       commands.stand()
       self.postSuccess()
