@@ -145,16 +145,18 @@ void LocalizationModule::resamplingParticles() {
 	int current_index = 0;
 	int previous_index = -1;
 	while (current_index < NUM_PARTICLES) {
-		int previous_index = sampleIndexFromRandom(drand48());
+		double random = drand48();
+		int previous_index = sampleIndexFromRandom(random);
 		if (previous_index == -1)
 			continue;
 		else {
-			std::cout << previous_index << ", " << std::endl;
+			std::cout << "(" << random << ", " << previous_index << "), " <<;
 			particles_[current_index] = previous_particles_[previous_index];
 			particles_[current_index].prob = 1.0;
 			current_index++;
 		}
 	}
+	std::cout << std::endl;
 }
 
 int LocalizationModule::sampleIndexFromRandom(float random) {
