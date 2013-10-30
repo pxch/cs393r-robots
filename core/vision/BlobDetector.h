@@ -1,7 +1,6 @@
 #ifndef BLOBDETECTOR_H
 #define BLOBDETECTOR_H
 
-
 #include <memory/TextLogger.h>
 #include <constants/VisionConstants.h>
 #include <vision/Classifier.h>
@@ -10,52 +9,28 @@
 #include <vision/Macros.h>
 #include <vision/ObjectDetector.h>
 #include <vision/enums/Colors.h>
-  
+
 typedef std::vector<Blob> BlobCollection;
 
-class BlobDetector : public ObjectDetector {
- public:
-  BlobDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier);
-  void init(TextLogger* tl){textlogger = tl;};
+class BlobDetector: public ObjectDetector {
+public:
+	BlobDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier);
+	void init(TextLogger* tl) {
+		textlogger = tl;
+	}
+	;
+	std::vector<BlobCollection> horizontalBlob, verticalBlob;
 
-  std::vector<BlobCollection> horizontalBlob, verticalBlob;
+	void formBlobs(int color);
 
-  void calculateHorizontalBlobData(unsigned char);
-  void calculateVerticalBlobData(unsigned char);
-  void verticalBlobSort(unsigned char);
-  void horizontalBlobSort(unsigned char);
+private:
+	Classifier*& classifier_;
+	TextLogger* textlogger;
 
-  void clearPointBlobReferences(Color color);
-  void formWhiteLineBlobs();
-  void formBlueBandBlobs();
-  void formPinkBandBlobs();
-  void formBlobs(Color color);
-  void formBlobs(BlobCollection& blobs, Color color);
-  void formOrangeBlobs();
-  void formYellowBlobs();
-  void resetOrangeBlobs();
-  void resetYellowBlobs();
-  void calculateBlobData(Color color);
-  void calculateBlobData(BlobCollection& blobs, Color color);
-  void calculateOrangeBlobData();
-  void calculateBandBlobData(Color color);
-
-  uint16_t mergeHorizontalBlobs(Color color, uint16_t* mergeIndex, int mergeCount);
-  uint16_t mergeVerticalBlobs(Color color, uint16_t* mergeIndex, int mergeCount);
-  uint16_t mergeBlobs(BlobCollection& blobs, uint16_t* mergeIndex, int mergeCount, int thresholdX = 30, int thresholdY = 30);
-  uint16_t mergeBlobs(Color color, std::vector<BlobCollection>& blobs, uint16_t* mergeIndex, int mergeCount);
-  BlobCollection mergeBlobs(BlobCollection& blobs, int thresholdX, int thresholdY);
-
-
- private:
-  void formBlobsWithVertLineSegs(unsigned char*,int);
-  void formBlobsWithHorzLineSegs(unsigned char*,int);
-  void setImagePointers();
-
-  Classifier*& classifier_;
-  VisionPoint ***verticalPoint, ***horizontalPoint;
-  uint32_t **verticalPointCount, **horizontalPointCount;
-  TextLogger* textlogger;
+	bool isOverlapped(VisionPoint& a, VisionPoint& b);
+	void mergeBlob(BlobCollection& blobs, int color, int indexA, int indexB);
+	void addPointToBlob(VisionPoint& point, uint32_t pointIndex, Blob& blob,
+			uint16_t blobIndex);
 };
 
 #endif
