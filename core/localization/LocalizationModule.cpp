@@ -307,8 +307,8 @@ void LocalizationModule::randomWalkParticles() {
 		AngRad dAng = DELTA_ANG * (2.0 * drand48() - 1);
 
 		std::cout << "Particle Index: [" << i << ", " << i + NUM_PARTICLES / 2
-				<< "]: dPos = (" << dPos[0] << ", " << dPos[1] << "), dAng = "
-				<< dAng << std::endl;
+				<< "]: dPos = (" << dPos.x << ", " << dPos.y << "), dAng = "
+				<< dAng * 180 / M_PI << std::endl;
 
 		// move them in opposite directions on this vector, based on their prob
 		float p1Ratio = 1.0 - part1.prob;
