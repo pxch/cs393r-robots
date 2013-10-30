@@ -45,21 +45,21 @@ void LocalizationModule::initSpecificModule() {
 
 void LocalizationModule::processFrame() {
 	int frameID = frameInfo->frame_id;
-	std::cout << "Frame: " << frameID << std::endl;
+	std::cout << "Frame: " << innerFrameIndex << std::endl;
 
 	// 1. Update particles from observations
 	updateParticlesFromOdometry();
 	updateParticlesFromSensor();
 
 	// 2. If this is a resampling frame, resample
-	if (frameID % RESAMPLE_FREQ == 0)
+	if (innerFrameIndex % RESAMPLE_FREQ == 0)
 		resamplingParticles();
 
 	// 3. Update the robot's pose
 	updatePose();
 
 	// 4. If this is a random walk frame, random walk
-	if (frameID % RANDOM_WALK_FREQ == 0)
+	if (innerFrameIndex % RANDOM_WALK_FREQ == 0)
 		randomWalkParticles();
 
 	// 5. Copy particles to localization memory:
@@ -183,20 +183,20 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		distanceBias = abs(beacon->visionDistance - particleDistance);
 		bearingBias = abs(beacon->visionBearing - particleBearing);
 
-//		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
-//				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
-//				<< ", " << p.theta * 180 / M_PI << std::endl;
-//		std::cout << "Particle Parameter: " << particleDistance << ", "
-//				<< particleBearing * 180 / M_PI << std::endl;
-//		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
-//				<< beacon->visionBearing * 180 / M_PI << std::endl;
+		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
+				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
+				<< ", " << p.theta * 180 / M_PI << std::endl;
+		std::cout << "Particle Parameter: " << particleDistance << ", "
+				<< particleBearing * 180 / M_PI << std::endl;
+		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
+				<< beacon->visionBearing * 180 / M_PI << std::endl;
 
 		float prob_multiplier = exp(
 				-0.5 * (distanceBias * distanceBias) / normalDistance
 						- 0.5 * (bearingBias * bearingBias) / normalBearing);
 		p.prob = p.prob * prob_multiplier;
 
-//		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
+		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
 	}
 
 	float sumProb = 0.0;
@@ -326,9 +326,14 @@ void LocalizationModule::randomWalkParticles() {
 		// move them in opposite directions on this vector, based on their prob
 //		float p1Ratio = 1.0 - part1.prob;
 //		float p2Ratio = 1.0 - part2.prob;
+		
+//		if (p1Ratio == 0.0)
+//			p1Ratio = 0.05;
+//		if (p2Ratio == 0.0)
+//			p2Ratio = 0.05;
 
-		float p1Ratio = part1.prob;
-		float p2Ratio = part2.prob;
+		float p1Ratio = 1;
+		float p2Ratio = 1;
 
 		float p1AngleRatio = p1Ratio;
 		float p2AngleRatio = p2Ratio;
@@ -359,10 +364,22 @@ void LocalizationModule::updatePose() {
 	Point2D robotLoc(0.0, 0.0);
 	AngRad robotOrient = 0.0;
 
+	float sumProb = 0.0;
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		sumProb += particles_[i].prob;
+	}
+	std::cout << "Prob Normalization: " << sumProb << std::endl;
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		particles_[i].prob /= (sumProb / NUM_PARTICLES);
+	}
+
+//	int effectiveParticlesCount = 0;
+//	float probThres = 0.2;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		Particle& p = particles_[i];
 		robotLoc += p.loc * p.prob;
 		robotOrient += p.theta * p.prob;
+//		effectiveParticlesCount ++;
 	}
 
 	robotLoc /= NUM_PARTICLES;
