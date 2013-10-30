@@ -318,8 +318,11 @@ void LocalizationModule::randomWalkParticles() {
 				<< dAng * 180 / M_PI << std::endl;
 
 		// move them in opposite directions on this vector, based on their prob
-		float p1Ratio = 1.0 - part1.prob;
-		float p2Ratio = 1.0 - part2.prob;
+//		float p1Ratio = 1.0 - part1.prob;
+//		float p2Ratio = 1.0 - part2.prob;
+
+		float p1Ratio = part1.prob;
+		float p2Ratio = part2.prob;
 
 		float p1AngleRatio = p1Ratio;
 		float p2AngleRatio = p2Ratio;
