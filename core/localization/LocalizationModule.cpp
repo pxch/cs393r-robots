@@ -150,7 +150,7 @@ void LocalizationModule::resamplingParticles() {
 		if (previous_index == -1)
 			continue;
 		else {
-			std::cout << "(" << random << ", " << previous_index << "), " <<;
+			std::cout << "(" << random << ", " << previous_index << "), ";
 			particles_[current_index] = previous_particles_[previous_index];
 			particles_[current_index].prob = 1.0;
 			current_index++;
