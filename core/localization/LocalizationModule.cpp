@@ -38,20 +38,19 @@ void LocalizationModule::initSpecificModule() {
 		p.prob = 1.0;
 	}
 	copyParticles();
+
+	resetParticles();
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		std::cout << "Particle " << i << ": " << particles_[i].loc.x << ", "
+				<< particles_[i].loc.y << std::endl;
+	}
+	std::cout << "Reset Particles..." << std::endl;
+
 }
 
 void LocalizationModule::processFrame() {
 	int frameID = frameInfo->frame_id;
 	std::cout << "Frame: " << frameID << std::endl;
-
-	if (frameID == 1) {
-		resetParticles();
-		for (int i = 0; i < NUM_PARTICLES; i++) {
-			std::cout << "Particle " << i << ": " << particles_[i].loc.x << ", "
-					<< particles_[i].loc.y << std::endl;
-		}
-		std::cout << "Reset Particles..." << std::endl;
-	}
 
 	// 1. Update particles from observations
 	updateParticlesFromOdometry();
