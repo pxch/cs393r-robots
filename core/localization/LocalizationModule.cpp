@@ -76,40 +76,52 @@ void LocalizationModule::updateParticlesFromSensor() {
 	WorldObject* beacon_b_p = &worldObjects->objects_[WO_BEACON_BLUE_PINK];
 
 	if (beacon_p_y->seen) {
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 		std::cout << "Updating Particles from Beacon_Pink_Yellow" << std::endl;
 		updateParticlesFromBeacon(beacon_p_y);
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 	}
 	if (beacon_y_p->seen) {
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 		std::cout << "Updating Particles from Beacon_Yellow_Pink" << std::endl;
 		updateParticlesFromBeacon(beacon_y_p);
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 	}
 	if (beacon_b_y->seen) {
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 		std::cout << "Updating Particles from Beacon_Blue_Yellow" << std::endl;
 		updateParticlesFromBeacon(beacon_b_y);
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 	}
 	if (beacon_y_b->seen) {
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 		std::cout << "Updating Particles from Beacon_Yellow_Blue" << std::endl;
 		updateParticlesFromBeacon(beacon_y_b);
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 	}
 	if (beacon_p_b->seen) {
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 		std::cout << "Updating Particles from Beacon_Pink_Blue" << std::endl;
 		updateParticlesFromBeacon(beacon_p_b);
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 	}
 	if (beacon_b_p->seen) {
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 		std::cout << "Updating Particles from Beacon_Blue_Pink" << std::endl;
 		updateParticlesFromBeacon(beacon_b_p);
-		std::cout << "------------------------------------------------" << std::endl;
+		std::cout << "------------------------------------------------"
+				<< std::endl;
 	}
 }
 
@@ -131,7 +143,8 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 //
 //	std::cout << "Prob Stats: " << prob_mean << ", " << prob_se << std::endl;
 
-	float normalization = 1.0;
+	float normalization = beacon->visionDistance * beacon->visionDistance
+			+ beacon->visionBearing * beacon->visionBearing;
 
 	float distanceBias = 0.0;
 	float bearingBias = 0.0;
@@ -175,7 +188,8 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 }
 
 void LocalizationModule::resamplingParticles() {
-	std::cout << "------------------------------------------------" << std::endl;
+	std::cout << "------------------------------------------------"
+			<< std::endl;
 	std::cout << "Resampling Particles..." << std::endl;
 	float sumProb = 0.0;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
@@ -202,7 +216,8 @@ void LocalizationModule::resamplingParticles() {
 		}
 	}
 	std::cout << std::endl;
-	std::cout << "------------------------------------------------" << std::endl;
+	std::cout << "------------------------------------------------"
+			<< std::endl;
 }
 
 int LocalizationModule::sampleIndexFromRandom(float random) {
@@ -287,7 +302,8 @@ void LocalizationModule::randomWalkParticles() {
 }
 
 void LocalizationModule::updatePose() {
-	std::cout << "------------------------------------------------" << std::endl;
+	std::cout << "------------------------------------------------"
+			<< std::endl;
 	std::cout << "Updating Robot Pose..." << std::endl;
 	WorldObject& self = worldObjects->objects_[robotState->WO_SELF];
 	// Compute a weighted average of the particles to fill in your location
@@ -309,5 +325,6 @@ void LocalizationModule::updatePose() {
 
 	std::cout << "Robot Location: " << robotLoc.x << ", " << robotLoc.y
 			<< ", Robot Orientation: " << robotOrient << std::endl;
-	std::cout << "------------------------------------------------" << std::endl;
+	std::cout << "------------------------------------------------"
+			<< std::endl;
 }
