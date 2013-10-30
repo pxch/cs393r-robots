@@ -129,6 +129,8 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	prob_se /= NUM_PARTICLES;
 	prob_se = sqrt(prob_se);
 
+	std::cout << "Prob Stats: " << prob_mean << ", " << prob_se << std::endl;
+
 	float normalization = prob_se;
 
 	float distanceBias = 0.0;
