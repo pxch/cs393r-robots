@@ -115,23 +115,23 @@ void LocalizationModule::updateParticlesFromSensor() {
 
 void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 
-	float prob_seq[NUM_PARTICLES] = { 0.0 };
-	float prob_mean = 0.0;
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		prob_seq[i] = particles_[i].prob;
-		prob_mean += prob_seq[i];
-	}
-	prob_mean /= NUM_PARTICLES;
-	float prob_se = 0.0;
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		prob_se += (prob_seq[i] - prob_mean) * (prob_seq[i] - prob_mean);
-	}
-	prob_se /= NUM_PARTICLES;
-	prob_se = sqrt(prob_se);
+//	float prob_seq[NUM_PARTICLES] = { 0.0 };
+//	float prob_mean = 0.0;
+//	for (int i = 0; i < NUM_PARTICLES; i++) {
+//		prob_seq[i] = particles_[i].prob;
+//		prob_mean += prob_seq[i];
+//	}
+//	prob_mean /= NUM_PARTICLES;
+//	float prob_se = 0.0;
+//	for (int i = 0; i < NUM_PARTICLES; i++) {
+//		prob_se += (prob_seq[i] - prob_mean) * (prob_seq[i] - prob_mean);
+//	}
+//	prob_se /= NUM_PARTICLES;
+//	prob_se = sqrt(prob_se);
+//
+//	std::cout << "Prob Stats: " << prob_mean << ", " << prob_se << std::endl;
 
-	std::cout << "Prob Stats: " << prob_mean << ", " << prob_se << std::endl;
-
-	float normalization = prob_se;
+	float normalization = 1.0;
 
 	float distanceBias = 0.0;
 	float bearingBias = 0.0;
@@ -162,6 +162,16 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 
 		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
 	}
+
+	float sumProb = 0.0;
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		sumProb += particles_[i].prob;
+	}
+	std::cout << "Prob Normalization: " << sumProb << std::endl;
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		particles_[i].prob /= sumProb;
+	}
+
 }
 
 void LocalizationModule::resamplingParticles() {
@@ -172,6 +182,7 @@ void LocalizationModule::resamplingParticles() {
 		previous_particles_[i] = particles_[i];
 		sumProb += particles_[i].prob;
 	}
+	std::cout << "Prob Normalization: " << sumProb << std::endl;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		previous_particles_[i].prob /= sumProb;
 	}
