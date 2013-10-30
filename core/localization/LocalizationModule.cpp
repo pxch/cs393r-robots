@@ -45,21 +45,21 @@ void LocalizationModule::initSpecificModule() {
 
 void LocalizationModule::processFrame() {
 	int frameID = frameInfo->frame_id;
-	std::cout << "Frame: " << innerFrameIndex << std::endl;
+	std::cout << "Frame: " << frameID << std::endl;
 
 	// 1. Update particles from observations
 	updateParticlesFromOdometry();
 	updateParticlesFromSensor();
 
 	// 2. If this is a resampling frame, resample
-	if (innerFrameIndex % RESAMPLE_FREQ == 0)
+	if (frameID % RESAMPLE_FREQ == 0)
 		resamplingParticles();
 
 	// 3. Update the robot's pose
 	updatePose();
 
 	// 4. If this is a random walk frame, random walk
-	if (innerFrameIndex % RANDOM_WALK_FREQ == 0)
+	if (frameID % RANDOM_WALK_FREQ == 0)
 		randomWalkParticles();
 
 	// 5. Copy particles to localization memory:
