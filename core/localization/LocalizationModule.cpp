@@ -39,30 +39,33 @@ void LocalizationModule::initSpecificModule() {
 	}
 	copyParticles();
 
+	innerFrameIndex = 0;
 	resetParticles();
 }
 
 void LocalizationModule::processFrame() {
 	int frameID = frameInfo->frame_id;
-	std::cout << "Frame: " << frameID << std::endl;
+	std::cout << "Frame: " << innerFrameIndex << std::endl;
 
 	// 1. Update particles from observations
 	updateParticlesFromOdometry();
 	updateParticlesFromSensor();
 
 	// 2. If this is a resampling frame, resample
-	if (frameID % RESAMPLE_FREQ == 0)
+	if (innerFrameIndex % RESAMPLE_FREQ == 0)
 		resamplingParticles();
 
 	// 3. Update the robot's pose
 	updatePose();
 
 	// 4. If this is a random walk frame, random walk
-	if (frameID % RANDOM_WALK_FREQ == 0)
+	if (innerFrameIndex % RANDOM_WALK_FREQ == 0)
 		randomWalkParticles();
 
 	// 5. Copy particles to localization memory:
 	copyParticles();
+
+	innerFrameIndex ++;
 }
 
 void LocalizationModule::updateParticlesFromSensor() {
@@ -160,8 +163,8 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 //
 //	std::cout << "Prob Stats: " << prob_mean << ", " << prob_se << std::endl;
 
-	float normalization = beacon->visionDistance * beacon->visionDistance
-			+ beacon->visionBearing * beacon->visionBearing;
+	float normalDistance = beacon->visionDistance * beacon->visionDistance;
+	float normalBearing = beacon->visionBearing * beacon->visionBearing;
 
 	float distanceBias = 0.0;
 	float bearingBias = 0.0;
@@ -177,29 +180,29 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		distanceBias = abs(beacon->visionDistance - particleDistance);
 		bearingBias = abs(beacon->visionBearing - particleBearing);
 
-//		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
-//				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
-//				<< ", " << p.theta * 180 / M_PI << std::endl;
-//		std::cout << "Particle Parameter: " << particleDistance << ", "
-//				<< particleBearing * 180 / M_PI << std::endl;
-//		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
-//				<< beacon->visionBearing * 180 / M_PI << std::endl;
+		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
+				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
+				<< ", " << p.theta * 180 / M_PI << std::endl;
+		std::cout << "Particle Parameter: " << particleDistance << ", "
+				<< particleBearing * 180 / M_PI << std::endl;
+		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
+				<< beacon->visionBearing * 180 / M_PI << std::endl;
 
 		float prob_multiplier = exp(
-				-0.5 * (distanceBias * distanceBias + bearingBias * bearingBias)
-						/ normalization);
+				-0.5 * (distanceBias * distanceBias) / normalDistance
+						- 0.5 * (bearingBias * bearingBias) / normalBearing);
 		p.prob = p.prob * prob_multiplier;
 
-//		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
+		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
 	}
 
 	float sumProb = 0.0;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		sumProb += particles_[i].prob;
 	}
-//	std::cout << "Prob Normalization: " << sumProb << std::endl;
+	std::cout << "Prob Normalization: " << sumProb << std::endl;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
-		particles_[i].prob /= sumProb;
+		particles_[i].prob /= (sumProb / NUM_PARTICLES);
 	}
 
 }

@@ -15,8 +15,8 @@
 #include <memory/DelayedLocalizationBlock.h>
 #include <localization/Particle.h>
 
-#define RESAMPLE_FREQ 1
-#define RANDOM_WALK_FREQ 1
+#define RESAMPLE_FREQ 3
+#define RANDOM_WALK_FREQ 3
 #define DEGRADE_FACTOR 0.99
 #define DELTA_DIST 10
 #define DELTA_ANG (DEG_T_RAD * 45)
@@ -40,6 +40,8 @@ private:
 
 	void resamplingParticles();
 	int sampleIndexFromRandom(float random);
+
+	unsigned int innerFrameIndex;
 
 	Particle particles_[NUM_PARTICLES];
 
