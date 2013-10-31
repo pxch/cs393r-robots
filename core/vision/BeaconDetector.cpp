@@ -79,7 +79,7 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 	beacon->visionDistance = distance;
 	beacon->visionBearing = bearing;
 
-	std::cout << "VisionDistance: " << distance << ", VisionBearing: " << bearing << std::endl;
+//	std::cout << "VisionDistance: " << distance << ", VisionBearing: " << bearing << std::endl;
 }
 
 void BeaconDetector::detectBeacon() {

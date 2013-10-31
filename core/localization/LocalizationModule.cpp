@@ -99,11 +99,11 @@ void LocalizationModule::computeParticleStats() {
 	particle_theta_var = var_theta;
 	particle_prob_var = var_prob;
 
-	std::cout << "Particle Stats:" << std::endl;
-	std::cout << particle_loc_mean.x << ", " << particle_loc_mean.y << ", "
-			<< particle_theta_mean << ", " << particle_prob_mean << std::endl;
-	std::cout << particle_loc_var.x << ", " << particle_loc_var.y << ", "
-			<< particle_theta_var << ", " << particle_prob_var << std::endl;
+//	std::cout << "Particle Stats:" << std::endl;
+//	std::cout << particle_loc_mean.x << ", " << particle_loc_mean.y << ", "
+//			<< particle_theta_mean << ", " << particle_prob_mean << std::endl;
+//	std::cout << particle_loc_var.x << ", " << particle_loc_var.y << ", "
+//			<< particle_theta_var << ", " << particle_prob_var << std::endl;
 }
 
 float LocalizationModule::probVarianceChange() {
@@ -118,7 +118,7 @@ void LocalizationModule::processFrame() {
 	int frameID = frameInfo->frame_id;
 	std::cout << "Frame: " << innerFrameIndex << std::endl;
 
-	computeParticleStats();
+//	computeParticleStats();
 
 //	if (dist_bias_mean > 500 && dist_bias_var < 2000)
 //		randomWalkParticles(200, M_PI / 4);
@@ -127,9 +127,9 @@ void LocalizationModule::processFrame() {
 	updateParticlesFromOdometry();
 	updateParticlesFromSensor();
 
-	std::cout << "Prob Variance: " << particle_prob_var << ", "
-			<< particle_prob_var_prev << ", " << probVarianceChange()
-			<< std::endl;
+//	std::cout << "Prob Variance: " << particle_prob_var << ", "
+//			<< particle_prob_var_prev << ", " << probVarianceChange()
+//			<< std::endl;
 
 	// 2. If this is a resampling frame, resample
 	if (innerFrameIndex % RESAMPLE_FREQ == 0)
@@ -338,7 +338,7 @@ void LocalizationModule::resamplingParticles() {
 		}
 	}
 
-//	printParticles();
+	printParticles();
 }
 
 int LocalizationModule::sampleIndexFromRandom(float random) {
@@ -413,7 +413,7 @@ void LocalizationModule::resetParticles() {
 		p.placeRandomly();
 	}
 
-//	printParticles();
+	printParticles();
 }
 
 void LocalizationModule::setParticleProbabilities(float newProb) {
