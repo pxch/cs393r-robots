@@ -385,6 +385,8 @@ void LocalizationModule::updatePose() {
 		particles_[i].prob /= (sumProb / NUM_PARTICLES);
 	}
 
+	printParticles();
+
 	Point2D robotLoc(0.0, 0.0);
 	AngRad robotOrient = 0.0;
 
