@@ -204,9 +204,9 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		Particle& p = particles_[i];
 
 		float prob_degrade = exp(
-				-0.5 * (distanceBias[i] * distanceBias[i]) / dist_bias_var
+				-0.5 * (distanceBias[i] * distanceBias[i]) / normalDistance
 						- 0.5 * (bearingBias[i] * bearingBias[i])
-								/ dist_bias_var);
+								/ normalBearing);
 
 		p.degradeProbability(prob_degrade);
 
