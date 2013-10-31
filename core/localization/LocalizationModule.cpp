@@ -217,13 +217,13 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	ang_bias_var /= NUM_PARTICLES;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
-//		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
-//				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
-//				<< ", " << p.theta * 180 / M_PI << std::endl;
-//		std::cout << "Particle Parameter: " << particleDistance << ", "
-//				<< particleBearing * 180 / M_PI << std::endl;
-//		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
-//				<< beacon->visionBearing * 180 / M_PI << std::endl;
+		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
+				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
+				<< ", " << p.theta * 180 / M_PI << std::endl;
+		std::cout << "Particle Parameter: " << particleDistance << ", "
+				<< particleBearing * 180 / M_PI << std::endl;
+		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
+				<< beacon->visionBearing * 180 / M_PI << std::endl;
 
 //		float prob_multiplier = exp(
 //				-0.05 * (distanceBias * distanceBias) / normalDistance
@@ -302,6 +302,14 @@ void LocalizationModule::resamplingParticles() {
 }
 
 void LocalizationModule::resamplingParticles2() {
+	float sumProb = 0.0;
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		sumProb += particles_[i].prob;
+	}
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		particles_[i].prob /= sumProb;
+	}
+
 	Particle newParticles[NUM_PARTICLES];
 	int index = 0;
 	float newWeightC[NUM_PARTICLES];
@@ -318,7 +326,7 @@ void LocalizationModule::resamplingParticles2() {
 		while (newWeightU[j] > newWeightC[i])
 			i = i + 1;
 		Particle& p = particles_[i];
-		p.prob = 1 / NUM_PARTICLES;
+		p.prob = 1.0;
 		newParticles[index] = p;
 		index = index + 1;
 		newWeightU[j + 1] = newWeightU[j] + 1 / NUM_PARTICLES;
