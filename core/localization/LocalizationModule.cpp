@@ -50,23 +50,29 @@ void LocalizationModule::initSpecificModule() {
 	particle_theta_mean = 0.0;
 	particle_theta_var = 0.0;
 	particle_theta_var_prev = 0.0;
+
+	particle_prob_mean = 0.0;
+	particle_prob_var = 0.0;
+	particle_prob_var_prev = 0.0;
 }
 
 void LocalizationModule::computeParticleStats() {
-	particle_loc_var_prev = particle_loc_var;
-	particle_theta_var_prev = particle_theta_var;
+//	particle_loc_var_prev = particle_loc_var;
+//	particle_theta_var_prev = particle_theta_var;
 
-	float mean_loc_x = 0, mean_loc_y = 0, mean_theta = 0;
-	float var_loc_x = 0, var_loc_y = 0, var_theta = 0;
+	float mean_loc_x = 0, mean_loc_y = 0, mean_theta = 0, mean_prob = 0;
+	float var_loc_x = 0, var_loc_y = 0, var_theta = 0, var_prob = 0;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		mean_loc_x += particles_[i].loc.x;
 		mean_loc_y += particles_[i].loc.y;
 		mean_theta += particles_[i].theta;
+		mean_prob += particles_[i].prob;
 	}
 	mean_loc_x /= NUM_PARTICLES;
 	mean_loc_y /= NUM_PARTICLES;
 	mean_theta /= NUM_PARTICLES;
+	mean_prob /= NUM_PARTICLES;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		var_loc_x += (particles_[i].loc.x - mean_loc_x)
@@ -75,22 +81,37 @@ void LocalizationModule::computeParticleStats() {
 				* (particles_[i].loc.y - mean_loc_y);
 		var_theta += (particles_[i].theta - mean_theta)
 				* (particles_[i].theta - mean_theta);
+		var_prob += (particles_[i].prob - mean_prob)
+				* (particles_[i].prob - mean_prob);
 	}
 	var_loc_x = sqrt(var_loc_x / NUM_PARTICLES);
 	var_loc_y = sqrt(var_loc_y / NUM_PARTICLES);
 	var_theta = sqrt(var_theta / NUM_PARTICLES);
+	var_prob = sqrt(var_prob / NUM_PARTICLES);
 
 	particle_loc_mean.x = mean_loc_x;
 	particle_loc_mean.y = mean_loc_y;
 	particle_theta_mean = mean_theta;
+	particle_prob_mean = mean_prob;
 
 	particle_loc_var.x = var_loc_x;
 	particle_loc_var.y = var_loc_y;
 	particle_theta_var = var_theta;
+	particle_prob_var = var_prob;
 
 	std::cout << "Particle Stats:" << std::endl;
-	std::cout << particle_loc_mean.x << ", " << particle_loc_mean.y << ", " << particle_theta_mean << std::endl;
-	std::cout << particle_loc_var.x << ", " << particle_loc_var.y << ", " << particle_theta_var << std::endl;
+	std::cout << particle_loc_mean.x << ", " << particle_loc_mean.y << ", "
+			<< particle_theta_mean << ", " << particle_prob_mean << std::endl;
+	std::cout << particle_loc_var.x << ", " << particle_loc_var.y << ", "
+			<< particle_theta_var << ", " << particle_prob_var << std::endl;
+}
+
+float LocalizationModule::probVarianceChange() {
+//	return (particle_loc_var.x - particle_loc_var_prev.x)
+//			* (particle_loc_var.x - particle_loc_var_prev.x)
+//			+ (particle_loc_var.y - particle_loc_var_prev.y)
+//					* (particle_loc_var.y - particle_loc_var_prev.y);
+	return abs(particle_prob_var - particle_prob_var_prev);
 }
 
 void LocalizationModule::processFrame() {
@@ -102,9 +123,13 @@ void LocalizationModule::processFrame() {
 //	if (dist_bias_mean > 500 && dist_bias_var < 2000)
 //		randomWalkParticles(200, M_PI / 4);
 
-	// 1. Update particles from observations
+// 1. Update particles from observations
 	updateParticlesFromOdometry();
 	updateParticlesFromSensor();
+
+	std::cout << "Prob Variance: " << particle_prob_var << ", "
+			<< particle_prob_var_prev << ", " << probVarianceChange()
+			<< std::endl;
 
 	// 2. If this is a resampling frame, resample
 	if (innerFrameIndex % RESAMPLE_FREQ == 0)
@@ -219,7 +244,7 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 //		return;
 //	}
 
-	//Normalize probability mean value equals one
+//Normalize probability mean value equals one
 	float sumProb = 0.0;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		sumProb += particles_[i].prob;

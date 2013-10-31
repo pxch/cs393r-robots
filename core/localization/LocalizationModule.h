@@ -46,6 +46,8 @@ private:
 
 	void printParticles();
 
+	void probVarianceChange();
+
 	unsigned int innerFrameIndex;
 
 	Particle particles_[NUM_PARTICLES];
@@ -63,6 +65,9 @@ private:
 	AngRad particle_theta_mean;
 	AngRad particle_theta_var;
 	AngRad particle_theta_var_prev;
+
+	float particle_prob_var;
+	float particle_prob_var_prev;
 
 	WorldObjectBlock* worldObjects;
 	LocalizationBlock* localizationMem;
