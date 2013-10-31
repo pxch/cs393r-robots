@@ -81,7 +81,7 @@ class FarNode(Node):
       if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y < 200 * 200:
         self.myState = FarNode.MY_NEAR_CENTER
       else:
-        if fabs(angle - robot.orientation) < pi / 18:
+        if fabs(angle - robot.orientation) < pi / 9:
           self.myState = FarNode.MY_FORWARD
         else:
           self.myState = FarNode.MY_TURN
@@ -90,16 +90,20 @@ class FarNode(Node):
       self.posSignal(FarNode.MY_NEAR_CENTER)
       return
     
-    elif self.myState == FarNode.MY_TURN:      
-      commands.setWalkVelocity(0, 0, robot.orientation - angle)
-
-      if fabs(angle - robot.orientation) < pi / 18:
+    elif self.myState == FarNode.MY_TURN:
+      if fabs(angle - robot.orientation) < pi / 9:
         self.myState = FarNode.MY_FORWARD
-            
+	turnAngle = 0
+      elif robot.orientation > angle:
+	turnAngle = pi / 18
+      else:
+	turnAngle = -pi / 18
+      commands.setWalkVelocity(0, 0, turnAngle)
+
     else:
       commands.setWalkVelocity(0.6, 0, 0)
       
-      if fabs(angle - robot.orientation) > pi / 18:
+      if fabs(angle - robot.orientation) > pi / 9:
         self.myState = FarNode.MY_TURN
 
 class ScanNode(Node):
