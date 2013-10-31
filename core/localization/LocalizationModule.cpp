@@ -380,16 +380,16 @@ void LocalizationModule::updatePose() {
 	WorldObject& self = worldObjects->objects_[robotState->WO_SELF];
 	// Compute a weighted average of the particles to fill in your location
 
-	float sumProb = 0.0;
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		sumProb += particles_[i].prob;
-	}
-	std::cout << "Prob Normalization Factor: " << sumProb << std::endl;
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		particles_[i].prob /= (sumProb / NUM_PARTICLES);
-	}
-
-	printParticles();
+//	float sumProb = 0.0;
+//	for (int i = 0; i < NUM_PARTICLES; i++) {
+//		sumProb += particles_[i].prob;
+//	}
+//	std::cout << "Prob Normalization Factor: " << sumProb << std::endl;
+//	for (int i = 0; i < NUM_PARTICLES; i++) {
+//		particles_[i].prob /= (sumProb / NUM_PARTICLES);
+//	}
+//
+//	printParticles();
 
 	Point2D robotLoc(0.0, 0.0);
 	AngRad robotOrient = 0.0;
