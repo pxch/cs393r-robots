@@ -37,10 +37,11 @@ void LocalizationModule::initSpecificModule() {
 		p.theta = 0;
 		p.prob = 1.0;
 	}
+	resetParticles();
+
 	copyParticles();
 
 	innerFrameIndex = 1;
-	resetParticles();
 
 	particle_loc_mean = Point2D(0.0, 0.0);
 	particle_loc_var = Point2D(0.0, 0.0);
@@ -210,7 +211,7 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 
 		p.degradeProbability(prob_degrade);
 
-		std::cout << "Prob Degrade Factor for Particle [" << i << "]: " << prob_degrade << std::endl;
+//		std::cout << "Prob Degrade Factor for Particle [" << i << "]: " << prob_degrade << std::endl;
 	}
 
 //	if (abs(minBias - maxBias) < 500 and minBias > 500) {
@@ -329,8 +330,6 @@ void LocalizationModule::resetParticles() {
 	}
 
 //	printParticles();
-
-	std::cout << std::endl << "Particles been reset..." << std::endl;
 }
 
 void LocalizationModule::setParticleProbabilities(float newProb) {
