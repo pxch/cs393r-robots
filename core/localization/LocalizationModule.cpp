@@ -55,7 +55,7 @@ void LocalizationModule::processFrame() {
 		trappedInWrongPosition = false;
 	}
 
-// 1. Update particles from observations
+	// 1. Update particles from observations
 	updateParticlesFromOdometry();
 	updateParticlesFromSensor();
 
@@ -102,27 +102,27 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		distanceBias[i] = abs(beacon->visionDistance - particleDistance);
 		bearingBias[i] = abs(beacon->visionBearing - particleBearing);
 
-		if (bearingBias[i] < M_PI / 4) {
-			if (distanceBias[i] / beacon->visionDistance < 0.25)
+		if (distanceBias[i] / beacon->visionDistance < 0.25) {
+			if (bearingBias[i] < M_PI / 4)
 				degrade_factor = 1;
-			else if (distanceBias[i] / beacon->visionDistance < 0.5)
+			else if (bearingBias[i] < M_PI / 2)
 				degrade_factor = 0.95;
 			else
 				degrade_factor = 0.9;
-		} else if (bearingBias[i] < M_PI / 2) {
-			if (distanceBias[i] / beacon->visionDistance < 0.25)
+		} else if (distanceBias[i] / beacon->visionDistance < 0.5) {
+			if (bearingBias[i] < M_PI / 4)
 				degrade_factor = 0.9;
-			else if (distanceBias[i] / beacon->visionDistance < 0.5)
-				degrade_factor = 0.85;
+			else if (bearingBias[i] < M_PI / 2)
+				degrade_factor = 0.8;
 			else
-				degrade_factor = 0.8;
-		} else {
-			if (distanceBias[i] / beacon->visionDistance < 0.25)
-				degrade_factor = 0.8;
-			else if (distanceBias[i] / beacon->visionDistance < 0.5)
 				degrade_factor = 0.7;
-			else
+		} else {
+			if (bearingBias[i] < M_PI / 4)
+				degrade_factor = 0.7;
+			else if (bearingBias[i] < M_PI / 2)
 				degrade_factor = 0.6;
+			else
+				degrade_factor = 0.5;
 		}
 
 		p.degradeProbability(degrade_factor);
@@ -131,6 +131,8 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	float sumProb = 0.0;
 	float mean_distanceBias = 0.0;
 	float var_distanceBias = 0.0;
+	Point2D mean_loc(0.0, 0.0);
+	AngRad mean_theta = 0.0;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		sumProb += particles_[i].prob;
@@ -138,6 +140,7 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	}
 
 	mean_distanceBias /= NUM_PARTICLES;
+
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		particles_[i].prob /= (sumProb / NUM_PARTICLES);
@@ -147,7 +150,16 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 
 	var_distanceBias /= NUM_PARTICLES;
 
-	if (mean_distanceBias / beacon->visionDistance > 0.5 && var_distanceBias < 200 * 200)
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		mean_loc += particles_[i].loc * particles_[i].prob;
+		mean_theta += particles_[i].theta * particles_[i].prob;
+	}
+	mean_loc /= NUM_PARTICLES;
+	mean_theta /= NUM_PARTICLES;
+
+	if (var_distanceBias < 200 * 200 &&
+		(mean_distanceBias / beacon->visionDistance > 0.5 || 
+			mean_loc.getBearingTo(beacon->loc, mean_theta) > M_PI / 4))
 		trappedInWrongPosition = true;
 }
 
@@ -168,15 +180,15 @@ void LocalizationModule::resamplingParticles() {
 		if (previous_index == -1)
 			continue;
 		else {
-			std::cout << "(" << random << ", " << previous_index << "), ";
+//			std::cout << "(" << random << ", " << previous_index << "), ";
 			particles_[current_index] = previous_particles_[previous_index];
 			particles_[current_index].prob = 1.0f;
 			current_index++;
 		}
 	}
-	std::cout << std::endl;
+//	std::cout << std::endl;
 
-	printParticles();
+//	printParticles();
 }
 
 int LocalizationModule::sampleIndexFromRandom(float random) {
@@ -251,7 +263,7 @@ void LocalizationModule::resetParticles() {
 		p.placeRandomly();
 	}
 
-	printParticles();
+//	printParticles();
 }
 
 void LocalizationModule::setParticleProbabilities(float newProb) {
@@ -277,10 +289,10 @@ void LocalizationModule::randomWalkParticles() {
 		float p1Ratio = 1.0 - part1.prob;
 		float p2Ratio = 1.0 - part2.prob;
 
-		if (p1Ratio == 0.0)
-			p1Ratio = 0.05;
-		if (p2Ratio == 0.0)
-			p2Ratio = 0.05;
+//		if (p1Ratio == 0.0)
+//			p1Ratio = 0.05;
+//		if (p2Ratio == 0.0)
+//			p2Ratio = 0.05;
 
 		float p1AngleRatio = p1Ratio;
 		float p2AngleRatio = p2Ratio;
