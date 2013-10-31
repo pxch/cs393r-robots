@@ -228,7 +228,7 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		particles_[i].prob /= (sumProb / NUM_PARTICLES);
 	}
 
-	if (sumProb == NaN) {
+	if (isnan(sumProb)) {
 		std::cout << "ERROR!" << std::enndl;
 		printParticles();
 		std::cin >> temp;
