@@ -44,6 +44,8 @@ private:
 
 	void computeParticleStats();
 
+	void printParticles();
+
 	unsigned int innerFrameIndex;
 
 	Particle particles_[NUM_PARTICLES];
