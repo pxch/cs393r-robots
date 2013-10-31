@@ -36,8 +36,9 @@ class TestMachine5(StateMachine):
     self._adt(stand, C, scan)
     self._adt(scan, S(ScanNode.FAIL), walk)
     self._adt(walk, T(5.0), scan)
-    self._adt(scan, S(ScanNOde.SUCCESS), walkinplace)
+    self._adt(scan, S(ScanNode.SUCCESS), walkinplace)
     self._adt(walkinplace, T(5.0), scan)
+    
 #     far_move = FarNode()
 #     near_move = NearNode()
 #     on_center = CenterNode()
@@ -70,7 +71,7 @@ class ScanNode(Node):
       if robot.loc.x * robot.loc.x + robot.loc.y + robot.loc.y < 50 * 50:
         self.postSignal(ScanNode.SUCCESS)
       else:
-        self.postSignal(scanNode.FAIL)
+        self.postSignal(ScanNode.FAIL)
 
 class WalkNode(Node):
   def __init__(self):
