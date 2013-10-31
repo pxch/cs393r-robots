@@ -229,6 +229,8 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 //				-0.05 * (distanceBias * distanceBias) / normalDistance
 //						- 0.05 * (bearingBias * bearingBias) / normalBearing);
 
+		Particle& p = particles_[i];
+
 		float prob_mul_dist = exp(
 				0.5 * distanceBias[i] * distanceBias[i] / dist_bias_var)
 				/ sqrt(2 * M_PI * dist_bias_var);
