@@ -121,7 +121,7 @@ void LocalizationModule::processFrame() {
 //	computeParticleStats();
 
 //	if (dist_bias_mean > 500 && dist_bias_var < 2000)
-//		randomWalkParticles(200, M_PI / 4);
+//		randomWalkParticles;
 
 // 1. Update particles from observations
 	updateParticlesFromOdometry();
@@ -140,7 +140,7 @@ void LocalizationModule::processFrame() {
 
 	// 4. If this is a random walk frame, random walk
 	if (innerFrameIndex % RANDOM_WALK_FREQ == 0)
-		randomWalkParticles(20, M_PI / 12);
+		randomWalkParticles;
 
 	// 5. Copy particles to localization memory:
 	copyParticles();
@@ -404,7 +404,7 @@ void LocalizationModule::updateParticlesFromOdometry() {
 		p.degradeProbability(DEGRADE_FACTOR);
 	}
 
-//	randomWalkParticles(20, M_PI / 12);
+//	randomWalkParticles;
 }
 
 void LocalizationModule::resetParticles() {
@@ -426,8 +426,7 @@ void LocalizationModule::setParticleProbabilities(float newProb) {
 	}
 }
 
-void LocalizationModule::randomWalkParticles(float delta_dist,
-		float delta_ang) {
+void LocalizationModule::randomWalkParticles() {
 	std::cout << "Performing Random Walk on All Particles..." << std::endl;
 	// loop through half, moving each pair of particles opposite directions
 
@@ -436,8 +435,8 @@ void LocalizationModule::randomWalkParticles(float delta_dist,
 		Particle& part2 = particles_[i + NUM_PARTICLES / 2];
 
 		Vector2D dPos(DELTA_DIST * (2.0 * drand48() - 1),
-				delta_dist * (2.0 * drand48() - 1));
-		AngRad dAng = delta_ang * (2.0 * drand48() - 1);
+				DELTA_DIST * (2.0 * drand48() - 1));
+		AngRad dAng = DELTA_ANG * (2.0 * drand48() - 1);
 
 // move them in opposite directions on this vector, based on their prob
 		float p1Ratio = 1.0 - part1.prob;
