@@ -62,10 +62,13 @@ void LocalizationModule::processFrame() {
 	if (innerFrameIndex % RANDOM_WALK_FREQ == 0)
 		randomWalkParticles();
 
+	if (dist_bias_mean > 500 && dist_bias_var < 10000)
+		resetParticles();
+
 	// 5. Copy particles to localization memory:
 	copyParticles();
 
-	innerFrameIndex ++;
+	innerFrameIndex++;
 }
 
 void LocalizationModule::updateParticlesFromSensor() {
@@ -163,63 +166,85 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 //
 //	std::cout << "Prob Stats: " << prob_mean << ", " << prob_se << std::endl;
 
-	float normalDistance = beacon->visionDistance * beacon->visionDistance;
-	float normalBearing = beacon->visionBearing * beacon->visionBearing;
-	
+//	float normalDistance = beacon->visionDistance * beacon->visionDistance;
+//	float normalBearing = beacon->visionBearing * beacon->visionBearing;
+
 //	float normalDistance = beacon->visionDistance * beacon->visionDistance;
 //	float normalBearing = M_PI * M_PI;
 
-	float distanceBias = 0.0;
-	float bearingBias = 0.0;
+	float distanceBias[NUM_PARTICLES];
+	float bearingBias[NUM_PARTICLES];
 
 	float particleDistance = 0.0;
 	float particleBearing = 0.0;
-      
-        float minBias = 50000;
-        float maxBias = 0.0;
+
+	float minBias = 200000;
+	float maxBias = 0.0;
+
+	dist_bias_var = 0.0;
+	dist_bias_mean = 0.0;
+	ang_bias_var = 0.0;
+	ang_bias_mean = 0.0;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		Particle& p = particles_[i];
 		particleDistance = p.loc.getDistanceTo(beacon->loc);
 		particleBearing = p.loc.getBearingTo(beacon->loc, p.theta);
 
-		distanceBias = abs(beacon->visionDistance - particleDistance);
-		bearingBias = abs(beacon->visionBearing - particleBearing);
+		distanceBias[i] = abs(beacon->visionDistance - particleDistance);
+		bearingBias[i] = abs(beacon->visionBearing - particleBearing);
 
-                if(minBias > distanceBias) minBias = distanceBias;
-		if(maxBias < distanceBias) maxBias = distanceBias;
+		if (minBias > distanceBias[i])
+			minBias = distanceBias[i];
+		if (maxBias < distanceBias[i])
+			maxBias = distanceBias[i];
 
-		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
-				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
-				<< ", " << p.theta * 180 / M_PI << std::endl;
-		std::cout << "Particle Parameter: " << particleDistance << ", "
-				<< particleBearing * 180 / M_PI << std::endl;
-		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
-				<< beacon->visionBearing * 180 / M_PI << std::endl;
+		dist_bias_mean += distanceBias[i];
+		ang_bias_mean += bearingBias[i];
+	}
 
-		float prob_multiplier = exp(
-				-0.05 * (distanceBias * distanceBias) / normalDistance
-						- 0.05 * (bearingBias * bearingBias) / normalBearing);
-		
+	dist_bias_mean /= NUM_PARTICLES;
+	ang_bias_mean /= NUM_PARTICLES;
 
-		//float prob_nultiplier_distance = 1.0/sqrt(2*M_PI*normalDistance)*exp(distanceBias*distanceBias/(2*normalDistance));
-			
-		//float prob_nultiplier_angle = 1.0/sqrt(2*M_PI*normalBearing)*exp(distanceBias*distanceBias/(2*normalBearing));
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		dist_bias_var += (distanceBias[i] - dist_bias_mean)
+				* (distanceBias[i] - dist_bias_mean);
+		ang_bias_var += (bearingBias[i] - ang_bias_mean)
+				* (bearingBias[i] - ang_bias_mean);
+	}
 
-	
-		//float prob_multiplier = (prob_nultiplier_distance+prob_nultiplier_angle)/2;
+	dist_bias_var /= NUM_PARTICLES;
+	ang_bias_var /= NUM_PARTICLES;
+
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+//		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
+//				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
+//				<< ", " << p.theta * 180 / M_PI << std::endl;
+//		std::cout << "Particle Parameter: " << particleDistance << ", "
+//				<< particleBearing * 180 / M_PI << std::endl;
+//		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
+//				<< beacon->visionBearing * 180 / M_PI << std::endl;
+
+//		float prob_multiplier = exp(
+//				-0.05 * (distanceBias * distanceBias) / normalDistance
+//						- 0.05 * (bearingBias * bearingBias) / normalBearing);
+
+		float prob_mul_dist = exp(0.5 * distanceBias[i] * distanceBias[i] / dist_bias_var)
+				/ sqrt(2 * M_PI * dist_bias_var);
+
+		float prob_mul_ang = exp(0.5 * bearingBias[i] * bearingBias[i] / ang_bias_var)
+				/ sqrt(2 * M_PI * ang_bias_var);
+
+		float prob_multiplier = (prob_mul_dist + prob_mul_ang) / 2;
 		p.prob = p.prob * prob_multiplier;
 
 		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
 	}
 
-
-	if(abs(minBias - maxBias) < 500 and minBias > 500){
-
-		resetParticles(); 
-		return;
-	} 
-
+//	if (abs(minBias - maxBias) < 500 and minBias > 500) {
+//		resetParticles();
+//		return;
+//	}
 
 	float sumProb = 0.0;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
@@ -276,7 +301,7 @@ int LocalizationModule::sampleIndexFromRandom(float random) {
 	if (random < 0.0 || random > 1.0)
 		return -1;
 	float sumProb = 0.0;
-	int index = 0;                              
+	int index = 0;
 	while (sumProb < random && index < NUM_PARTICLES) {
 		sumProb += previous_particles_[index].prob;
 		index++;
@@ -345,10 +370,10 @@ void LocalizationModule::randomWalkParticles() {
 //				<< "]: dPos = (" << dPos.x << ", " << dPos.y << "), dAng = "
 //				<< dAng * 180 / M_PI << std::endl;
 
-		// move them in opposite directions on this vector, based on their prob
+// move them in opposite directions on this vector, based on their prob
 		float p1Ratio = 1.0 - part1.prob;
 		float p2Ratio = 1.0 - part2.prob;
-		
+
 		if (p1Ratio == 0.0)
 			p1Ratio = 0.05;
 		if (p2Ratio == 0.0)

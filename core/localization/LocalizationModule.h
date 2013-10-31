@@ -47,6 +47,11 @@ private:
 
 	Particle previous_particles_[NUM_PARTICLES];
 
+	float particle_dist_var;
+	float particle_dist_mean;
+	float particle_ang_var;
+	float particle_ang_mean;
+
 	WorldObjectBlock* worldObjects;
 	LocalizationBlock* localizationMem;
 	TeamPacketsBlock* teamPacketsMem;
