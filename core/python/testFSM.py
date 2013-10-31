@@ -23,6 +23,7 @@ class TestMachine(StateMachine):
 
 
 #######################################assignment5##########################
+
 class TestMachine5(StateMachine):
   def setup(self):
     start = Node()
@@ -79,13 +80,13 @@ class LocalizationNode(Node):
         angle = -pi
     
     if robot.orientation - angle > pi / 18:
-      turnParam = pi / 18
+      turnParam = -pi / 9 
     elif angle - robot.orientation > pi / 18:
-      turnParam = -pi / 18
+      turnParam = pi / 9
     else:
       turnParam = 0
     
-    if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y > 50 * 50:
+    if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y > 100 * 100:
       forwardParam = 0.3
     else:
       forwardParam = 0
