@@ -346,6 +346,7 @@ void LocalizationModule::resamplingParticles() {
 			current_index++;
 		}
 	}
+	std::cout << std::endl;
 
 	printParticles();
 }
