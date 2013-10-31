@@ -62,7 +62,7 @@ void LocalizationModule::processFrame() {
 	if (innerFrameIndex % RANDOM_WALK_FREQ == 0)
 		randomWalkParticles();
 
-	if (dist_bias_mean > 500 && dist_bias_var < 10000)
+	if (dist_bias_mean > 500 && dist_bias_var < 1000)
 		resetParticles();
 
 	// 5. Copy particles to localization memory:
