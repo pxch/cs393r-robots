@@ -239,6 +239,10 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 void LocalizationModule::resamplingParticles() {
 	std::cout << "Resampling Particles..." << std::endl;
 
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		previous_particles_[i] = particles_[i];
+	}
+
 	int current_index = 0;
 	int previous_index = -1;
 	while (current_index < NUM_PARTICLES) {
