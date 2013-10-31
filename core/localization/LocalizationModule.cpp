@@ -114,7 +114,7 @@ void LocalizationModule::processFrame() {
 
 	// 4. If this is a random walk frame, random walk
 	if (innerFrameIndex % RANDOM_WALK_FREQ == 0)
-		randomWalkParticles();
+		randomWalkParticles(20, M_PI / 12);
 
 //	if (dist_bias_mean > 500 && dist_bias_var < 10000)
 //		resetParticles();
@@ -435,7 +435,7 @@ void LocalizationModule::updateParticlesFromOdometry() {
 //		p.degradeProbability(DEGRADE_FACTOR);
 	}
 
-	randomWalkParticles();
+	randomWalkParticles(20, M_PI / 12);
 }
 
 void LocalizationModule::resetParticles() {

@@ -32,7 +32,7 @@ private:
 	void updateParticlesFromOdometry();
 	void resetParticles();
 	void setParticleProbabilities(float newProb);
-	void randomWalkParticles(float delta_dist = DELTA_DIST, float delta_ang = DELTA_ANG);
+	void randomWalkParticles(float delta_dist, float delta_ang);
 	void copyParticles();
 
 	void updateParticlesFromSensor();
