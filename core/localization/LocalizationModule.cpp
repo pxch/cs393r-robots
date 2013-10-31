@@ -132,7 +132,7 @@ void LocalizationModule::processFrame() {
 			<< std::endl;
 
 	// 2. If this is a resampling frame, resample
-	if (probVarianceChange() > 0.05)
+	if (innerFrameIndex % RESAMPLE_FREQ == 0)
 		resamplingParticles();
 
 	// 3. Update the robot's pose
@@ -161,7 +161,61 @@ void LocalizationModule::updateParticlesFromSensor() {
 }
 
 void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
+	float degrade_factor = 0;
 
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		Particle& p = particles_[i];
+		particleDistance = p.loc.getDistanceTo(beacon->loc);
+		particleBearing = p.loc.getBearingTo(beacon->loc, p.theta);
+
+		float distanceBias = abs(beacon->visionDistance - particleDistance);
+		float bearingBias = abs(beacon->visionBearing - particleBearing);
+
+		if (bearingBias < M_PI / 4) {
+			if (distanceBias / beacon->visionDistance < 1.25 && distanceBias / beacon->visionDistance > 0.8)
+				degrade_factor = 1;
+			else if (distanceBias / beacon->visionDistance < 1.5 && distanceBias / beacon->visionDistance > 0.67)
+				degrade_factor = 0.95;
+			else
+				degrade_factor = 0.9;
+		}
+		else if (bearingBias < M_PI / 2) {
+			if (distanceBias / beacon->visionDistance < 1.25 && distanceBias / beacon->visionDistance > 0.8)
+				degrade_factor = 0.9;
+			else if (distanceBias / beacon->visionDistance < 1.5 && distanceBias / beacon->visionDistance > 0.67)
+				degrade_factor = 0.85;
+			else
+				degrade_factor = 0.8;
+		}
+		else {
+			if (distanceBias / beacon->visionDistance < 1.25 && distanceBias / beacon->visionDistance > 0.8)
+				degrade_factor = 0.8;
+			else if (distanceBias / beacon->visionDistance < 1.5 && distanceBias / beacon->visionDistance > 0.67)
+				degrade_factor = 0.7;
+			else
+				degrade_factor = 0.6;
+		}
+
+		p.degradeProbability(degrade_factor);
+	}
+
+	float sumProb = 0.0;
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		sumProb += particles_[i].prob;
+	}
+//	std::cout << "Prob Normalization Factor: " << sumProb << std::endl;
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		particles_[i].prob /= (sumProb / NUM_PARTICLES);
+	}
+
+	if (isnan(sumProb)) {
+		std::cout << "ERROR!" << std::endl;
+		printParticles();
+		std::cin >> temp;
+	}
+
+
+/*
 	float normalDistance = beacon->visionDistance * beacon->visionDistance;
 	float normalBearing = beacon->visionBearing * beacon->visionBearing;
 
@@ -259,6 +313,7 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		printParticles();
 		std::cin >> temp;
 	}
+*/
 }
 
 void LocalizationModule::resamplingParticles() {
