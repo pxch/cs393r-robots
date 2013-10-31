@@ -46,7 +46,7 @@ private:
 
 	void printParticles();
 
-	void probVarianceChange();
+	float probVarianceChange();
 
 	unsigned int innerFrameIndex;
 
@@ -66,6 +66,7 @@ private:
 	AngRad particle_theta_var;
 	AngRad particle_theta_var_prev;
 
+	float particle_prob_mean;
 	float particle_prob_var;
 	float particle_prob_var_prev;
 

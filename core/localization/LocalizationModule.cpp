@@ -132,7 +132,7 @@ void LocalizationModule::processFrame() {
 			<< std::endl;
 
 	// 2. If this is a resampling frame, resample
-	if (innerFrameIndex % RESAMPLE_FREQ == 0)
+	if (probVarianceChange() > 0.05)
 		resamplingParticles();
 
 	// 3. Update the robot's pose
@@ -346,7 +346,7 @@ void LocalizationModule::updateParticlesFromOdometry() {
 		p.degradeProbability(DEGRADE_FACTOR);
 	}
 
-	randomWalkParticles(20, M_PI / 12);
+//	randomWalkParticles(20, M_PI / 12);
 }
 
 void LocalizationModule::resetParticles() {
