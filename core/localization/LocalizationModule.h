@@ -48,10 +48,10 @@ private:
 
 	Particle previous_particles_[NUM_PARTICLES];
 
-	float particle_dist_var;
-	float particle_dist_mean;
-	float particle_ang_var;
-	float particle_ang_mean;
+	float dist_bias_var;
+	float dist_bias_mean;
+	float ang_bias_var;
+	float ang_bias_mean;
 
 	WorldObjectBlock* worldObjects;
 	LocalizationBlock* localizationMem;
