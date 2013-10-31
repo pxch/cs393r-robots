@@ -30,16 +30,20 @@ class TestMachine5(StateMachine):
     sit = SitNode()
     stand = StandNode()
     localization = LocalizationNode()
-#     scan = ScanNode()
-#     walk = WalkNode()
-#     walkinplace = WalkInPlaceNode()
+    scan = ScanNode()
+    walkinplace = WalkInPlaceNode()
+    
     self._adt(start, N, stand)
-    self._adt(stand, C, localization)
+    self._adt(stand, C, scan)
+    self._adt(scan, S(ScanNode.FAIL), localization)
+    self._adt(scan, S(ScanNode.SUCCESS), walkinplace)
+    self._adt(localization, T(15.0), scan)
+    self._adt(walkinplace, T(15.0), scan)
 #     self._adt(stand, C, scan)
 #     self._adt(scan, S(ScanNode.FAIL), walk)
 #     self._adt(walk, T(10.0), scan)
 #     self._adt(scan, S(ScanNode.SUCCESS), walkinplace)
-#     self._adt(walkinplace, T(10.0), scan)
+
     
 #     far_move = FarNode()
 #     near_move = NearNode()
@@ -85,15 +89,20 @@ class LocalizationNode(Node):
     else:
       turnParam = 0
     
-    if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y > 50 * 50:
+    if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y > 2 * 100 * 100:
       forwardParam = 0.3
     else:
       forwardParam = 0
     
     commands.setWalkVelocity(forwardParam, 0, turnParam)
 
-    
-    
+class WalkInPlaceNode(Node):
+  def __init__(self):
+    super(WalkInPlaceNode, self).__init__()
+  
+  def run(self):
+    commands.setWalkVelocity(0, 0, 0)
+
 class ScanNode(Node):
   SUCCESS = 0
   FAIL = 1
@@ -111,7 +120,7 @@ class ScanNode(Node):
     commands.stand()
     self.task.processFrame()
     if self.getTime() > 5.0:
-      if robot.loc.x * robot.loc.x + robot.loc.y + robot.loc.y < 50 * 50:
+      if robot.loc.x * robot.loc.x + robot.loc.y + robot.loc.y < 2 * 100 * 100:
         self.postSignal(ScanNode.SUCCESS)
       else:
         self.postSignal(ScanNode.FAIL)
@@ -142,16 +151,6 @@ class WalkNode(Node):
     
     commands.setWalkVelocity(0.3, 0, turnAngle)
     
-    if self.getTime() > 10.0:
-      commands.stand()
-      self.postSuccess()
-
-class WalkInPlaceNode(Node):
-  def __init__(self):
-    super(WalkInPlaceNode, self).__init__()
-  
-  def run(self):
-    commands.setWalkVelocity(0, 0, 0)
     if self.getTime() > 10.0:
       commands.stand()
       self.postSuccess()
