@@ -53,7 +53,7 @@ void LocalizationModule::processFrame() {
 
 	// 2. If this is a resampling frame, resample
 	if (innerFrameIndex % RESAMPLE_FREQ == 0)
-		resamplingParticles2();
+		resamplingParticles();
 
 	// 3. Update the robot's pose
 	updatePose();
@@ -191,13 +191,13 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		particleDistance = p.loc.getDistanceTo(beacon->loc);
 		particleBearing = p.loc.getBearingTo(beacon->loc, p.theta);
 
-		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
-				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
-				<< ", " << p.theta * 180 / M_PI << std::endl;
-		std::cout << "Particle Parameter: " << particleDistance << ", "
-				<< particleBearing * 180 / M_PI << std::endl;
-		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
-				<< beacon->visionBearing * 180 / M_PI << std::endl;
+//		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
+//				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
+//				<< ", " << p.theta * 180 / M_PI << std::endl;
+//		std::cout << "Particle Parameter: " << particleDistance << ", "
+//				<< particleBearing * 180 / M_PI << std::endl;
+//		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
+//				<< beacon->visionBearing * 180 / M_PI << std::endl;
 
 		distanceBias[i] = abs(beacon->visionDistance - particleDistance);
 		bearingBias[i] = abs(beacon->visionBearing - particleBearing);
@@ -224,7 +224,7 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	dist_bias_var /= NUM_PARTICLES;
 	ang_bias_var /= NUM_PARTICLES;
 
-	std::cout << dist_bias_mean << ", " << dist_bias_var << ", "
+	std::cout << "Bias Stats: " << dist_bias_mean << ", " << dist_bias_var << ", "
 			<< ang_bias_mean << ", " << ang_bias_var << std::endl;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
@@ -245,7 +245,7 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		float prob_multiplier = (prob_mul_dist + prob_mul_ang) / 2;
 		p.prob = p.prob * prob_multiplier;
 
-		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
+//		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
 	}
 
 //	if (abs(minBias - maxBias) < 500 and minBias > 500) {
