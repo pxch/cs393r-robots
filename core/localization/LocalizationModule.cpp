@@ -217,6 +217,8 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	ang_bias_var /= NUM_PARTICLES;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
+		Particle& p = particles_[i];
+
 		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
 				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
 				<< ", " << p.theta * 180 / M_PI << std::endl;
@@ -228,8 +230,6 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 //		float prob_multiplier = exp(
 //				-0.05 * (distanceBias * distanceBias) / normalDistance
 //						- 0.05 * (bearingBias * bearingBias) / normalBearing);
-
-		Particle& p = particles_[i];
 
 		float prob_mul_dist = exp(
 				0.5 * distanceBias[i] * distanceBias[i] / dist_bias_var)
