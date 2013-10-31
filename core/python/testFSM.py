@@ -56,7 +56,6 @@ class FarNode(Node):
   def reset(self):
     super(FarNode, self).reset()
     self.task = head.Scan()
-    self.myState = MY_START
   
   def run(self):
     self.task.processFrame()
@@ -153,7 +152,6 @@ class NearNode(Node):
   def reset(self):
     super(NearNode, self).reset()
     self.task = head.Scan(2.0, 5.0)
-    self.myState = MY_START
   
   def run(self):
     core.speech.say("Near the center")
@@ -212,7 +210,6 @@ class CenterNode(Node):
   def reset(self):
     super(CenterNode, self).reset()
     self.task = head.Scan(2.0, 5.0)
-    self.myState = MY_START
 
   def run(self):
     core.speech.say("On center")
