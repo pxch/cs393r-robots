@@ -41,11 +41,65 @@ void LocalizationModule::initSpecificModule() {
 
 	innerFrameIndex = 1;
 	resetParticles();
+
+	particle_loc_mean = Point2D(0.0, 0.0);
+	particle_loc_var = Point2D(0.0, 0.0);
+	particle_loc_var_prev = Point2D(0.0, 0.0);
+
+	particle_theta_mean = 0.0;
+	particle_theta_var = 0.0;
+	particle_theta_var_prev = 0.0;
+}
+
+void LocalizationModule::computeParticleStats() {
+	particle_loc_var_prev = particle_loc_var;
+	particle_theta_var_prev = particle_theta_var;
+
+	float mean_loc_x = 0, mean_loc_y = 0, mean_theta = 0;
+	float var_loc_x = 0, var_loc_y = 0, var_theta = 0;
+
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		mean_loc_x += particles_[i].loc.x;
+		mean_loc_y += particles_[i].loc.y;
+		mean_theta += particles_[i].theta;
+	}
+	mean_loc_x /= NUM_PARTICLES;
+	mean_loc_y /= NUM_PARTICLES;
+	mean_theta /= NUM_PARTICLES;
+
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		var_loc_x += (particles_[i].loc.x - mean_loc_x)
+				* (particles_[i].loc.x - mean_loc_x);
+		var_loc_y += (particles_[i].loc.y - mean_loc_y)
+				* (particles_[i].loc.y - mean_loc_y);
+		var_theta += (particles_[i].theta - mean_theta)
+				* (particles_[i].theta - mean_theta);
+	}
+	var_loc_x = sqrt(var_loc_x / NUM_PARTICLES);
+	var_loc_y = sqrt(var_loc_y / NUM_PARTICLES);
+	var_theta = sqrt(var_theta / NUM_PARTICLES);
+
+	particle_loc_mean.x = mean_loc_x;
+	particle_loc_mean.y = mean_loc_y;
+	particle_theta_mean = mean_theta;
+
+	particle_loc_var.x = var_loc_x;
+	particle_loc_var.y = var_loc_y;
+	particle_theta_var = var_theta;
+
+	std::cout << "Particle Stats:" << std::endl;
+	std::cout << particle_loc_mean.x << ", " << particle_loc_mean.y << ", " << particle_theta_mean << std::endl;
+	std:;cout << particle_loc_var.x << ", " << particle_loc_var.y << ", " << particle_theta_var << std::endl;
 }
 
 void LocalizationModule::processFrame() {
 	int frameID = frameInfo->frame_id;
 	std::cout << "Frame: " << innerFrameIndex << std::endl;
+
+	computeParticleStats();
+
+	if (dist_bias_mean > 500 && dist_bias_var < 2000)
+		randomWalkParticles(200, M_PI / 4);
 
 	// 1. Update particles from observations
 	updateParticlesFromOdometry();
@@ -61,9 +115,6 @@ void LocalizationModule::processFrame() {
 	// 4. If this is a random walk frame, random walk
 	if (innerFrameIndex % RANDOM_WALK_FREQ == 0)
 		randomWalkParticles();
-
-//	if (dist_bias_mean > 500 && dist_bias_var < 10000)
-//		resetParticles();
 
 	// 5. Copy particles to localization memory:
 	copyParticles();
@@ -224,15 +275,16 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	dist_bias_var /= NUM_PARTICLES;
 	ang_bias_var /= NUM_PARTICLES;
 
-	std::cout << "Bias Stats: " << dist_bias_mean << ", " << dist_bias_var << ", "
-			<< ang_bias_mean << ", " << ang_bias_var << std::endl;
+	std::cout << "Bias Stats: " << dist_bias_mean << ", " << dist_bias_var
+			<< ", " << ang_bias_mean << ", " << ang_bias_var << std::endl;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		Particle& p = particles_[i];
 
 		float prob_multiplier = exp(
 				-0.5 * (distanceBias[i] * distanceBias[i]) / normalDistance
-				- 0.5 * (bearingBias[i] * bearingBias[i]) / normalBearing);
+						- 0.5 * (bearingBias[i] * bearingBias[i])
+								/ normalBearing);
 
 //		float prob_mul_dist = exp(
 //				-0.5 * distanceBias[i] * distanceBias[i] / dist_bias_var)
@@ -377,8 +429,10 @@ void LocalizationModule::updateParticlesFromOdometry() {
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		Particle& p = particles_[i];
 		p.moveRelative(disp);
-		p.degradeProbability(DEGRADE_FACTOR);
+//		p.degradeProbability(DEGRADE_FACTOR);
 	}
+
+	randomWalkParticles();
 }
 
 void LocalizationModule::resetParticles() {
@@ -405,7 +459,8 @@ void LocalizationModule::setParticleProbabilities(float newProb) {
 	}
 }
 
-void LocalizationModule::randomWalkParticles() {
+void LocalizationModule::randomWalkParticles(float delta_dist,
+		float delta_ang) {
 	std::cout << "------------------------------------------------"
 			<< std::endl;
 	std::cout << "Performing Random Walk on All Particles..." << std::endl;
@@ -416,8 +471,8 @@ void LocalizationModule::randomWalkParticles() {
 		Particle& part2 = particles_[i + NUM_PARTICLES / 2];
 
 		Vector2D dPos(DELTA_DIST * (2.0 * drand48() - 1),
-				DELTA_DIST * (2.0 * drand48() - 1));
-		AngRad dAng = DELTA_ANG * (2.0 * drand48() - 1);
+				delta_dist * (2.0 * drand48() - 1));
+		AngRad dAng = delta_ang * (2.0 * drand48() - 1);
 
 //		std::cout << "Particle Index: [" << i << ", " << i + NUM_PARTICLES / 2
 //				<< "]: dPos = (" << dPos.x << ", " << dPos.y << "), dAng = "

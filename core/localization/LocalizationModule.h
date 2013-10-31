@@ -18,8 +18,8 @@
 #define RESAMPLE_FREQ 10
 #define RANDOM_WALK_FREQ 3
 #define DEGRADE_FACTOR 0.99
-#define DELTA_DIST 50
-#define DELTA_ANG (DEG_T_RAD * 45)
+#define DELTA_DIST 20
+#define DELTA_ANG (DEG_T_RAD * 15)
 
 class LocalizationModule: public Module {
 public:
@@ -32,7 +32,7 @@ private:
 	void updateParticlesFromOdometry();
 	void resetParticles();
 	void setParticleProbabilities(float newProb);
-	void randomWalkParticles();
+	void randomWalkParticles(float delta_dist = DELTA_DIST, float delta_ang = DELTA_ANG);
 	void copyParticles();
 
 	void updateParticlesFromSensor();
@@ -41,6 +41,8 @@ private:
 	void resamplingParticles();
 	void resamplingParticles2();
 	int sampleIndexFromRandom(float random);
+
+	void computeParticleStats();
 
 	unsigned int innerFrameIndex;
 
@@ -52,6 +54,13 @@ private:
 	float dist_bias_mean;
 	float ang_bias_var;
 	float ang_bias_mean;
+
+	Point2D particle_loc_mean;
+	Point2D particle_loc_var;
+	Point2D particle_loc_var_prev;
+	AngRad particle_theta_mean;
+	AngRad particle_theta_var;
+	AngRad particle_theta_var_prev;
 
 	WorldObjectBlock* worldObjects;
 	LocalizationBlock* localizationMem;
