@@ -29,15 +29,17 @@ class TestMachine5(StateMachine):
     finish = Node()
     sit = SitNode()
     stand = StandNode()
-    scan = ScanNode()
-    walk = WalkNode()
-    walkinplace = WalkInPlaceNode()
+    localization = LocalizationNode()
+#     scan = ScanNode()
+#     walk = WalkNode()
+#     walkinplace = WalkInPlaceNode()
     self._adt(start, N, stand)
-    self._adt(stand, C, scan)
-    self._adt(scan, S(ScanNode.FAIL), walk)
-    self._adt(walk, T(10.0), scan)
-    self._adt(scan, S(ScanNode.SUCCESS), walkinplace)
-    self._adt(walkinplace, T(10.0), scan)
+    self._adt(stand, C, localization)
+#     self._adt(stand, C, scan)
+#     self._adt(scan, S(ScanNode.FAIL), walk)
+#     self._adt(walk, T(10.0), scan)
+#     self._adt(scan, S(ScanNode.SUCCESS), walkinplace)
+#     self._adt(walkinplace, T(10.0), scan)
     
 #     far_move = FarNode()
 #     near_move = NearNode()
@@ -51,6 +53,47 @@ class TestMachine5(StateMachine):
 #     self._adt(on_center, S(CenterNode.MY_OUT_FAR), FarNode())
 #     self._adt(on_center, S(CenterNode.MY_OUT_NEAR), NearNode())
 
+class LocalizationNode(Node):
+  def __init__(self):
+    super(LocalizationNode, self).__init__()
+    self.task = head.Scan()
+    
+  def reset(self):
+    super(LocalizationNode, self).reset()
+    self.task = head.Scan()
+    
+  def run(self):
+    self.task.processFrame()
+    
+    robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
+    
+    angle = atan2(robot.loc.y, robot.loc.x)
+    if angle > 0:
+      angle = angle - pi
+    elif angle < 0:
+      angle = angle + pi
+    else:
+      if robot.orientation > 0:
+        angle = pi
+      else:
+        angle = -pi
+    
+    if robot.orientation - angle > pi / 18:
+      turnParam = pi / 18
+    elif angle - robot.orientation > pi / 18:
+      turnParam = -pi / 18
+    else:
+      turnParam = 0
+    
+    if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y > 50 * 50:
+      forwardParam = 0.3
+    else:
+      forwardParam = 0
+    
+    commands.setWalkVelocity(forwardParam, 0, turnParam)
+
+    
+    
 class ScanNode(Node):
   SUCCESS = 0
   FAIL = 1
