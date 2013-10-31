@@ -16,9 +16,9 @@
 #include <localization/Particle.h>
 
 #define RESAMPLE_FREQ 5
-#define RANDOM_WALK_FREQ 10
+#define RANDOM_WALK_FREQ 5
 #define DEGRADE_FACTOR 0.99
-#define DELTA_DIST 100
+#define DELTA_DIST 20
 #define DELTA_ANG (DEG_T_RAD * 45)
 
 class LocalizationModule: public Module {

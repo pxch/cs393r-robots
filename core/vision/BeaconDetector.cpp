@@ -210,11 +210,11 @@ void BeaconDetector::detectBeacon(WorldObject* beacon, int color1, int color2,
 
 				//Pass all check, find beacon
 				if (flag == true) {
-					std::cout << "------------------------------" << std::endl;
-					std::cout << "Find Beacon_" << color1_str << "_"
-							<< color2_str << std::endl;
+//					std::cout << "------------------------------" << std::endl;
+//					std::cout << "Find Beacon_" << color1_str << "_"
+//							<< color2_str << std::endl;
 					formBeacon(beacon, blob1, blob2);
-					std::cout << "------------------------------" << std::endl;
+//					std::cout << "------------------------------" << std::endl;
 				}
 			}
 		}

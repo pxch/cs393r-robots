@@ -61,13 +61,13 @@ void LocalizationModule::processFrame() {
 
 	// 2. If this is a resampling frame, resample
 	if (innerFrameIndex % RESAMPLE_FREQ == 0)
-		resamplingParticles();
+		resamplingParticles2();
 
 	// 3. Update the robot's pose
 	updatePose();
 
 	// 4. If this is a random walk frame, random walk
-	if (innerFrameIndex % RANDOM_WALK_FREQ == 0)
+	if (innerFrameIndex % RANDOM_WALK_FREQ == 1)
 		randomWalkParticles();
 
 	// 5. Copy particles to localization memory:
@@ -77,7 +77,7 @@ void LocalizationModule::processFrame() {
 }
 
 void LocalizationModule::updateParticlesFromSensor() {
-	std::cout << "Updating Particles From Sensor..." << std::endl;
+//	std::cout << "Updating Particles From Sensor..." << std::endl;
 
 	// Reset Beacon Location in each Frame
 	for (int i = NUM_LANDMARKS - 6; i < NUM_LANDMARKS; i++) {
@@ -106,23 +106,23 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 			if (bearingBias[i] < M_PI / 4)
 				degrade_factor = 1;
 			else if (bearingBias[i] < M_PI / 2)
-				degrade_factor = 0.95;
-			else
-				degrade_factor = 0.9;
-		} else if (distanceBias[i] / beacon->visionDistance < 0.5) {
-			if (bearingBias[i] < M_PI / 4)
-				degrade_factor = 0.9;
-			else if (bearingBias[i] < M_PI / 2)
 				degrade_factor = 0.8;
 			else
-				degrade_factor = 0.7;
-		} else {
+				degrade_factor = 0.5;
+		} else if (distanceBias[i] / beacon->visionDistance < 0.5) {
 			if (bearingBias[i] < M_PI / 4)
-				degrade_factor = 0.7;
+				degrade_factor = 0.8;
 			else if (bearingBias[i] < M_PI / 2)
 				degrade_factor = 0.6;
 			else
-				degrade_factor = 0.5;
+				degrade_factor = 0.3;
+		} else {
+			if (bearingBias[i] < M_PI / 4)
+				degrade_factor = 0.6;
+			else if (bearingBias[i] < M_PI / 2)
+				degrade_factor = 0.4;
+			else
+				degrade_factor = 0.1;
 		}
 
 		p.degradeProbability(degrade_factor);
@@ -135,29 +135,40 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	AngRad mean_theta = 0.0;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
-		sumProb += particles_[i].prob;
-		mean_distanceBias += distanceBias[i];
+		Particle& p = particles_[i];
+		sumProb += p.prob;
+		mean_distanceBias += distanceBias[i] * p.prob;
+
+		mean_loc += p.loc * p.prob;
+		mean_theta += p.theta * p.prob;
 	}
 
-	mean_distanceBias /= NUM_PARTICLES;
+	mean_distanceBias /= sumProb;
 
+	mean_loc /= sumProb;
+	mean_theta /= sumProb;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
-		particles_[i].prob /= (sumProb / NUM_PARTICLES);
+		Particle& p = particles_[i];
+//		p.loc = p.loc + (mean_loc - p.loc) * (1 - p.prob) * 0.2;
+//		p.theta = p.theta + (mean_theta - p.theta) * (1 - p.prob) * 0.2;
+		
+		p.loc = p.loc + (mean_loc - p.loc) * (1 - p.prob) * 0.25
+			+ (beacon->loc - p.loc) * (p.loc.getDistanceTo(beacon->loc) / beacon->visionDistance - 1) * (1 - p.prob) * 0.25;
+		p.theta = p.theta + (mean_theta - p.theta) * (1 - p.prob) * 0.25
+			+ (p.loc.getBearingTo(beacon->loc, p.theta) - beacon->visionBearing) * (1 - p.prob) * 0.25;
+
+//		p.theta = p.theta + (mean_theta - p.theta) * (1 - p.prob) * 0.25
+//			+ (mean_loc.getBearingTo(beacon->loc, mean_theta) - beacon->visionBearing) * (1 - p.prob) * 0.25;
+
 		var_distanceBias += (distanceBias[i] - mean_distanceBias)
-				* (distanceBias[i] - mean_distanceBias);
+			* (distanceBias[i] - mean_distanceBias) * p.prob;
 	}
 
-	var_distanceBias /= NUM_PARTICLES;
+	var_distanceBias /= sumProb;
 
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		mean_loc += particles_[i].loc * particles_[i].prob;
-		mean_theta += particles_[i].theta * particles_[i].prob;
-	}
-	mean_loc /= NUM_PARTICLES;
-	mean_theta /= NUM_PARTICLES;
 
-	if (var_distanceBias < 200 * 200 &&
+	if (var_distanceBias < 20 * 20 &&
 		(mean_distanceBias / beacon->visionDistance > 0.5 || 
 			mean_loc.getBearingTo(beacon->loc, mean_theta) > M_PI / 4))
 		trappedInWrongPosition = true;
@@ -165,6 +176,14 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 
 void LocalizationModule::resamplingParticles() {
 	std::cout << "Resampling Particles..." << std::endl;
+
+	float sumProb = 0.0;
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		sumProb += particles_[i].prob;
+	}
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		particles_[i].prob /= (sumProb / NUM_PARTICLES);
+	}
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		previous_particles_[i] = particles_[i];
@@ -207,30 +226,39 @@ int LocalizationModule::sampleIndexFromRandom(float random) {
 }
 
 void LocalizationModule::resamplingParticles2() {
-	Particle newParticles[NUM_PARTICLES];
+	std::cout << "Resampling Particles..." << std::endl;
+
+	float sumProb = 0.0;
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		sumProb += particles_[i].prob;
+	}
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		particles_[i].prob /= (sumProb / NUM_PARTICLES);
+	}
+
+	for (int i = 0; i < NUM_PARTICLES; i++) {
+		previous_particles_[i] = particles_[i];
+	}
+	
 	int index = 0;
 	float newWeightC[NUM_PARTICLES];
 	float newWeightU[NUM_PARTICLES];
-	newWeightC[0] = particles_[0].prob;
 
+	newWeightC[0] = previous_particles_[0].prob;
 	for (int i = 1; i < NUM_PARTICLES; i++)
-		newWeightC[i] = newWeightC[i - 1] + particles_[i].prob;
+		newWeightC[i] = newWeightC[i - 1] + previous_particles_[i].prob;
+	
 	newWeightU[0] = drand48();
-	int i = 1;
+	for (int i = 1; i < NUM_PARTICLES; i++)
+		newWeightU[i] = newWeightU[i - 1] + 1.0;
 
+	int i = 1;
 	for (int j = 0; j < NUM_PARTICLES; j++) {
 
 		while (newWeightU[j] > newWeightC[i])
 			i = i + 1;
-		Particle& p = particles_[i];
-		p.prob = 1.0;
-		newParticles[index] = p;
-		index = index + 1;
-		newWeightU[j + 1] = newWeightU[j] + 1.0;
-	}
-
-	for (int j = 0; j < NUM_PARTICLES; j++) {
-		particles_[j] = newParticles[j];
+		particles_[j] = previous_particles_[i];
+		particles_[j].prob = 1.0f;
 	}
 
 //	printParticles();
@@ -242,7 +270,7 @@ void LocalizationModule::copyParticles() {
 }
 
 void LocalizationModule::updateParticlesFromOdometry() {
-	std::cout << "Updating Particles From Odometry..." << std::endl;
+//	std::cout << "Updating Particles From Odometry..." << std::endl;
 
 	Pose2D disp = odometry->displacement;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
@@ -311,17 +339,22 @@ void LocalizationModule::updatePose() {
 
 //	printParticles();
 
+	float sumProb = 0.0;
+
 	Point2D robotLoc(0.0, 0.0);
 	AngRad robotOrient = 0.0;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		Particle& p = particles_[i];
-		robotLoc += p.loc * p.prob;
-		robotOrient += p.theta * p.prob;
+		if (p.prob > 0.2) {
+			robotLoc += p.loc * p.prob;
+			robotOrient += p.theta * p.prob;
+			sumProb += p.prob;
+		}	
 	}
 
-	robotLoc /= NUM_PARTICLES;
-	robotOrient /= NUM_PARTICLES;
+	robotLoc /= sumProb;
+	robotOrient /= sumProb;
 
 	self.loc = robotLoc;
 	self.orientation = robotOrient;
@@ -336,7 +369,8 @@ void LocalizationModule::printParticles() {
 	std::cout << "Print Particle Information" << std::endl;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		std::cout << "[Particle " << i << "]: " << particles_[i].loc.x << ", "
-				<< particles_[i].loc.y << std::endl;
+				<< particles_[i].loc.y << ", " << particles_[i].theta << ", "
+				<< particles_[i].prob << std::endl;
 	}
 	std::cout << "------------------------------------------------"
 			<< std::endl;

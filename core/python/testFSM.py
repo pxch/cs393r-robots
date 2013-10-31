@@ -49,7 +49,7 @@ class ScanNode(Node):
 
   def run(self):
     self.task.processFrame()
-    commands.setWalkVelocity(0.3, 0, 0)
+    commands.setWalkVelocity(0.5, 0, 0)
     if self.getTime() > 30.0:
       if self.task.finished():
         self.postCompleted()
