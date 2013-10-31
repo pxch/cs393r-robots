@@ -18,8 +18,8 @@
 #define RESAMPLE_FREQ 5
 #define RANDOM_WALK_FREQ 4
 #define DEGRADE_FACTOR 0.99
-#define DELTA_DIST 20
-#define DELTA_ANG (DEG_T_RAD * 15)
+#define DELTA_DIST 100
+#define DELTA_ANG (DEG_T_RAD * 45)
 
 class LocalizationModule: public Module {
 public:
@@ -32,7 +32,7 @@ private:
 	void updateParticlesFromOdometry();
 	void resetParticles();
 	void setParticleProbabilities(float newProb);
-	void randomWalkParticles(float delta_dist, float delta_ang);
+	void randomWalkParticles();
 	void copyParticles();
 
 	void updateParticlesFromSensor();
