@@ -42,11 +42,13 @@ private:
 	void resamplingParticles2();
 	int sampleIndexFromRandom(float random);
 
-	void computeParticleStats();
+//	void computeParticleStats();
 
 	void printParticles();
 
-	float probVarianceChange();
+//	float probVarianceChange();
+
+	bool trappedInWrongPosition;
 
 	unsigned int innerFrameIndex;
 
@@ -59,16 +61,16 @@ private:
 	float ang_bias_var;
 	float ang_bias_mean;
 
-	Point2D particle_loc_mean;
-	Point2D particle_loc_var;
-	Point2D particle_loc_var_prev;
-	AngRad particle_theta_mean;
-	AngRad particle_theta_var;
-	AngRad particle_theta_var_prev;
-
-	float particle_prob_mean;
-	float particle_prob_var;
-	float particle_prob_var_prev;
+//	Point2D particle_loc_mean;
+//	Point2D particle_loc_var;
+//	Point2D particle_loc_var_prev;
+//	AngRad particle_theta_mean;
+//	AngRad particle_theta_var;
+//	AngRad particle_theta_var_prev;
+//
+//	float particle_prob_mean;
+//	float particle_prob_var;
+//	float particle_prob_var_prev;
 
 	WorldObjectBlock* worldObjects;
 	LocalizationBlock* localizationMem;

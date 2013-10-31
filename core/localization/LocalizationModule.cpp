@@ -43,93 +43,21 @@ void LocalizationModule::initSpecificModule() {
 
 	innerFrameIndex = 1;
 
-	particle_loc_mean = Point2D(0.0, 0.0);
-	particle_loc_var = Point2D(0.0, 0.0);
-	particle_loc_var_prev = Point2D(0.0, 0.0);
-
-	particle_theta_mean = 0.0;
-	particle_theta_var = 0.0;
-	particle_theta_var_prev = 0.0;
-
-	particle_prob_mean = 0.0;
-	particle_prob_var = 0.0;
-	particle_prob_var_prev = 0.0;
-}
-
-void LocalizationModule::computeParticleStats() {
-//	particle_loc_var_prev = particle_loc_var;
-//	particle_theta_var_prev = particle_theta_var;
-
-	float mean_loc_x = 0, mean_loc_y = 0, mean_theta = 0, mean_prob = 0;
-	float var_loc_x = 0, var_loc_y = 0, var_theta = 0, var_prob = 0;
-
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		mean_loc_x += particles_[i].loc.x;
-		mean_loc_y += particles_[i].loc.y;
-		mean_theta += particles_[i].theta;
-		mean_prob += particles_[i].prob;
-	}
-	mean_loc_x /= NUM_PARTICLES;
-	mean_loc_y /= NUM_PARTICLES;
-	mean_theta /= NUM_PARTICLES;
-	mean_prob /= NUM_PARTICLES;
-
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		var_loc_x += (particles_[i].loc.x - mean_loc_x)
-				* (particles_[i].loc.x - mean_loc_x);
-		var_loc_y += (particles_[i].loc.y - mean_loc_y)
-				* (particles_[i].loc.y - mean_loc_y);
-		var_theta += (particles_[i].theta - mean_theta)
-				* (particles_[i].theta - mean_theta);
-		var_prob += (particles_[i].prob - mean_prob)
-				* (particles_[i].prob - mean_prob);
-	}
-	var_loc_x = sqrt(var_loc_x / NUM_PARTICLES);
-	var_loc_y = sqrt(var_loc_y / NUM_PARTICLES);
-	var_theta = sqrt(var_theta / NUM_PARTICLES);
-	var_prob = sqrt(var_prob / NUM_PARTICLES);
-
-	particle_loc_mean.x = mean_loc_x;
-	particle_loc_mean.y = mean_loc_y;
-	particle_theta_mean = mean_theta;
-	particle_prob_mean = mean_prob;
-
-	particle_loc_var.x = var_loc_x;
-	particle_loc_var.y = var_loc_y;
-	particle_theta_var = var_theta;
-	particle_prob_var = var_prob;
-
-//	std::cout << "Particle Stats:" << std::endl;
-//	std::cout << particle_loc_mean.x << ", " << particle_loc_mean.y << ", "
-//			<< particle_theta_mean << ", " << particle_prob_mean << std::endl;
-//	std::cout << particle_loc_var.x << ", " << particle_loc_var.y << ", "
-//			<< particle_theta_var << ", " << particle_prob_var << std::endl;
-}
-
-float LocalizationModule::probVarianceChange() {
-//	return (particle_loc_var.x - particle_loc_var_prev.x)
-//			* (particle_loc_var.x - particle_loc_var_prev.x)
-//			+ (particle_loc_var.y - particle_loc_var_prev.y)
-//					* (particle_loc_var.y - particle_loc_var_prev.y);
-	return abs(particle_prob_var - particle_prob_var_prev);
+	trappedInWrongPosition = false;
 }
 
 void LocalizationModule::processFrame() {
 	int frameID = frameInfo->frame_id;
 	std::cout << "Frame: " << innerFrameIndex << std::endl;
 
-//	computeParticleStats();
-
-//	if (dist_bias_mean > 500 && dist_bias_var < 2000)
-//		randomWalkParticles();
+	if (trappedInWrongPosition) {
+		resetParticles();
+		trappedInWrongPosition = false;
+	}
 
 // 1. Update particles from observations
 	updateParticlesFromOdometry();
 	updateParticlesFromSensor();
-
-//	std::cout << "Prob Variance: " << particle_prob_var << ", "
-//			<< particle_prob_var_prev << ", " << probVarianceChange()
-//			<< std::endl;
 
 	// 2. If this is a resampling frame, resample
 	if (innerFrameIndex % RESAMPLE_FREQ == 0)
@@ -163,34 +91,35 @@ void LocalizationModule::updateParticlesFromSensor() {
 void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	float degrade_factor = 0;
 
+	float distanceBias[NUM_PARTICLES];
+	float bearingBias[NUM_PARTICLES];
+
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		Particle& p = particles_[i];
 		float particleDistance = p.loc.getDistanceTo(beacon->loc);
 		float particleBearing = p.loc.getBearingTo(beacon->loc, p.theta);
 
-		float distanceBias = abs(beacon->visionDistance - particleDistance);
-		float bearingBias = abs(beacon->visionBearing - particleBearing);
+		distanceBias[i] = abs(beacon->visionDistance - particleDistance);
+		bearingBias[i] = abs(beacon->visionBearing - particleBearing);
 
-		if (bearingBias < M_PI / 4) {
-			if (distanceBias / beacon->visionDistance < 1.25 && distanceBias / beacon->visionDistance > 0.8)
+		if (bearingBias[i] < M_PI / 4) {
+			if (distanceBias[i] / beacon->visionDistance < 0.25)
 				degrade_factor = 1;
-			else if (distanceBias / beacon->visionDistance < 1.5 && distanceBias / beacon->visionDistance > 0.67)
+			else if (distanceBias[i] / beacon->visionDistance < 0.5)
 				degrade_factor = 0.95;
 			else
 				degrade_factor = 0.9;
-		}
-		else if (bearingBias < M_PI / 2) {
-			if (distanceBias / beacon->visionDistance < 1.25 && distanceBias / beacon->visionDistance > 0.8)
+		} else if (bearingBias[i] < M_PI / 2) {
+			if (distanceBias[i] / beacon->visionDistance < 0.25)
 				degrade_factor = 0.9;
-			else if (distanceBias / beacon->visionDistance < 1.5 && distanceBias / beacon->visionDistance > 0.67)
+			else if (distanceBias[i] / beacon->visionDistance < 0.5)
 				degrade_factor = 0.85;
 			else
 				degrade_factor = 0.8;
-		}
-		else {
-			if (distanceBias / beacon->visionDistance < 1.25 && distanceBias / beacon->visionDistance > 0.8)
+		} else {
+			if (distanceBias[i] / beacon->visionDistance < 0.25)
 				degrade_factor = 0.8;
-			else if (distanceBias / beacon->visionDistance < 1.5 && distanceBias / beacon->visionDistance > 0.67)
+			else if (distanceBias[i] / beacon->visionDistance < 0.5)
 				degrade_factor = 0.7;
 			else
 				degrade_factor = 0.6;
@@ -200,120 +129,26 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	}
 
 	float sumProb = 0.0;
+	float mean_distanceBias = 0.0;
+	float var_distanceBias = 0.0;
+
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		sumProb += particles_[i].prob;
+		mean_distanceBias += distanceBias[i];
 	}
+
+	mean_distanceBias /= NUM_PARTICLES;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		particles_[i].prob /= (sumProb / NUM_PARTICLES);
+		var_distanceBias += (distanceBias[i] - mean_distanceBias)
+				* (distanceBias[i] - mean_distanceBias);
 	}
 
-//	if (isnan(sumProb)) {
-//		std::cout << "ERROR!" << std::endl;
-//		printParticles();
-//		std::cin >> temp;
-//	}
+	var_distanceBias /= NUM_PARTICLES;
 
-
-/*
-	float normalDistance = beacon->visionDistance * beacon->visionDistance;
-	float normalBearing = beacon->visionBearing * beacon->visionBearing;
-
-	float distanceBias[NUM_PARTICLES];
-	float bearingBias[NUM_PARTICLES];
-
-	float particleDistance = 0.0;
-	float particleBearing = 0.0;
-
-	float minBias = 200000;
-	float maxBias = 0.0;
-
-	dist_bias_var = 0.0;
-	dist_bias_mean = 0.0;
-	ang_bias_var = 0.0;
-	ang_bias_mean = 0.0;
-
-	float temp;
-
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		Particle& p = particles_[i];
-		particleDistance = p.loc.getDistanceTo(beacon->loc);
-		particleBearing = p.loc.getBearingTo(beacon->loc, p.theta);
-
-//		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
-//				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
-//				<< ", " << p.theta * 180 / M_PI << std::endl;
-//		std::cout << "Particle Parameter: " << particleDistance << ", "
-//				<< particleBearing * 180 / M_PI << std::endl;
-//		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
-//				<< beacon->visionBearing * 180 / M_PI << std::endl;
-
-		distanceBias[i] = abs(beacon->visionDistance - particleDistance);
-		bearingBias[i] = abs(beacon->visionBearing - particleBearing);
-
-		if (minBias > distanceBias[i])
-			minBias = distanceBias[i];
-		if (maxBias < distanceBias[i])
-			maxBias = distanceBias[i];
-
-		dist_bias_mean += distanceBias[i];
-		ang_bias_mean += bearingBias[i];
-	}
-
-	dist_bias_mean /= NUM_PARTICLES;
-	ang_bias_mean /= NUM_PARTICLES;
-
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		dist_bias_var += (distanceBias[i] - dist_bias_mean)
-				* (distanceBias[i] - dist_bias_mean);
-		ang_bias_var += (bearingBias[i] - ang_bias_mean)
-				* (bearingBias[i] - ang_bias_mean);
-	}
-
-	dist_bias_var /= NUM_PARTICLES;
-	if (dist_bias_var <= 0)
-		return;
-	ang_bias_var /= NUM_PARTICLES;
-	if (ang_bias_var <= 0)
-		return;
-
-	std::cout << "Bias Stats: " << dist_bias_mean << ", " << dist_bias_var
-			<< ", " << ang_bias_mean << ", " << ang_bias_var << std::endl;
-
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		Particle& p = particles_[i];
-
-		float prob_degrade = exp(
-				-0.5 * (distanceBias[i] * distanceBias[i]) / normalDistance
-						- 0.5 * (bearingBias[i] * bearingBias[i])
-								/ normalBearing);
-
-		p.degradeProbability(prob_degrade);
-
-//		std::cout << "Prob Degrade Factor for Particle [" << i << "]: " << prob_degrade << std::endl;
-	}
-
-//	if (abs(minBias - maxBias) < 500 and minBias > 500) {
-//		resetParticles();
-//		return;
-//	}
-
-//Normalize probability mean value equals one
-	float sumProb = 0.0;
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		sumProb += particles_[i].prob;
-	}
-	std::cout << "Prob Normalization Factor: " << sumProb << std::endl;
-	for (int i = 0; i < NUM_PARTICLES; i++) {
-		particles_[i].prob /= (sumProb / NUM_PARTICLES);
-	}
-
-	if (isnan(sumProb)) {
-		std::cout << "ERROR!" << std::endl;
-		printParticles();
-		std::cin >> temp;
-	}
-*/
+	if (mean_distanceBias / beacon->visionDistance > 0.5 && var_distanceBias < 200 * 200)
+		trappedInWrongPosition = true;
 }
 
 void LocalizationModule::resamplingParticles() {
@@ -328,7 +163,7 @@ void LocalizationModule::resamplingParticles() {
 	float random = 0.0;
 
 	while (current_index < NUM_PARTICLES) {
-		random = (float)NUM_PARTICLES * drand48();
+		random = (float) NUM_PARTICLES * drand48();
 		previous_index = sampleIndexFromRandom(random);
 		if (previous_index == -1)
 			continue;
@@ -462,15 +297,6 @@ void LocalizationModule::updatePose() {
 	WorldObject& self = worldObjects->objects_[robotState->WO_SELF];
 	// Compute a weighted average of the particles to fill in your location
 
-//	float sumProb = 0.0;
-//	for (int i = 0; i < NUM_PARTICLES; i++) {
-//		sumProb += particles_[i].prob;
-//	}
-//	std::cout << "Prob Normalization Factor: " << sumProb << std::endl;
-//	for (int i = 0; i < NUM_PARTICLES; i++) {
-//		particles_[i].prob /= (sumProb / NUM_PARTICLES);
-//	}
-//
 //	printParticles();
 
 	Point2D robotLoc(0.0, 0.0);
