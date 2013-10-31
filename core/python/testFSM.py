@@ -35,9 +35,9 @@ class TestMachine5(StateMachine):
     self._adt(start, N, stand)
     self._adt(stand, C, scan)
     self._adt(scan, S(ScanNode.FAIL), walk)
-    self._adt(walk, T(5.0), scan)
+    self._adt(walk, T(10.0), scan)
     self._adt(scan, S(ScanNode.SUCCESS), walkinplace)
-    self._adt(walkinplace, T(5.0), scan)
+    self._adt(walkinplace, T(10.0), scan)
     
 #     far_move = FarNode()
 #     near_move = NearNode()
@@ -65,7 +65,7 @@ class ScanNode(Node):
 
   def run(self):
     robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
-    self.stand()
+    commands.stand()
     self.task.processFrame()
     if self.getTime() > 5.0:
       if robot.loc.x * robot.loc.x + robot.loc.y + robot.loc.y < 50 * 50:
@@ -93,13 +93,13 @@ class WalkNode(Node):
         angle = -pi
     
     if angle > robot.orientation:
-      turnAngle = -pi / 18
-    else:
       turnAngle = pi / 18
+    else:
+      turnAngle = -pi / 18
     
     commands.setWalkVelocity(0.3, 0, turnAngle)
     
-    if self.getTime() > 5.0:
+    if self.getTime() > 10.0:
       commands.stand()
       self.postSuccess()
 
@@ -109,7 +109,7 @@ class WalkInPlaceNode(Node):
   
   def run(self):
     commands.setWalkVelocity(0, 0, 0)
-    if self.getTime() > 5.0:
+    if self.getTime() > 10.0:
       commands.stand()
       self.postSuccess()
     
