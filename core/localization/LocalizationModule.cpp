@@ -153,6 +153,8 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	ang_bias_var = 0.0;
 	ang_bias_mean = 0.0;
 
+	float temp;
+
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		Particle& p = particles_[i];
 		particleDistance = p.loc.getDistanceTo(beacon->loc);
@@ -211,6 +213,11 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		std::cout << "Prob Degrade Factor for Particle [" << i << "]: " << prob_degrade << std::endl;
 	}
 
+	if (prob_degrade == NaN) {
+		std::cout << "ERROR!" << std::enndl;
+		printParticles();
+		std::cin >> temp;
+	}
 //	if (abs(minBias - maxBias) < 500 and minBias > 500) {
 //		resetParticles();
 //		return;
@@ -245,7 +252,7 @@ void LocalizationModule::resamplingParticles() {
 		}
 	}
 
-	printParticles();
+//	printParticles();
 }
 
 int LocalizationModule::sampleIndexFromRandom(float random) {
@@ -290,7 +297,7 @@ void LocalizationModule::resamplingParticles2() {
 		particles_[j] = newParticles[j];
 	}
 
-	printParticles();
+//	printParticles();
 }
 
 void LocalizationModule::copyParticles() {
@@ -320,7 +327,7 @@ void LocalizationModule::resetParticles() {
 		p.placeRandomly();
 	}
 
-	printParticles();
+//	printParticles();
 
 	std::cout << std::endl << "Particles been reset..." << std::endl;
 }
@@ -359,10 +366,9 @@ void LocalizationModule::randomWalkParticles(float delta_dist,
 
 		part1.move(dPos * p1Ratio, p1AngleRatio * dAng);
 		part2.move(-dPos * p2Ratio, p2AngleRatio * -dAng);
-
 	}
 
-	printParticles();
+//	printParticles();
 }
 
 void LocalizationModule::updatePose() {
