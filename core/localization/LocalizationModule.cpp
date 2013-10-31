@@ -121,7 +121,7 @@ void LocalizationModule::processFrame() {
 //	computeParticleStats();
 
 //	if (dist_bias_mean > 500 && dist_bias_var < 2000)
-//		randomWalkParticles;
+//		randomWalkParticles();
 
 // 1. Update particles from observations
 	updateParticlesFromOdometry();
@@ -140,7 +140,7 @@ void LocalizationModule::processFrame() {
 
 	// 4. If this is a random walk frame, random walk
 	if (innerFrameIndex % RANDOM_WALK_FREQ == 0)
-		randomWalkParticles;
+		randomWalkParticles();
 
 	// 5. Copy particles to localization memory:
 	copyParticles();
@@ -404,7 +404,7 @@ void LocalizationModule::updateParticlesFromOdometry() {
 		p.degradeProbability(DEGRADE_FACTOR);
 	}
 
-//	randomWalkParticles;
+//	randomWalkParticles();
 }
 
 void LocalizationModule::resetParticles() {
