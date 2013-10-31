@@ -30,18 +30,82 @@ class TestMachine5(StateMachine):
     sit = SitNode()
     stand = StandNode()
     scan = ScanNode()
-    far_move = FarNode()
-    near_move = NearNode()
-    on_center = CenterNode()
+    walk = WalkNode()
+    walkinplace = WalkInPlaceNode()
     self._adt(start, N, stand)
-    self._adt(stand, C, far_move)
-    self._adt(far_move, S(FarNode.MY_NEAR_CENTER), scan)
-    self._adt(scan, T(5.0), near_move)
-    self._adt(near_move, S(NearNode.MY_FAIL), FarNode())
-    self._adt(near_move, S(NearNode.MY_SUCCESS), on_center)
-    self._adt(on_center, S(CenterNode.MY_OUT_FAR), FarNode())
-    self._adt(on_center, S(CenterNode.MY_OUT_NEAR), NearNode())
+    self._adt(stand, C, scan)
+    self._adt(scan, T(5.0), walk)
+#     far_move = FarNode()
+#     near_move = NearNode()
+#     on_center = CenterNode()
+#     self._adt(start, N, stand)
+#     self._adt(stand, C, far_move)
+#     self._adt(far_move, S(FarNode.MY_NEAR_CENTER), scan)
+#     self._adt(scan, T(5.0), near_move)
+#     self._adt(near_move, S(NearNode.MY_FAIL), FarNode())
+#     self._adt(near_move, S(NearNode.MY_SUCCESS), on_center)
+#     self._adt(on_center, S(CenterNode.MY_OUT_FAR), FarNode())
+#     self._adt(on_center, S(CenterNode.MY_OUT_NEAR), NearNode())
 
+class ScanNode(Node):
+  SUCCESS = 0
+  FAIL = 1
+  
+  def __init__(self):
+    super(ScanNode, self).__init__()
+    self.task = head.Scan()
+  
+  def reset(self):
+    super(ScanNode, self).reset()
+    self.task = head.Scan()
+
+  def run(self):
+    robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
+    self.stand()
+    self.task.processFrame()
+    if self.getTime() > 5.0:
+      if robot.loc.x * robot.loc.x + robot.loc.y + robot.loc.y < 50 * 50:
+        self.postSignal(ScanNode.SUCCESS)
+      else:
+        self.postSignal(scanNode.FAIL)
+
+class WalkNode(Node):
+  def __init__(self):
+    super(ScanNode, self).__init__()
+
+  def run(self):
+    robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
+    print robot.loc.x, robot.loc.y, robot.orientation
+    
+    angle = atan2(robot.loc.y, robot.loc.x)
+    if angle > 0:
+      angle = angle - pi
+    elif angle < 0:
+      angle = angle + pi
+    else:
+      if robot.orientation > 0:
+        angle = pi
+      else:
+        angle = -pi
+    
+    if angle > robot.orientation:
+      turnAngle = -pi / 18
+    else:
+      turnAngle = pi / 18
+    
+    commands.setWalkVelocity(0.3, 0, turnAngle)
+    
+    if self.getTime() > 5.0:
+      commands.stand()
+      self.postSuccess()
+
+class WalkInPlaceNode(Node):
+  def __init__(self):
+    super(WalkInPlaceNode, self).__init__()
+  
+  def run(self):
+    commands.setWalkVelocity(0, 0, 0)
+    
 class FarNode(Node):
   MY_START = 0
   MY_TURN = 1
@@ -105,22 +169,6 @@ class FarNode(Node):
       
       if fabs(angle - robot.orientation) > pi / 9:
         self.myState = FarNode.MY_TURN
-
-class ScanNode(Node):
-  def __init__(self):
-    super(ScanNode, self).__init__()
-    self.task = head.Scan()
-  
-  def reset(self):
-    super(ScanNode, self).reset()
-    self.task = head.Scan()
-
-  def run(self):
-    self.stand()
-    self.task.processFrame()
-    if self.getTime() > 10.0:
-      if self.task.finished():
-        self.postCompleted()
 
 class NearNode(Node):
   MY_START = 0
