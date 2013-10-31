@@ -191,6 +191,14 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		particleDistance = p.loc.getDistanceTo(beacon->loc);
 		particleBearing = p.loc.getBearingTo(beacon->loc, p.theta);
 
+		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
+				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
+				<< ", " << p.theta * 180 / M_PI << std::endl;
+		std::cout << "Particle Parameter: " << particleDistance << ", "
+				<< particleBearing * 180 / M_PI << std::endl;
+		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
+				<< beacon->visionBearing * 180 / M_PI << std::endl;
+
 		distanceBias[i] = abs(beacon->visionDistance - particleDistance);
 		bearingBias[i] = abs(beacon->visionBearing - particleBearing);
 
@@ -216,16 +224,11 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	dist_bias_var /= NUM_PARTICLES;
 	ang_bias_var /= NUM_PARTICLES;
 
+	std::cout << dist_bias_mean << ", " << dist_bias_var << ", "
+			<< ang_bias_mean << ", " << ang_bias_var << std::endl;
+
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		Particle& p = particles_[i];
-
-		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
-				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
-				<< ", " << p.theta * 180 / M_PI << std::endl;
-		std::cout << "Particle Parameter: " << particleDistance << ", "
-				<< particleBearing * 180 / M_PI << std::endl;
-		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
-				<< beacon->visionBearing * 180 / M_PI << std::endl;
 
 //		float prob_multiplier = exp(
 //				-0.05 * (distanceBias * distanceBias) / normalDistance
