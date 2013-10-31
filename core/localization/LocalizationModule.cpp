@@ -203,7 +203,7 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		sumProb += particles_[i].prob;
 	}
-//	std::cout << "Prob Normalization Factor: " << sumProb << std::endl;
+
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		particles_[i].prob /= (sumProb / NUM_PARTICLES);
 	}
@@ -328,7 +328,7 @@ void LocalizationModule::resamplingParticles() {
 	float random = 0.0;
 
 	while (current_index < NUM_PARTICLES) {
-		random = (float)NUM_PARTICLES * drand48();
+		random = drand48();
 		previous_index = sampleIndexFromRandom(random);
 		if (previous_index == -1)
 			continue;
@@ -345,7 +345,7 @@ void LocalizationModule::resamplingParticles() {
 }
 
 int LocalizationModule::sampleIndexFromRandom(float random) {
-	if (random < 0.0 || random > 1.0)
+	if (random < 0.0 || random > NUM_PARTICLES)
 		return -1;
 	float sumProb = 0.0;
 	int index = 0;
