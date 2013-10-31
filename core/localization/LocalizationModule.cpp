@@ -197,17 +197,17 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
 				<< beacon->visionBearing * 180 / M_PI << std::endl;
 
-		//float prob_multiplier = exp(
-		//		-0.05 * (distanceBias * distanceBias) / normalDistance
-		//				- 0.05 * (bearingBias * bearingBias) / normalBearing);
+		float prob_multiplier = exp(
+				-0.05 * (distanceBias * distanceBias) / normalDistance
+						- 0.05 * (bearingBias * bearingBias) / normalBearing);
 		
 
-		float prob_nultiplier_distance = 1/sqrt(2*M_PI*normalDistance)*exp(distanceBias*distanceBias/(2*normalDistance));
+		//float prob_nultiplier_distance = 1.0/sqrt(2*M_PI*normalDistance)*exp(distanceBias*distanceBias/(2*normalDistance));
 			
-		float prob_nultiplier_angle = 1/sqrt(2*M_PI*normalBearing)*exp(distanceBias*distanceBias/(2*normalBearing));
+		//float prob_nultiplier_angle = 1.0/sqrt(2*M_PI*normalBearing)*exp(distanceBias*distanceBias/(2*normalBearing));
 
 	
-		float prob_multiplier = (prob_nultiplier_distance+prob_nultiplier_angle)/2;
+		//float prob_multiplier = (prob_nultiplier_distance+prob_nultiplier_angle)/2;
 		p.prob = p.prob * prob_multiplier;
 
 		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
