@@ -165,8 +165,8 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		Particle& p = particles_[i];
-		particleDistance = p.loc.getDistanceTo(beacon->loc);
-		particleBearing = p.loc.getBearingTo(beacon->loc, p.theta);
+		float particleDistance = p.loc.getDistanceTo(beacon->loc);
+		float particleBearing = p.loc.getBearingTo(beacon->loc, p.theta);
 
 		float distanceBias = abs(beacon->visionDistance - particleDistance);
 		float bearingBias = abs(beacon->visionBearing - particleBearing);
@@ -208,11 +208,11 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		particles_[i].prob /= (sumProb / NUM_PARTICLES);
 	}
 
-	if (isnan(sumProb)) {
-		std::cout << "ERROR!" << std::endl;
-		printParticles();
-		std::cin >> temp;
-	}
+//	if (isnan(sumProb)) {
+//		std::cout << "ERROR!" << std::endl;
+//		printParticles();
+//		std::cin >> temp;
+//	}
 
 
 /*
