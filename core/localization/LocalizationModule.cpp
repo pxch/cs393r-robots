@@ -174,6 +174,9 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 
 	float particleDistance = 0.0;
 	float particleBearing = 0.0;
+      
+        float minBias = 50000;
+        float maxBias = 0.0;
 
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		Particle& p = particles_[i];
@@ -183,6 +186,9 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		distanceBias = abs(beacon->visionDistance - particleDistance);
 		bearingBias = abs(beacon->visionBearing - particleBearing);
 
+                if(minBias > distanceBias) minBias = distanceBias;
+		if(maxBias < distanceBias) maxBias = distanceBias;
+
 		std::cout << "Beacon: " << beacon->loc.x << ", " << beacon->loc.y
 				<< ". Particle[" << i << "]: " << p.loc.x << ", " << p.loc.y
 				<< ", " << p.theta * 180 / M_PI << std::endl;
@@ -191,13 +197,29 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		std::cout << "Beacon Parameter: " << beacon->visionDistance << ", "
 				<< beacon->visionBearing * 180 / M_PI << std::endl;
 
-		float prob_multiplier = exp(
-				-0.5 * (distanceBias * distanceBias) / normalDistance
-						- 0.5 * (bearingBias * bearingBias) / normalBearing);
+		//float prob_multiplier = exp(
+		//		-0.05 * (distanceBias * distanceBias) / normalDistance
+		//				- 0.05 * (bearingBias * bearingBias) / normalBearing);
+		
+
+		float prob_nultiplier_distance = 1/sqrt(2*M_PI*normalDistance)*exp(distanceBias*distanceBias/(2*normalDistance));
+			
+		float prob_nultiplier_angle = 1/sqrt(2*M_PI*normalBearing)*exp(distanceBias*distanceBias/(2*normalBearing));
+
+	
+		float prob_multiplier = (prob_nultiplier_distance+prob_nultiplier_angle)/2;
 		p.prob = p.prob * prob_multiplier;
 
 		std::cout << "Prob Multiplier: " << prob_multiplier << std::endl;
 	}
+
+
+	if(abs(minBias - maxBias) < 500 and minBias > 500){
+
+		resetParticles(); 
+		return;
+	} 
+
 
 	float sumProb = 0.0;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
@@ -254,7 +276,7 @@ int LocalizationModule::sampleIndexFromRandom(float random) {
 	if (random < 0.0 || random > 1.0)
 		return -1;
 	float sumProb = 0.0;
-	int index = 0;
+	int index = 0;                              
 	while (sumProb < random && index < NUM_PARTICLES) {
 		sumProb += previous_particles_[index].prob;
 		index++;
@@ -324,16 +346,16 @@ void LocalizationModule::randomWalkParticles() {
 //				<< dAng * 180 / M_PI << std::endl;
 
 		// move them in opposite directions on this vector, based on their prob
-//		float p1Ratio = 1.0 - part1.prob;
-//		float p2Ratio = 1.0 - part2.prob;
+		float p1Ratio = 1.0 - part1.prob;
+		float p2Ratio = 1.0 - part2.prob;
 		
-//		if (p1Ratio == 0.0)
-//			p1Ratio = 0.05;
-//		if (p2Ratio == 0.0)
-//			p2Ratio = 0.05;
+		if (p1Ratio == 0.0)
+			p1Ratio = 0.05;
+		if (p2Ratio == 0.0)
+			p2Ratio = 0.05;
 
-		float p1Ratio = 1;
-		float p2Ratio = 1;
+//		float p1Ratio = 1;
+//		float p2Ratio = 1;
 
 		float p1AngleRatio = p1Ratio;
 		float p2AngleRatio = p2Ratio;
