@@ -37,8 +37,8 @@ class TestMachine5(StateMachine):
     self._adt(stand, C, scan)
     self._adt(scan, S(ScanNode.FAIL), localization)
     self._adt(scan, S(ScanNode.SUCCESS), walkinplace)
-    self._adt(localization, T(15.0), scan)
-    self._adt(walkinplace, T(15.0), scan)
+    self._adt(localization, T(10.0), scan)
+    self._adt(walkinplace, T(20.0), scan)
 #     self._adt(stand, C, scan)
 #     self._adt(scan, S(ScanNode.FAIL), walk)
 #     self._adt(walk, T(10.0), scan)
@@ -81,11 +81,20 @@ class LocalizationNode(Node):
         angle = pi
       else:
         angle = -pi
-    
+    print "angel and ori"    
+    print angle
+    print robot.orientation 
+
     if robot.orientation - angle > pi / 18:
-      turnParam = pi / 18
+	if robot.orientation - angle > pi:
+      	    turnParam = pi / 9
+	else:
+	    turnParam = -pi / 9
     elif angle - robot.orientation > pi / 18:
-      turnParam = -pi / 18
+	if angle - robot.orientation > pi:
+            turnParam = -pi / 9
+	else:
+	    turnParam = pi / 9
     else:
       turnParam = 0
     
