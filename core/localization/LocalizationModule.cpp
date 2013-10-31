@@ -229,7 +229,7 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	}
 
 	if (isnan(sumProb)) {
-		std::cout << "ERROR!" << std::enndl;
+		std::cout << "ERROR!" << std::endl;
 		printParticles();
 		std::cin >> temp;
 	}
