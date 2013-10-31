@@ -328,7 +328,7 @@ void LocalizationModule::resamplingParticles() {
 	float random = 0.0;
 
 	while (current_index < NUM_PARTICLES) {
-		random = drand48();
+		random = (float)NUM_PARTICLES * drand48();
 		previous_index = sampleIndexFromRandom(random);
 		if (previous_index == -1)
 			continue;
