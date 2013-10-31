@@ -213,11 +213,6 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 		std::cout << "Prob Degrade Factor for Particle [" << i << "]: " << prob_degrade << std::endl;
 	}
 
-	if (prob_degrade == NaN) {
-		std::cout << "ERROR!" << std::enndl;
-		printParticles();
-		std::cin >> temp;
-	}
 //	if (abs(minBias - maxBias) < 500 and minBias > 500) {
 //		resetParticles();
 //		return;
@@ -231,6 +226,12 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 	std::cout << "Prob Normalization Factor: " << sumProb << std::endl;
 	for (int i = 0; i < NUM_PARTICLES; i++) {
 		particles_[i].prob /= (sumProb / NUM_PARTICLES);
+	}
+
+	if (sumProb == NaN) {
+		std::cout << "ERROR!" << std::enndl;
+		printParticles();
+		std::cin >> temp;
 	}
 }
 
