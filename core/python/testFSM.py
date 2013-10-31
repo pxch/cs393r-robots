@@ -155,16 +155,6 @@ class WalkNode(Node):
       commands.stand()
       self.postSuccess()
 
-class WalkInPlaceNode(Node):
-  def __init__(self):
-    super(WalkInPlaceNode, self).__init__()
-  
-  def run(self):
-    commands.setWalkVelocity(0, 0, 0)
-    if self.getTime() > 10.0:
-      commands.stand()
-      self.postSuccess()
-    
 class FarNode(Node):
   MY_START = 0
   MY_TURN = 1
