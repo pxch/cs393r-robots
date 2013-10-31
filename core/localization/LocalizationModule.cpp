@@ -53,7 +53,7 @@ void LocalizationModule::processFrame() {
 
 	// 2. If this is a resampling frame, resample
 	if (innerFrameIndex % RESAMPLE_FREQ == 0)
-		resamplingParticles();
+		resamplingParticles2();
 
 	// 3. Update the robot's pose
 	updatePose();
@@ -295,6 +295,36 @@ void LocalizationModule::resamplingParticles() {
 //	}
 	std::cout << "------------------------------------------------"
 			<< std::endl;
+}
+
+
+
+void LocalizationModule::resamplingParticles2() {
+		
+	Particle newParticles[NUM_PARTICLES];
+	int index=0;
+	float newWeightC[NUM_PARTICLES];
+	float newWeightU[NUM_PARTICLES];
+	newWeightC[0] = particles_[0].prob;
+	
+	for(int i=1; i < NUM_PARTICLES; i++) newWeightC[i] = newWeightC[i-1] + particles_[i].prob;
+	newWeightU[0] = 1/NUM_PARTICLES;
+	int i = 1;
+
+	for(int j = 0; j < NUM_PARTICLES; j++){
+
+		while(newWeightU[j] > newWeightC[i]) i = i+1;
+		Particle& p = particles_[i];
+		p.prob = 1/NUM_PARTICLES;
+		newParticles[index] = p;
+		index = index + 1;
+		newWeightU[j+1] = newWeightU[j] + 1/NUM_PARTICLES;
+	} 
+
+	for(int j = 0; j < NUM_PARTICLES; j++){
+
+		particles_[j] = newParticles[j];
+	}
 }
 
 int LocalizationModule::sampleIndexFromRandom(float random) {

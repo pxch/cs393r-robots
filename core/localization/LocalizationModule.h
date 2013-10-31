@@ -39,6 +39,7 @@ private:
 	void updateParticlesFromBeacon(WorldObject* beacon);
 
 	void resamplingParticles();
+	void resamplingParticles2();
 	int sampleIndexFromRandom(float random);
 
 	unsigned int innerFrameIndex;
