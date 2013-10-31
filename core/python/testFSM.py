@@ -65,22 +65,22 @@ class FarNode(Node):
     core.speech.say("Far from center")
     robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
     
+    angle = atan2(robot.loc.y, robot.loc.x)
+    if angle > 0:
+      angle = angle - pi
+    elif angle < 0:
+      angle = angle + pi
+    else:
+      if robot.orientation > 0:
+        angle = pi
+      else:
+        angle = -pi
+        
     if self.myState == FarNode.MY_START:
       commands.stand()
       if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y < 200 * 200:
         self.myState = FarNode.MY_NEAR_CENTER
       else:
-        angle = atan2(robot.loc.y, robot.loc.x)
-        if angle > 0:
-          angle = angle - pi
-        elif angle < 0:
-          angle = angle + pi
-        else:
-          if robot.orientation > 0:
-            angle = pi
-          else:
-            angle = -pi
-          
         if fabs(angle - robot.orientation) < pi / 18:
           self.myState = FarNode.MY_FORWARD
         else:
@@ -90,36 +90,14 @@ class FarNode(Node):
       self.posSignal(FarNode.MY_NEAR_CENTER)
       return
     
-    elif self.myState == FarNode.MY_TURN:
+    elif self.myState == FarNode.MY_TURN:      
       commands.setWalkVelocity(0, 0, robot.orientation - angle)
-      
-      angle = atan2(robot.loc.y, robot.loc.x)
-      if angle > 0:
-        angle = angle - pi
-      elif angle < 0:
-        angle = angle + pi
-      else:
-        if robot.orientation > 0:
-          angle = pi
-        else:
-          angle = -pi
-      
+
       if fabs(angle - robot.orientation) < pi / 18:
         self.myState = FarNode.MY_FORWARD
             
     else:
       commands.setWalkVelocity(0.6, 0, 0)
-      
-      angle = atan2(robot.loc.y, robot.loc.x)
-      if angle > 0:
-        angle = angle - pi
-      elif angle < 0:
-        angle = angle + pi
-      else:
-        if robot.orientation > 0:
-          angle = pi
-        else:
-          angle = -pi
       
       if fabs(angle - robot.orientation) > pi / 18:
         self.myState = FarNode.MY_TURN
@@ -160,45 +138,37 @@ class NearNode(Node):
     core.speech.say("Near the center")
     robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
     
+    angle = atan2(robot.loc.y, robot.loc.x)
+    if angle > 0:
+      angle = angle - pi
+    elif angle < 0:
+      angle = angle + pi
+    else:
+      if robot.orientation > 0:
+        angle = pi
+      else:
+        angle = -pi
+        
     if self.myState == NearNode.MY_START:
       if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y < 50 * 50:
         self.myState = NearNode.MY_SUCCESS
       else:
-        angle = atan2(robot.loc.y, robot.loc.x)
-        if angle > 0:
-          angle = angle - pi
-        elif angle < 0:
-          angle = angle + pi
-        else:
-          if robot.orientation > 0:
-            angle = pi
-          else:
-            angle = -pi
+        self.myState = NearNode.MY_WALKING
+
     elif self.myState == NearNode.MY_SUCCESS:
       self.postSignal(NearNode.MY_SUCCESS)
       return
     elif self.myState == NearNode.MY_FAIL:
       self.postSignal(NearNode.MY_FAIL)
       return
-    else:
-      angle = atan2(robot.loc.y, robot.loc.x)
-      if angle > 0:
-        angle = angle - pi
-      elif angle < 0:
-        angle = angle + pi
-      else:
-        if robot.orientation > 0:
-          angle = pi
-        else:
-          angle = -pi
-      
+    else:      
       commands.setWalkVelocity(0.3, 0, robot.orientation - angle)
       
       if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y < 50 * 50:
         self.myState = NearNode.MY_SUCCESS
       elif robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y > 200 * 200:
         self.myState = NearNode.MY_FAIL
-  
+
 class CenterNode(Node):
   MY_START = 0
   MY_KEEPING = 1
