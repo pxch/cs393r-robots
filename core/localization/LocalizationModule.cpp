@@ -229,10 +229,12 @@ void LocalizationModule::updateParticlesFromBeacon(WorldObject* beacon) {
 //				-0.05 * (distanceBias * distanceBias) / normalDistance
 //						- 0.05 * (bearingBias * bearingBias) / normalBearing);
 
-		float prob_mul_dist = exp(0.5 * distanceBias[i] * distanceBias[i] / dist_bias_var)
+		float prob_mul_dist = exp(
+				0.5 * distanceBias[i] * distanceBias[i] / dist_bias_var)
 				/ sqrt(2 * M_PI * dist_bias_var);
 
-		float prob_mul_ang = exp(0.5 * bearingBias[i] * bearingBias[i] / ang_bias_var)
+		float prob_mul_ang = exp(
+				0.5 * bearingBias[i] * bearingBias[i] / ang_bias_var)
 				/ sqrt(2 * M_PI * ang_bias_var);
 
 		float prob_multiplier = (prob_mul_dist + prob_mul_ang) / 2;
@@ -297,32 +299,30 @@ void LocalizationModule::resamplingParticles() {
 			<< std::endl;
 }
 
-
-
 void LocalizationModule::resamplingParticles2() {
-		
 	Particle newParticles[NUM_PARTICLES];
-	int index=0;
+	int index = 0;
 	float newWeightC[NUM_PARTICLES];
 	float newWeightU[NUM_PARTICLES];
 	newWeightC[0] = particles_[0].prob;
-	
-	for(int i=1; i < NUM_PARTICLES; i++) newWeightC[i] = newWeightC[i-1] + particles_[i].prob;
-	newWeightU[0] = 1/NUM_PARTICLES;
+
+	for (int i = 1; i < NUM_PARTICLES; i++)
+		newWeightC[i] = newWeightC[i - 1] + particles_[i].prob;
+	newWeightU[0] = 1 / NUM_PARTICLES;
 	int i = 1;
 
-	for(int j = 0; j < NUM_PARTICLES; j++){
+	for (int j = 0; j < NUM_PARTICLES; j++) {
 
-		while(newWeightU[j] > newWeightC[i]) i = i+1;
+		while (newWeightU[j] > newWeightC[i])
+			i = i + 1;
 		Particle& p = particles_[i];
-		p.prob = 1/NUM_PARTICLES;
+		p.prob = 1 / NUM_PARTICLES;
 		newParticles[index] = p;
 		index = index + 1;
-		newWeightU[j+1] = newWeightU[j] + 1/NUM_PARTICLES;
-	} 
+		newWeightU[j + 1] = newWeightU[j] + 1 / NUM_PARTICLES;
+	}
 
-	for(int j = 0; j < NUM_PARTICLES; j++){
-
+	for (int j = 0; j < NUM_PARTICLES; j++) {
 		particles_[j] = newParticles[j];
 	}
 }
