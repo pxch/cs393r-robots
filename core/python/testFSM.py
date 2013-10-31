@@ -2,7 +2,7 @@ from state import *
 import commands, core, util, pose
 import time
 import state, percepts
-import math
+from math import atan2, pi, fabs
 import head
 
 class TestMachine(StateMachine):
@@ -51,11 +51,13 @@ class FarNode(Node):
   def __init__(self):
     super(FarNode, self).__init__()
     self.task = head.Scan()
-    self.myState = MY_START
+    self.myState = FarNode.MY_START
   
   def reset(self):
     super(FarNode, self).reset()
     self.task = head.Scan()
+    self.myState = FarNode.MY_START
+
   
   def run(self):
     self.task.processFrame()
@@ -63,10 +65,10 @@ class FarNode(Node):
     core.speech.say("Far from center")
     robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
     
-    if self.myState == MY_START:
+    if self.myState == FarNode.MY_START:
       commands.stand()
       if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y < 200 * 200:
-        self.myState = MY_NEAR_CENTER
+        self.myState = FarNode.MY_NEAR_CENTER
       else:
         angle = atan2(robot.loc.y, robot.loc.x)
         if angle > 0:
@@ -80,15 +82,15 @@ class FarNode(Node):
             angle = -pi
           
         if fabs(angle - robot.orientation) < pi / 18:
-          self.myState = MY_FORWARD
+          self.myState = FarNode.MY_FORWARD
         else:
-          self.myState = MY_TURN
+          self.myState = FarNode.MY_TURN
     
-    elif self.myState == MY_NEAR_CENTER:
-      self.posSignal(MY_NEAR_CENTER)
+    elif self.myState == FarNode.MY_NEAR_CENTER:
+      self.posSignal(FarNode.MY_NEAR_CENTER)
       return
     
-    elif self.myState == MY_TURN:
+    elif self.myState == FarNode.MY_TURN:
       commands.setWalkVelocity(0, 0, robot.orientation - angle)
       
       angle = atan2(robot.loc.y, robot.loc.x)
@@ -103,7 +105,7 @@ class FarNode(Node):
           angle = -pi
       
       if fabs(angle - robot.orientation) < pi / 18:
-        self.myState = MY_FORWARD
+        self.myState = FarNode.MY_FORWARD
             
     else:
       commands.setWalkVelocity(0.6, 0, 0)
@@ -120,7 +122,7 @@ class FarNode(Node):
           angle = -pi
       
       if fabs(angle - robot.orientation) > pi / 18:
-        self.myState = MY_TURN
+        self.myState = FarNode.MY_TURN
 
 class ScanNode(Node):
   def __init__(self):
@@ -147,19 +149,20 @@ class NearNode(Node):
   def __init__(self):
     super(NearNode, self).__init__()
     self.task = head.Scan(2.0, 5.0)
-    self.myState = MY_START
+    self.myState = NearNode.MY_START
        
   def reset(self):
     super(NearNode, self).reset()
     self.task = head.Scan(2.0, 5.0)
-  
+    self.myState = NearNode.MY_START
+
   def run(self):
     core.speech.say("Near the center")
     robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
     
-    if myState == MY_START:
+    if self.myState == NearNode.MY_START:
       if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y < 50 * 50:
-        self.myState = MY_SUCCESS
+        self.myState = NearNode.MY_SUCCESS
       else:
         angle = atan2(robot.loc.y, robot.loc.x)
         if angle > 0:
@@ -171,11 +174,11 @@ class NearNode(Node):
             angle = pi
           else:
             angle = -pi
-    elif myState == MY_SUCCESS:
-      self.postSignal(MY_SUCCESS)
+    elif self.myState == NearNode.MY_SUCCESS:
+      self.postSignal(NearNode.MY_SUCCESS)
       return
-    elif myState == MY_FAIL:
-      self.postSignal(MY_FAIL)
+    elif self.myState == NearNode.MY_FAIL:
+      self.postSignal(NearNode.MY_FAIL)
       return
     else:
       angle = atan2(robot.loc.y, robot.loc.x)
@@ -192,9 +195,9 @@ class NearNode(Node):
       commands.setWalkVelocity(0.3, 0, robot.orientation - angle)
       
       if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y < 50 * 50:
-        self.myState = MY_SUCCESS
+        self.myState = NearNode.MY_SUCCESS
       elif robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y > 200 * 200:
-        self.myState = MY_FAIL
+        self.myState = NearNode.MY_FAIL
   
 class CenterNode(Node):
   MY_START = 0
@@ -205,29 +208,30 @@ class CenterNode(Node):
   def __init__(self):
     super(CenterNode, self).__init__()
     self.task = head.Scan(2.0, 5.0)
-    self.myState = MY_START
+    self.myState = CenterNode.MY_START
   
   def reset(self):
     super(CenterNode, self).reset()
     self.task = head.Scan(2.0, 5.0)
+    self.myState = CenterNode.MY_START
 
   def run(self):
     core.speech.say("On center")
     robot = core.world_objects.getObjPtr(core.robot_state.WO_SELF)
     
-    if self.myState == MY_START:
-      self.myState = MY_KEEPING
-    elif self.myState == MY_KEEPING:
+    if self.myState == CenterNode.MY_START:
+      self.myState = CenterNode.MY_KEEPING
+    elif self.myState == CenterNode.MY_KEEPING:
       commands.setWalkVelocity(0, 0, 0)
       if robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y > 200 * 200:
-        self.myState = MY_OUT_FAR
+        self.myState = CenterNode.MY_OUT_FAR
       elif robot.loc.x * robot.loc.x + robot.loc.y * robot.loc.y > 50 * 50:
-        self.myState = MY_OUT_NEAR
-    elif self.myState == MY_OUT_FAR:
-      self.postSignal(MY_OUT_FAR)
+        self.myState = CenterNode.MY_OUT_NEAR
+    elif self.myState == CenterNode.MY_OUT_FAR:
+      self.postSignal(CenterNode.MY_OUT_FAR)
       return
     else:
-      self.postSignal(MY_OUT_NEAR)
+      self.postSignal(CenterNode.MY_OUT_NEAR)
       return
     
 class towardsToCenterNode(Node):
