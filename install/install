@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 import os, sys
 
-#NAO_HOME = os.environ['NAO_HOME'] = '/home/' + os.environ['USER'] + '/nao/trunk'
-NAO_HOME = os.environ['NAO_HOME'] = '~' + '/nao/trunk'
+NAO_HOME = os.environ['NAO_HOME'] = '/home/' + os.environ['USER'] + '/nao/trunk'
 os.chdir(NAO_HOME + '/install')
 os.system('./install_libs')
 os.system('./install_naoqi')

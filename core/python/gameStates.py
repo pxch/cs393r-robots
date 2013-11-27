@@ -39,9 +39,15 @@ class Playing(MachineTask):
     super(Playing, self).__init__(testFSM.TestMachine5())
 
 class Testing(Task):
+  def __init__(self):
+    super(Testing, self).__init__()
+    self.task = kicks.Kick()
+
+  #def reset(self):
+   # super(KickNode, self).reset()
+    #self.task = kicks.Kick()
+  
   def run(self):
-    commands.setStiffness()
-    commands.setWalkVelocity(.5, .2, 0.0)
-    if self.getTime() > 5.0:
-      self.subtask = pose.Sit()
-      self.finish()
+    self.task.processFrame()
+    self.task.finished()
+    #self.finish()
