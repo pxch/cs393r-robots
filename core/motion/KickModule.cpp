@@ -18,7 +18,7 @@
 #define DIST_KICK_INCREMENTAL 20
 #define DIST_ALIGN_INCREMENTAL -120
 
-#define FOOT_RADIUS 42
+#define FOOT_RADIUS 40
 
 KickModule::KickModule() {
 }
@@ -368,22 +368,24 @@ void KickModule::calcSwingSplinePts() {
     dir = -1;
 
 //Calculate kick swing params due to ball rel pos and align pos
-  if (ball_seen && goal_seen) {
-    goal_pos.x = goal_rel_pos.x;
-    goal_pos.y = goal_rel_pos.y;
-
+  if (ball_seen) {
     ball_pos.x = ball_rel_pos.x;
     ball_pos.y = ball_rel_pos.y;
   
-    kick_start_pos.x = DIST_ALIGN_INCREMENTAL;
-//    align_pos.y = goal_pos.y - (goal_pos.x - ball_pos.x) / (goal_pos.x - DIST_ALIGN_INCREMENTAL) * (goal_pos.y - ball_pos.y);
-    kick_start_pos.y = ball_pos.y + (ball_pos.y - goal_pos.y) * (ball_pos.x - DIST_ALIGN_INCREMENTAL) / (goal_pos.x - ball_pos.x);
-  
-    align.x = kick_start_pos.x + FOOT_RADIUS;
-    align.y = kick_start_pos.y;
-    
-    align.y *= dir;
+    if (goal_seen) {
+      goal_pos.x = goal_rel_pos.x;
+      goal_pos.y = goal_rel_pos.y;
 
+
+      kick_start_pos.x = DIST_ALIGN_INCREMENTAL;
+//    align_pos.y = goal_pos.y - (goal_pos.x - ball_pos.x) / (goal_pos.x - DIST_ALIGN_INCREMENTAL) * (goal_pos.y - ball_pos.y);
+      kick_start_pos.y = ball_pos.y + (ball_pos.y - goal_pos.y) * (ball_pos.x - DIST_ALIGN_INCREMENTAL) / (goal_pos.x - ball_pos.x);
+  
+      align.x = kick_start_pos.x + FOOT_RADIUS; ////??????????????????????  kick_start_pos.x + FOOT_RADIUS;
+      align.y = kick_start_pos.y;
+    
+      align.y *= dir;
+      align.y = max(align.y, 40);
     ////////
     
 //    if ( align.y > 80 )
@@ -391,16 +393,14 @@ void KickModule::calcSwingSplinePts() {
 
     ////////
 
-    params_->states[KickState::ALIGN].swing = align;
+      params_->states[KickState::ALIGN].swing = align;
+    }
+    else {
+      kick_start_pos.x = align.x;
+      kick_start_pos.y = align.y;
 
-/*
-    align_pos.x = align.x;
-    align_pos.y = align.y;
-
-    if (kick_module_->swing_leg_ == Kick::RIGHT) {
-      align_pos.y = -align_pos.y;
-    }86-56
-*/
+      kick_start_pos.y *= dir;
+    }
 
     float dist_align_ball = sqrt((ball_pos.x - kick_start_pos.x) * (ball_pos.x - kick_start_pos.x) + (ball_pos.y - kick_start_pos.y) * (ball_pos.y - kick_start_pos.y));
   
@@ -429,7 +429,7 @@ void KickModule::calcSwingSplinePts() {
       touch.y += 10;
     }
 
-    touch.z = kick.z;
+    touch.z = BALL_RADIUS;
 
     std::cout << "ball: (" << ball_pos.x << ", " << ball_pos.y << ")" << std::endl;
     std::cout << "goal: (" << goal_pos.x << ", " << goal_pos.y << ")" << std::endl;

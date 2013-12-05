@@ -71,6 +71,7 @@ void BallDetector::detectBall() {
 		candidate->relPosition.z -= BALL_RADIUS;
 		candidate->valid = true;
 
+                ball->distance = candidate->groundDistance;
 		ball->relPos.x = candidate->relPosition.x;
 		ball->relPos.y = candidate->relPosition.y;
 

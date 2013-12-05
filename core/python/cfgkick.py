@@ -35,7 +35,7 @@ info.swing = core.vector3_float(0,100,10)
 kick_time = kick_time + info.state_time
 
 info = OmniKick.getStateInfoPtr(core.KickState.ALIGN)
-info.state_time = 150
+info.state_time = 1500
 info.joint_time = 150
 info.com = core.vector3_float(comOffsetX,comOffset,comHeight)
 info.swing = core.vector3_float(backAmount,100,liftAlignAmount)
@@ -68,7 +68,7 @@ info.com = core.vector3_float(comOffsetX,comOffset + 20,comHeight)
 info.swing = core.vector3_float(0,100,liftAmount/2)
 
 info = OmniKick.getStateInfoPtr(core.KickState.SHIFTBACK)
-info.state_time = 500 #75
+info.state_time = 1500 #75
 info.joint_time = 75
 info.com = core.vector3_float(comOffsetX,50,comHeight)
 info.swing = core.vector3_float(0,100,0)

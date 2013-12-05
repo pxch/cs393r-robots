@@ -36,7 +36,7 @@ class Ready(HeadBodyTask):
 
 class Playing(MachineTask):
   def __init__(self):
-    super(Playing, self).__init__(testFSM.TestMachine5())
+    super(Playing, self).__init__(testFSM.TestMachine())
 
 class Testing(Task):
   def __init__(self):
