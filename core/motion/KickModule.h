@@ -23,6 +23,7 @@ class SensorBlock;
 class SpeechBlock;
 class WalkInfoBlock;
 class WalkRequestBlock;
+class WorldObjectBlock;
 
 class KickModule : public Module {
 public:
@@ -63,6 +64,7 @@ private:
   void calcCenterOfMass(float *command_angles, Vector3<float> &center_of_mass, bool stance_is_left, float tilt_roll_factor);
   void commandLegsRelativeToTorso(float *command_angles, Pose3D left_target, Pose3D right_target, float tilt, float roll, float tilt_roll_factor, bool left_compliant, bool right_compliant);
 
+  void resetWorldObject();
 
 private:
   float previous_commands_[NUM_JOINTS];
@@ -80,6 +82,7 @@ private:
   KickParameters *params_;
   KickParameters *params_normal_;
   KickParameters *params_super_;
+  KickParameters *params_omni_;
   BodyModelBlock command_body_model_; // for local computation about commands
 
   FrameInfoBlock *frame_info_;
@@ -94,6 +97,17 @@ private:
   SpeechBlock *speech_;
   WalkInfoBlock *walk_info_;
   WalkRequestBlock *walk_request_;
+  WorldObjectBlock *world_objects_;
+
+
+  bool ball_seen;
+  Vector2<float> ball_image_center_pos;
+  Vector2<float> ball_rel_pos;
+ 
+  bool goal_seen;
+  Vector2<float> goal_image_center_pos;
+  Vector2<float> goal_rel_pos;
+
 };
 
 #endif

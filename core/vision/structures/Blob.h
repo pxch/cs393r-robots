@@ -27,6 +27,8 @@ struct Blob {
                 xf = 0;
                 yi = 0;
                 yf = 0;
+		dx = 0;
+		dy = 0;
                 lpCount = 0;
                 avgX = 0;
                 avgY = 0;

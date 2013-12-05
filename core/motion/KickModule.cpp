@@ -12,6 +12,13 @@
 #include <memory/SpeechBlock.h>
 #include <memory/WalkInfoBlock.h>
 #include <memory/WalkRequestBlock.h>
+#include <memory/WorldObjectBlock.h>
+#include <common/Field.h>
+
+#define DIST_KICK_INCREMENTAL 50
+#define DIST_ALIGN_INCREMENTAL -80
+
+#define FOOT_RADIUS 42
 
 KickModule::KickModule() {
 }
@@ -32,6 +39,7 @@ void KickModule::specifyMemoryDependency() {
   requiresMemoryBlock("speech");
   requiresMemoryBlock("walk_info");
   requiresMemoryBlock("walk_request");
+  requiresMemoryBlock("world_objects");
 }
 
 void KickModule::specifyMemoryBlocks() {
@@ -47,6 +55,7 @@ void KickModule::specifyMemoryBlocks() {
   getMemoryBlock(speech_, "speech");
   getMemoryBlock(walk_info_,"walk_info");
   getMemoryBlock(walk_request_,"walk_request");
+  getOrAddMemoryBlock(world_objects_, "world_objects");
 }
 
 void KickModule::initSpecificModule() {
@@ -59,16 +68,44 @@ void KickModule::initSpecificModule() {
   
   params_normal_ = &kick_params_->params_;
   params_super_ = &kick_params_->params_super_;
+  params_omni_ = &kick_params_->params_omni_;
+
+  resetWorldObject();
 }
 
 void KickModule::processFrame() {
   processKickRequest();
+
+  WorldObject* ball = &world_objects_->objects_[WO_BALL];
+  WorldObject* goal = &world_objects_->objects_[WO_BEACON_YELLOW_PINK];
 
   if (kick_module_->state_ == KickState::STAND) {
     kick_request_->kick_running_ = true;
     // only transition into kick if we think we're stable
     //std::cout << "walk_info_->instability_: " << walk_info_->instability_ << std::endl;    
     if ((walk_info_->instability_ < walk_info_->stabilizer_off_threshold_) && (!walk_info_->walk_is_active_)) {
+
+      if (getFramesInState() >= state_params_->state_time / 20) {
+        if (ball->seen == true && ball_seen == false) {
+          std::cout << "BALL SEEN? " << ball->seen << ", " << ball_seen << std::endl;
+          std::cout << "Set ball position..." << std::endl;
+          ball_seen = ball->seen;
+          ball_image_center_pos.x = ball->imageCenterX;
+          ball_image_center_pos.y = ball->imageCenterY;
+          ball_rel_pos.x = ball->relPos.x;
+          ball_rel_pos.y = ball->relPos.y;
+        }
+        if (goal->seen == true && goal_seen == false) {
+          std::cout << "GOAL SEEN? " << goal->seen << ", " << goal_seen << std::endl;
+          std::cout << "Set goal position..." << std::endl;
+          goal_seen = goal->seen;
+          goal_image_center_pos.x = goal->imageCenterX;
+          goal_image_center_pos.y = goal->imageCenterY;
+          goal_rel_pos.x = goal->relPos.x;
+          goal_rel_pos.y = goal->relPos.y;
+        }
+      }
+
       if (getFramesInState() >= state_params_->state_time / 10) { // divide by 10 to convert from ms to frames.
         walk_request_->noWalk();
         transitionToState((KickState::State)(kick_module_->state_ + 1));
@@ -98,7 +135,7 @@ void KickModule::processFrame() {
     kick_request_->kick_running_ = false;
     kick_module_->kick_type_ = Kick::NO_KICK;
   } else {
-    // if we're still in a kick, do it
+
     kick();
     setKickOdometry();
     kick_request_->kick_running_ = true;
@@ -131,7 +168,7 @@ void KickModule::startKick() {
   kick_module_->set_kick_odometry_ = false;
   kick_module_->desired_kick_distance_ = kick_request_->desired_distance_;
   kick_module_->desired_kick_angle_ = kick_request_->desired_angle_;
-  params_ = params_normal_; // do normal kick
+  params_ = params_omni_; // do normal kick
 
   invalidCount = 0;
   initStiffness();
@@ -140,6 +177,7 @@ void KickModule::startKick() {
   else
     transitionToState(KickState::STAND);
   kick_module_->kick_start_time_ = frame_info_->seconds_since_start;
+  std::cout << "============================================================" << std::endl << "Start kick" << std::endl;
   std::cout << "Kick requested: " <<  kick_module_->kick_type_ << "  requested distance: " << kick_module_->desired_kick_distance_ << "  requested angle: " << kick_module_->desired_kick_angle_ << std::endl;
   
   setHead();
@@ -188,6 +226,10 @@ void KickModule::transitionToState(KickState::State state) {
     }
   }
 
+  if (state == KickState::FINISHSTAND) {
+    resetWorldObject();
+  }
+
   kick_module_->state_ = state;
   kick_module_->sent_command_ = false;
   kick_module_->sent_steady_state_command_ = false;
@@ -196,10 +238,24 @@ void KickModule::transitionToState(KickState::State state) {
   state_params_ = &(params_->states[kick_module_->state_]);
 }
 
+void KickModule::resetWorldObject() {
+  std::cout << "Reset ball and goal information..." << std::endl;
+  ball_seen = false;
+  goal_seen = false;
+  ball_image_center_pos.x = 0;
+  ball_image_center_pos.y = 0;
+  ball_rel_pos.x = 0;
+  ball_rel_pos.y = 0;
+  goal_image_center_pos.x = 0;
+  goal_image_center_pos.y = 0;
+  goal_rel_pos.x = 0;
+  goal_rel_pos.y = 0;
+}
+
 bool KickModule::chooseKickLeg() {
   // choose a leg if switchable
   if (kick_module_->swing_leg_ == Kick::SWITCHABLE) {
-    if (kick_request_->ball_rel_y_ > 0) {
+    if (ball_rel_pos.y > 0) {
       kick_module_->swing_leg_ = Kick::LEFT;
     } else {
       kick_module_->swing_leg_ = Kick::RIGHT;
@@ -209,7 +265,7 @@ bool KickModule::chooseKickLeg() {
 }
 
 bool KickModule::checkKickValidity() {
-  // std::cout << "Kick request - forward: " << kick_request_->ball_rel_x_ << ", side: " << kick_request_->ball_rel_y_ << ", dist side: " << kick_module_->ball_dist_side_ << std::endl; 
+  std::cout << "Kick request - forward: " << ball_rel_pos.x << ", side: " << ball_rel_pos.y << ", dist side: " << kick_module_->ball_dist_side_ << std::endl; 
   if((kick_module_->swing_leg_ == Kick::LEFT && kick_module_->ball_dist_side_ > 30) || (kick_module_->swing_leg_ == Kick::RIGHT && kick_module_->ball_dist_side_ < -50)) {
     std::cout << "Ball too far sideways: " << kick_module_->ball_dist_side_ << std::endl;
     return false;
@@ -223,7 +279,7 @@ bool KickModule::checkKickValidity() {
 }
 
 bool KickModule::handleAiming() {
-  if (!kick_request_->ball_seen_) {
+  if (!ball_seen) {
     std::cout << "Ball not seen." << std::endl;
     return false;
   }
@@ -270,7 +326,7 @@ void KickModule::kick() {
   
     if (kick_module_->state_ == KickState::ALIGN) {
       Vector3<float> temp;
-      getSwingTargets(swing,temp);
+//      getSwingTargets(swing,temp);
     } 
 
     com.y *= dir;
@@ -290,9 +346,91 @@ void KickModule::kick() {
 
 void KickModule::calcSwingSplinePts() {
   Vector3<float> align = params_->states[KickState::ALIGN].swing;
-  Vector3<float> kick = params_->states[KickState::KICK2].swing;
+  Vector3<float> kick = params_->states[KickState::SPLINE].swing;
 
-  getSwingTargets(align,kick);
+//Calculate kick align params due to ball rel pos and beacon rel pos
+
+  std::cout << "ball seen? " << ball_seen << " goal seen? " << goal_seen << std::endl;
+
+  Vector2<float> align_pos;
+  Vector2<float> ball_pos;
+  Vector2<float> kick_pos;
+  Vector2<float> goal_pos;
+
+  Vector2<float> ball;
+
+//Calculate kick swing params due to ball rel pos and align pos
+  if (ball_seen && goal_seen) {
+    goal_pos.x = goal_rel_pos.x;
+    goal_pos.y = goal_rel_pos.y;
+
+    ball_pos.x = ball_rel_pos.x;
+    ball_pos.y = ball_rel_pos.y;
+
+    ball = ball_pos;
+    if (kick_module_->swing_leg_ == Kick::RIGHT) {
+      ball.y = -ball.y;
+    }
+  
+    align_pos.x = DIST_ALIGN_INCREMENTAL;
+//    align_pos.y = goal_pos.y - (goal_pos.x - ball_pos.x) / (goal_pos.x - DIST_ALIGN_INCREMENTAL) * (goal_pos.y - ball_pos.y);
+  
+    align_pos.y = ball_pos.y + (ball_pos.y - goal_pos.y) * (ball_pos.x - DIST_ALIGN_INCREMENTAL) / (goal_pos.x - ball_pos.x);
+  
+    align.x = align_pos.x;
+    align.y = align_pos.y;
+
+    if (kick_module_->swing_leg_ == Kick::RIGHT) {
+      align.y = -align.y;
+    }
+
+    ////////
+    
+    if ( align.y > 80 )
+      align.y += 20;
+
+    ////////
+
+    params_->states[KickState::ALIGN].swing = align;
+
+/*
+    align_pos.x = align.x;
+    align_pos.y = align.y;
+
+    if (kick_module_->swing_leg_ == Kick::RIGHT) {
+      align_pos.y = -align_pos.y;
+    }86-56
+*/
+
+    float dist_align_ball = sqrt((ball_pos.x - align_pos.x) * (ball_pos.x - align_pos.x) + (ball_pos.y - align_pos.y) * (ball_pos.y - align_pos.y));
+  
+    float delta_kick_x = (ball_pos.x - align_pos.x) / dist_align_ball * DIST_KICK_INCREMENTAL;
+  
+    float delta_kick_y = (ball_pos.y - align_pos.y) / dist_align_ball * DIST_KICK_INCREMENTAL;
+
+    kick_pos.x = ball_pos.x + delta_kick_x;
+    kick_pos.y = ball_pos.y + delta_kick_y;
+
+    kick.x = kick_pos.x;
+    kick.y = kick_pos.y;
+
+    if (kick_module_->swing_leg_ == Kick::RIGHT) {
+      kick.y = -kick.y;
+    }
+
+    std::cout << "align: (" << align_pos.x << ", " << align_pos.y << "), ";
+    std::cout << "ball: (" << ball_pos.x << ", " << ball_pos.y << "), ";
+    std::cout << "kick: (" << kick_pos.x << ", " << kick_pos.y << "), ";
+    std::cout << "goal: (" << goal_pos.x << ", " << goal_pos.y << ")" << std::endl;
+
+    std::cout << "align params: (" << align.x << ", " << align.y << ", " << align.z << "), ";
+    std::cout << "kick params: (" << kick.x << ", " << kick.y << ", " << kick.z << ")" << std::endl;
+
+    params_->states[KickState::SPLINE].swing = kick;
+  }
+////////////////////////////////////
+
+  //getSwingTargets(align,kick);
 
   double time = 0;  //default
   if (kick_module_->swing_leg_ == Kick::RIGHT) {
@@ -306,12 +444,13 @@ void KickModule::calcSwingSplinePts() {
   //cout<<"Time for kick"<<time<<endl;
   
   int num_pts = 5;
-  params_->states[KickState::SPLINE].state_time = time;
+//  params_->states[KickState::SPLINE].state_time = time;
+  params_->states[KickState::SPLINE].state_time = max(params_->states[KickState::SPLINE].state_time, time);
   params_->states[KickState::SPLINE].joint_time = time;
-  double timesInMs[] = {0,10,20,time-10,time};
-  double xs[] = {align.x,align.x,align.x,kick.x,kick.x};
-  double ys[] = {align.y,align.y,align.y,kick.y,kick.y};
-  double zs[] = {align.z,align.z,align.z,kick.z,kick.z};
+  double timesInMs[] = {0,10,20,time-50,time-10,time};
+  double xs[] = {align.x,align.x,align.x,ball.x,kick.x,kick.x};
+  double ys[] = {align.y,align.y,align.y,ball.y,kick.y,kick.y};
+  double zs[] = {align.z,align.z,align.z,kick.z,kick.z,kick.z};
   setSwingSpline(num_pts,timesInMs,xs,ys,zs);
 }
 
@@ -327,8 +466,15 @@ void KickModule::sendSplineCOMCommands(const Vector3<float> &com_in) {
   Vector3<float> com(com_in);
   if (!is_left_swing)
     dir = -1;
- 
+
   swing_spline_.calc(time,swing);
+
+  if (time > state_params_->joint_time) {
+    swing = state_params_->swing;
+  }
+
+  std::cout << "Kick Swing Params: " << swing.x << ", " << swing.y << ", " << swing.z << std::endl;
+
   swing.y *= dir;
   com.y *= dir;
 
@@ -354,12 +500,12 @@ void KickModule::getSwingTargets(Vector3<float> &align, Vector3<float> &kick) {
 void KickModule::calcBallPosWRTSwingLeg() {
   int offset = 50;
   if (kick_module_->swing_leg_ == Kick::LEFT) {
-    kick_module_->ball_dist_side_ = kick_request_->ball_rel_y_ - offset;
+    kick_module_->ball_dist_side_ = ball_rel_pos.y - offset;
   } else {
-    kick_module_->ball_dist_side_ = kick_request_->ball_rel_y_ + offset;
+    kick_module_->ball_dist_side_ = ball_rel_pos.y + offset;
   }
-  kick_module_->ball_dist_forward_ = kick_request_->ball_rel_x_;
-  //std::cout << "rel side: " << kick_request_->ball_rel_y_ << ", rel forward: " << kick_request_->ball_rel_x_ << std::endl;
+  kick_module_->ball_dist_forward_ = ball_rel_pos.x;
+  std::cout << "rel side: " << ball_rel_pos.y << ", rel forward: " << ball_rel_pos.x << std::endl;
 }
 
 void KickModule::setKickOdometry() {

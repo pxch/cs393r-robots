@@ -1,6 +1,7 @@
 #include "BeaconDetector.h"
 #include <iostream>
 
+#define BEACON_REL_X_OFFSET -100
 using namespace Eigen;
 
 BeaconDetector::BeaconDetector(DETECTOR_DECLARE_ARGS, Classifier*& classifier,
@@ -64,8 +65,7 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 		beacon->fromTopCamera = false;
 
 	CameraMatrix cameraMatrix(iparams_, camera_);
-	beacon->distance = cameraMatrix.getWorldDistanceByHeight(beacon->height,
-			200);
+	beacon->distance = cameraMatrix.getWorldDistanceByHeight(beacon->height, 200);
 
 //	std::cout << "Width: " << beacon->width << ", Height: " << beacon->height
 //			<< ", imageCenterX: " << beacon->imageCenterX << ", imageCenterY: "
@@ -78,8 +78,12 @@ void BeaconDetector::formBeacon(WorldObject* beacon, Blob& blob1, Blob& blob2) {
 	float bearing = cmatrix_.bearing(p);
 	beacon->visionDistance = distance;
 	beacon->visionBearing = bearing;
+	
+	beacon->relPos.x = p.x + BEACON_REL_X_OFFSET;
+	beacon->relPos.y = p.y;
 
 //	std::cout << "VisionDistance: " << distance << ", VisionBearing: " << bearing << std::endl;
+	std::cout << "Beacon CenterX: " << beacon->imageCenterX << ", CenterY: " << beacon->imageCenterY << ", RelativeX: " << beacon->relPos.x << ", RelativeY: " << beacon->relPos.y << std::endl;
 }
 
 void BeaconDetector::detectBeacon() {
@@ -96,12 +100,12 @@ void BeaconDetector::detectBeacon() {
 	WorldObject* beacon_b_p =
 			&vblocks_.world_object->objects_[WO_BEACON_BLUE_PINK];
 
-	detectBeacon(beacon_p_y, c_PINK, c_YELLOW, "PINK", "YELLOW");
+//	detectBeacon(beacon_p_y, c_PINK, c_YELLOW, "PINK", "YELLOW");
 	detectBeacon(beacon_y_p, c_YELLOW, c_PINK, "YELLOW", "PINK");
-	detectBeacon(beacon_b_y, c_BLUE, c_YELLOW, "BLUE", "YELLOW");
-	detectBeacon(beacon_y_b, c_YELLOW, c_BLUE, "YELLOW", "BLUE");
-	detectBeacon(beacon_p_b, c_PINK, c_BLUE, "PINK", "BLUE");
-	detectBeacon(beacon_b_p, c_BLUE, c_PINK, "BLUE", "PINK");
+//	detectBeacon(beacon_b_y, c_BLUE, c_YELLOW, "BLUE", "YELLOW");
+//	detectBeacon(beacon_y_b, c_YELLOW, c_BLUE, "YELLOW", "BLUE");
+//	detectBeacon(beacon_p_b, c_PINK, c_BLUE, "PINK", "BLUE");
+//	detectBeacon(beacon_b_p, c_BLUE, c_PINK, "BLUE", "PINK");
 }
 
 void BeaconDetector::detectBeacon(WorldObject* beacon, int color1, int color2,

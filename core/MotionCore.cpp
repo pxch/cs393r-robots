@@ -12,6 +12,8 @@
 #include <memory/WalkInfoBlock.h>
 #include <memory/RobotInfoBlock.h>
 
+#include <memory/WorldObjectBlock.h>
+
 #include <memory/WalkRequestBlock.h>
 #include <memory/ProcessedSonarBlock.h>
 
@@ -307,6 +309,8 @@ void MotionCore::initMemory() {
 
   memory_.getOrAddBlockByName(robot_info_,"robot_info",MemoryOwner::SHARED);
 
+  memory_.getOrAddBlockByName(world_objects_,"world_objects",MemoryOwner::SHARED);
+
   // synchronized blocks - the true means remove any existing locks
   memory_.getOrAddBlockByName(sync_body_model_,"sync_body_model",MemoryOwner::SYNC);
   memory_.getOrAddBlockByName(sync_joint_angles_,"sync_joint_angles",MemoryOwner::SYNC);
@@ -477,8 +481,22 @@ void MotionCore::publishData() {
   *sync_joint_angles_ = *processed_joint_angles_;
   *sync_sensors_ = *processed_sensors_;
   *sync_odometry_ = *odometry_;
+  
+  *sync_kick_request_ = *kick_request_;
   sync_kick_request_->kick_running_ = kick_request_->kick_running_;
   sync_kick_request_->finished_with_step_ = kick_request_->finished_with_step_;
+/*
+  sync_kick_request_->ball_seen_ = kick_request_->ball_seen_;
+  sync_kick_request_->ball_image_center_x_ = kick_request_->ball_image_center_x_;
+  sync_kick_request_->ball_image_center_y_ = kick_request_->ball_image_center_y_;
+  sync_kick_request_->ball_rel_x_ = kick_request_->ball_rel_x_;
+  sync_kick_request_->ball_rel_y_ = kick_request_->ball_rel_y_;
+  sync_kick_request_->goal_seen_ = kick_request_->goal_seen_;
+  sync_kick_request_->goal_image_center_x_ = kick_request_->goal_image_center_x_;
+  sync_kick_request_->goal_image_center_y_ = kick_request_->goal_image_center_y_;
+  sync_kick_request_->goal_rel_x_ = kick_request_->goal_rel_x_;
+  sync_kick_request_->goal_rel_y_ = kick_request_->goal_rel_y_;
+*/
 
   *sync_walk_request_ = *walk_request_;
   sync_walk_request_->new_command_ = false;

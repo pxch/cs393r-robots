@@ -110,13 +110,19 @@ void ImageProcessor::processFrame() {
 	updateTransform();
 	classifier_->classifyImage(color_table_);
 
-	classifier_->constructRuns();
+	classifier_->constructRuns(c_PINK);
+	classifier_->constructRuns(c_BLUE);
+	classifier_->constructRuns(c_YELLOW);
+	classifier_->constructRuns(c_ORANGE);
 
 	blob_detector_->formBlobs(c_PINK);
 	blob_detector_->formBlobs(c_BLUE);
 	blob_detector_->formBlobs(c_YELLOW);
+	blob_detector_->formBlobs(c_ORANGE);
 
 	beacon_detector_->detectBeacon();
+	
+	ball_detector_->detectBall();
 }
 
 void ImageProcessor::SetColorTable(unsigned char* table) {
@@ -129,6 +135,10 @@ std::vector<BallCandidate*> ImageProcessor::getBallCandidates() {
 }
 
 BallCandidate* ImageProcessor::getBestBallCandidate() {
+	if (ball_detector_->bestCandidateFound()) {
+		BallCandidate* best = &ball_detector_->candidates[0];
+		return best;
+	}
 	return NULL;
 }
 

@@ -1,4 +1,122 @@
 import core, UTdebug
+
+OmniKick = core.KickParameters()
+
+# times in milliseconds
+liftAmount = 40 #25
+backAmount = -80
+throughAmount = 80
+liftAlignAmount = 60
+liftKickAmount = 25
+comHeight = 175 # this should be the height of the walk
+comOffset = 10
+comOffsetX = 15
+kick_time = 0
+
+info = OmniKick.getStateInfoPtr(core.KickState.STAND)
+info.state_time = 1200 # decrease this if possible
+info.joint_time = 1200
+info.com = core.vector3_float(comOffsetX,50,comHeight)
+info.swing = core.vector3_float(0,100,0)
+kick_time = kick_time + info.state_time
+
+info = OmniKick.getStateInfoPtr(core.KickState.SHIFT)
+info.state_time = 150
+info.joint_time = 150
+info.com = core.vector3_float(comOffsetX,comOffset + 30,comHeight)
+info.swing = core.vector3_float(0,100,0)
+kick_time = kick_time + info.state_time
+
+info = OmniKick.getStateInfoPtr(core.KickState.LIFT)
+info.state_time = 50
+info.joint_time = 50
+info.com = core.vector3_float(comOffsetX,comOffset,comHeight)
+info.swing = core.vector3_float(0,100,10)
+kick_time = kick_time + info.state_time
+
+info = OmniKick.getStateInfoPtr(core.KickState.ALIGN)
+info.state_time = 150
+info.joint_time = 150
+info.com = core.vector3_float(comOffsetX,comOffset,comHeight)
+info.swing = core.vector3_float(backAmount,100,liftAlignAmount)
+kick_time = kick_time + info.state_time
+
+info = OmniKick.getStateInfoPtr(core.KickState.KICK1)
+info.state_time = 0
+info.joint_time = 50
+info.com = core.vector3_float(comOffsetX,comOffset,comHeight)
+info.swing = core.vector3_float(0,100,(liftKickAmount+liftAlignAmount)/2)
+kick_time = kick_time + info.state_time
+
+info = OmniKick.getStateInfoPtr(core.KickState.KICK2)
+info.state_time = 0
+info.joint_time = 50
+info.com = core.vector3_float(comOffsetX,comOffset,comHeight)
+info.swing = core.vector3_float(throughAmount,100,liftKickAmount)
+kick_time = kick_time + info.state_time
+
+info = OmniKick.getStateInfoPtr(core.KickState.RESETFOOT)
+info.state_time = 150
+info.joint_time = 150
+info.com = core.vector3_float(comOffsetX,comOffset,comHeight)
+info.swing = core.vector3_float(0,100,liftAmount)
+
+info = OmniKick.getStateInfoPtr(core.KickState.FOOTDOWN)
+info.state_time = 50
+info.joint_time = 50
+info.com = core.vector3_float(comOffsetX,comOffset + 20,comHeight)
+info.swing = core.vector3_float(0,100,liftAmount/2)
+
+info = OmniKick.getStateInfoPtr(core.KickState.SHIFTBACK)
+info.state_time = 500 #75
+info.joint_time = 75
+info.com = core.vector3_float(comOffsetX,50,comHeight)
+info.swing = core.vector3_float(0,100,0)
+
+info = OmniKick.getStateInfoPtr(core.KickState.FINISHSTAND)
+info.state_time = 500
+info.joint_time = 500
+info.com = core.vector3_float(comOffsetX/2,50,comHeight)
+info.swing = core.vector3_float(0,100,0)   
+
+# SPLINE STATE
+info = OmniKick.getStateInfoPtr(core.KickState.SPLINE)
+info.state_time = 500
+info.joint_time = info.state_time
+info.com = core.vector3_float(comOffsetX,comOffset,comHeight)
+info.swing = core.vector3_float(throughAmount,100,liftKickAmount)
+
+# these aren't used for this kick, but are needed to make lua happy
+OmniKick.l_hip_roll_before_ = -0.4;
+OmniKick.l_hip_roll_after_ = -0.4;
+OmniKick.l_hip_pitch_before_ = 0.2;
+OmniKick.l_hip_pitch_after_ = -1.12;
+OmniKick.l_knee_pitch_before_ = 1.4;
+OmniKick.l_knee_pitch_after_ = 1.4;
+OmniKick.l_ankle_roll_before_ = 0.8;
+OmniKick.l_ankle_roll_after_ = 0.8;
+OmniKick.l_ankle_pitch_before_ = -0.95;
+OmniKick.l_ankle_pitch_after_ = -0.4;
+
+OmniKick.step_into_kick_ = False
+OmniKick.use_stance_spline = False
+OmniKick.kick_time_ = (450 + kick_time) / 1000.0
+OmniKick.offset_ = 10
+
+OmniKick.swing_length_ = 120
+OmniKick.swing_time_ = 200
+
+OmniKick.align_height_ = 32.5
+OmniKick.kick_height_ = 32.5
+
+# ideal ball placements - i.e. what the kick was developed for
+OmniKick.ideal_ball_side_left_swing_ = 15
+OmniKick.ideal_ball_side_right_swing_ = -30
+
+############################################################################
+############################################################################
+############################################################################
+
 StraightKick = core.KickParameters()
 
 # times in milliseconds

@@ -8,7 +8,8 @@ struct KickParamBlock : public MemoryBlock {
   KickParamBlock():
     send_params_(false),
     params_(),
-    params_super_()
+    params_super_(),
+    params_omni_()
   {
     header.version = 3;
     header.size = sizeof(KickParamBlock);
@@ -17,6 +18,7 @@ struct KickParamBlock : public MemoryBlock {
   bool send_params_;
   KickParameters params_;
   KickParameters params_super_;
+  KickParameters params_omni_;
 };
 
 #endif /* end of include guard: KICKPARAMBLOCK_FD54EE88 */

@@ -54,12 +54,17 @@ public:
     ball_image_center_x_(0),
     ball_image_center_y_(0),
     ball_seen_(false),
+    goal_image_center_x_(0),
+    goal_image_center_y_(0),
+    goal_seen_(false),
     new_head_(true),
     kick_running_(false),
     vision_kick_running_(false),
     allow_correction_walk_(false),
     ball_rel_x_(0),
     ball_rel_y_(0),
+    goal_rel_x_(0),
+    goal_rel_y_(0),
     finished_with_step_(false)
   {
     header.version = 9;
@@ -142,6 +147,11 @@ public:
   int ball_image_center_x_;
   int ball_image_center_y_;
   bool ball_seen_;
+
+  int goal_image_center_x_;
+  int goal_image_center_y_;
+  bool goal_seen_;
+
   bool new_head_;
 
   bool kick_running_;
@@ -150,6 +160,9 @@ public:
 
   float ball_rel_x_;
   float ball_rel_y_;
+
+  float goal_rel_x_;
+  float goal_rel_y_;
 
   bool finished_with_step_;
   RingBufferWithSum<float, 10> accelX_;

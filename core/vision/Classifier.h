@@ -39,7 +39,7 @@ public:
 	void getStepSize(int& hstep, int& vstep);
 	void getStepScale(int& hscale, int& vscale);
 	void reset();
-	void constructRuns();
+	void constructRuns(int color);
 private:
 	bool setImagePointers();
 	const VisionBlocks& vblocks_;

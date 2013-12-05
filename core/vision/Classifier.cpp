@@ -160,39 +160,38 @@ void Classifier::reset() {
 	}
 }
 
-void Classifier::constructRuns() {
+void Classifier::constructRuns(int color) {
 	bool isCurrentColor = false;
 	int runCount = 0;
-	for (int i = 0; i < NUM_COLORS; i++) {
-		for (int j = 0; j < iparams_.height; j++) {
-			isCurrentColor = false;
-			runCount = 0;
-			for (int k = 0; k < iparams_.width; k++) {
-				if (segImg_[j * iparams_.width + k] == i) {
-					if (isCurrentColor == false) {
-						++runCount;
-						isCurrentColor = true;
-						horizontalPoint[i][j][runCount - 1].xi = k;
-						horizontalPoint[i][j][runCount - 1].yi = j;
-						horizontalPoint[i][j][runCount - 1].yf = j;
-						horizontalPoint[i][j][runCount - 1].dy = 1;
-						horizontalPoint[i][j][runCount - 1].isValid = true;
-					} else if (k == iparams_.width - 1) {
-						isCurrentColor = false;
-						horizontalPoint[i][j][runCount - 1].xf = k;
-						horizontalPoint[i][j][runCount - 1].dx = k + 1
-								- horizontalPoint[i][j][runCount - 1].xi;
-					}
-				} else {
-					if (isCurrentColor == true) {
-						isCurrentColor = false;
-						horizontalPoint[i][j][runCount - 1].xf = k - 1;
-						horizontalPoint[i][j][runCount - 1].dx = k
-								- horizontalPoint[i][j][runCount - 1].xi;
-					}
+	for (int j = 0; j < iparams_.height; j++) {
+		isCurrentColor = false;
+		runCount = 0;
+		for (int k = 0; k < iparams_.width; k++) {
+			if (segImg_[j * iparams_.width + k] == color) {
+				if (isCurrentColor == false) {
+					++runCount;
+					isCurrentColor = true;
+					horizontalPoint[color][j][runCount - 1].xi = k;
+					horizontalPoint[color][j][runCount - 1].yi = j;
+					horizontalPoint[color][j][runCount - 1].yf = j;
+					horizontalPoint[color][j][runCount - 1].dy = 1;
+					horizontalPoint[color][j][runCount - 1].isValid = true;
+				} else if (k == iparams_.width - 1) {
+					isCurrentColor = false;
+					horizontalPoint[color][j][runCount - 1].xf = k;
+					horizontalPoint[color][j][runCount - 1].dx = k + 1
+							- horizontalPoint[color][j][runCount - 1].xi;
+				}
+			} else {
+				if (isCurrentColor == true) {
+					isCurrentColor = false;
+					horizontalPoint[color][j][runCount - 1].xf = k - 1;
+					horizontalPoint[color][j][runCount - 1].dx = k
+							- horizontalPoint[color][j][runCount - 1].xi;
 				}
 			}
-			horizontalPointCount[i][j] = runCount;
 		}
+		horizontalPointCount[color][j] = runCount;
 	}
+
 }

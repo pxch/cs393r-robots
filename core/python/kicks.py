@@ -6,7 +6,7 @@ from state import SimpleStateMachine
 import commands
 
 class Kick(Task):
-  def __init__(self, foot = core.Kick.RIGHT, desiredDistance = 2000.0):
+  def __init__(self, foot = core.Kick.SWITCHABLE, desiredDistance = 2000.0):
     Task.__init__(self)
     self.kickRunning = False
     self.postKick = False

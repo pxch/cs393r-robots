@@ -303,7 +303,7 @@ void VisionCore::initMemory() {
   memory_->getOrAddBlockByName(robot_info_,"robot_info",MemoryOwner::SHARED);
   memory_->getOrAddBlockByName(robot_state_,"robot_state");
   memory_->getOrAddBlockByName(robot_vision_,"robot_vision");
-  memory_->getOrAddBlockByName(world_objects_,"world_objects");
+  memory_->getOrAddBlockByName(world_objects_,"world_objects",MemoryOwner::SHARED);
 
   // synchronized blocks
   if (!isToolCore()) {

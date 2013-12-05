@@ -43,9 +43,9 @@ class Testing(Task):
     super(Testing, self).__init__()
     self.task = kicks.Kick()
 
-  #def reset(self):
-   # super(KickNode, self).reset()
-    #self.task = kicks.Kick()
+  def reset(self):
+    super(KickNode, self).reset()
+    self.task = kicks.Kick()
   
   def run(self):
     self.task.processFrame()

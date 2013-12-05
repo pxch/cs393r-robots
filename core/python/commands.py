@@ -54,7 +54,8 @@ def setHeadPan(target_pos, target_time, isChange = None):
   
   core.joint_commands.setHeadPan(target_pos, target_time*1000.0, isChange)
 
-def setKickParameters(params, paramsSuper):
+def setKickParameters(params, paramsSuper, paramsOmni):
   core.kick_params.send_params_ = True
   core.kick_params.params_ = params
   core.kick_params.params_super_ = paramsSuper
+  core.kick_params.params_omni_ = paramsOmni

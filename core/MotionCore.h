@@ -23,6 +23,8 @@ class ProcessedSonarBlock;
 class WalkInfoBlock;
 class RobotInfoBlock;
 
+class WorldObjectBlock;
+
 class KinematicsModule;
 class KickModule;
 class MotionModule;
@@ -97,6 +99,8 @@ public:
   ProcessedSonarBlock *processed_sonar_;
   WalkInfoBlock* walk_info_;
   RobotInfoBlock* robot_info_;
+
+  WorldObjectBlock* world_objects_;
 
   void publishData();
   void receiveData();

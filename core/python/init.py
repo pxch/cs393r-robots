@@ -31,7 +31,7 @@ def processFrame():
     global firstFrame
     core.instance.preVision()
     if firstFrame:
-      commands.setKickParameters(cfgkick.StraightKick, cfgkick.StraightSuperKick)
+      commands.setKickParameters(cfgkick.StraightKick, cfgkick.StraightSuperKick, cfgkick.OmniKick)
       core.world_objects.init(core.robot_state.team_)
       core.visionC.initSpecificModule()
       core.localizationC.initSpecificModule()
