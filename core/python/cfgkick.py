@@ -7,15 +7,15 @@ liftAmount = 40 #25
 backAmount = -80
 throughAmount = 80
 liftAlignAmount = 60
-liftKickAmount = 25
+liftKickAmount = 30
 comHeight = 175 # this should be the height of the walk
 comOffset = 10
 comOffsetX = 15
 kick_time = 0
 
 info = OmniKick.getStateInfoPtr(core.KickState.STAND)
-info.state_time = 500 # decrease this if possible
-info.joint_time = 500
+info.state_time = 800 # decrease this if possible
+info.joint_time = 800
 info.com = core.vector3_float(comOffsetX,50,comHeight)
 info.swing = core.vector3_float(0,100,0)
 kick_time = kick_time + info.state_time
@@ -81,7 +81,7 @@ info.swing = core.vector3_float(0,100,0)
 
 # SPLINE STATE
 info = OmniKick.getStateInfoPtr(core.KickState.SPLINE)
-info.state_time = 500
+info.state_time = 600
 info.joint_time = info.state_time
 info.com = core.vector3_float(comOffsetX,comOffset,comHeight)
 info.swing = core.vector3_float(throughAmount,100,liftKickAmount)
@@ -124,7 +124,7 @@ liftAmount = 40 #25
 backAmount = -80
 throughAmount = 80
 liftAlignAmount = 60
-liftKickAmount = 25
+liftKickAmount = 35
 comHeight = 175 # this should be the height of the walk
 comOffset = 10
 comOffsetX = 15

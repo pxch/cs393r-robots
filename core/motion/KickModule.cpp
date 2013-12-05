@@ -16,7 +16,7 @@
 #include <common/Field.h>
 
 #define DIST_KICK_INCREMENTAL 80
-#define DIST_ALIGN_INCREMENTAL -80
+#define DIST_ALIGN_INCREMENTAL -20
 
 #define FOOT_RADIUS_OUTER 45
 #define FOOT_RADIUS_INNER 25
@@ -90,9 +90,9 @@ void KickModule::processFrame() {
     if ((walk_info_->instability_ < walk_info_->stabilizer_off_threshold_) && (!walk_info_->walk_is_active_)) {
 
       if (getFramesInState() >= state_params_->state_time / 20) {
-        if (ball->seen && !ball_seen) {
-          std::cout << "BALL SEEN? " << ball->seen << std::endl;
-          std::cout << "Set ball position..." << std::endl;
+        if (ball->seen) {
+//          std::cout << "BALL SEEN? " << ball->seen << std::endl;
+//          std::cout << "Set ball position..." << std::endl;
           ball_seen = ball->seen;
           ball_image_center_pos.x = ball->imageCenterX;
           ball_image_center_pos.y = ball->imageCenterY;
@@ -446,7 +446,7 @@ void KickModule::calcSwingSplinePts() {
     if (foot_dir == 1)
       align.x = kick_start_pos.x + FOOT_RADIUS_OUTER;
     else if (foot_dir == -1)
-      align.x = kick_start_pos.x + FOOT_RADIUS_OUTER;
+      align.x = kick_start_pos.x + FOOT_RADIUS_INNER;
     else
       align.x = kick_start_pos.x;
 
@@ -460,7 +460,7 @@ void KickModule::calcSwingSplinePts() {
     else
       align.y = align.y + FOOT_RADIUS_CENTER;
 
-    align.y = min(align.y, 80);
+    align.y = max(align.y, 80);
 
     params_->states[KickState::ALIGN].swing = align;
 
@@ -531,7 +531,7 @@ void KickModule::calcSwingSplinePts() {
 //        touch.y += 10;
 //      }
 
-    touch.z = BALL_RADIUS;
+    touch.z = BALL_RADIUS + 5;
 
     std::cout << "ball: (" << ball_pos.x << ", " << ball_pos.y << ")" << std::endl;
     std::cout << "goal: (" << goal_pos.x << ", " << goal_pos.y << ")" << std::endl;
@@ -553,22 +553,33 @@ void KickModule::calcSwingSplinePts() {
 
   
   double time = 0;  //default
-  if (kick_module_->swing_leg_ == Kick::RIGHT) {
+/*  if (kick_module_->swing_leg_ == Kick::RIGHT) {
     kick_module_->desired_kick_distance_ = 4000;
     time = -0.0698*kick_module_->desired_kick_distance_ + 399.4; // tuned on Alison
   } else {
     kick_module_->desired_kick_distance_ = 3000;
     time = -0.0685*kick_module_->desired_kick_distance_ + 382.5;
+  }*/
+
+  if (kick_module_->swing_leg_ == Kick::RIGHT) {
+    kick_module_->desired_kick_distance_ = 4000;
+    time = -0.0698*kick_module_->desired_kick_distance_ + 199.4; // tuned on Alison
+  } else {
+    kick_module_->desired_kick_distance_ = 3000;
+    time = -0.0685*kick_module_->desired_kick_distance_ + 182.5;
   }
   printf("desired: %2.f\n", kick_module_->desired_kick_distance_);
-  time = crop(time,200,400);
+//  time = crop(time,200,400);
+  time = crop(time,100,300);
   std::cout << "time: " << time << std::endl; 
   //cout<<"Time for kick"<<time<<endl;
 
 //  params_->states[KickState::SPLINE].state_time = time;
   params_->states[KickState::SPLINE].state_time = max(params_->states[KickState::SPLINE].state_time, time);
   params_->states[KickState::SPLINE].joint_time = time;
-/*
+
+  params_->states[KickState::RESETFOOT].swing.y = kick.y;
+
   if (time_ratio > 0.0) {
     std::cout << "Spline with touch point. Time ratio: " << time_ratio << std::endl;
     double touch_time = (time - 30) * time_ratio + 20;
@@ -580,7 +591,7 @@ void KickModule::calcSwingSplinePts() {
     double zs[] = {align.z,align.z,align.z,touch.z,kick.z,kick.z};
     setSwingSpline(num_pts,timesInMs,xs,ys,zs);
   }
-  else {*/
+  else {
     std::cout << "Spline without touch point..." << std::endl;
     int num_pts = 5;
     double timesInMs[] = {0,10,20,time-10,time};
@@ -588,7 +599,7 @@ void KickModule::calcSwingSplinePts() {
     double ys[] = {align.y,align.y,align.y,kick.y,kick.y};
     double zs[] = {align.z,align.z,align.z,kick.z,kick.z};
     setSwingSpline(num_pts,timesInMs,xs,ys,zs);
-//  }
+  }
 }
 
 void KickModule::setSwingSpline(int num_pts,double timesInMs[], double xs[], double ys[], double zs[]) {
@@ -613,7 +624,7 @@ void KickModule::sendSplineCOMCommands(const Vector3<float> &com_in) {
     swing_spline_.calc(time,swing);
   }
 
-  std::cout << "Kick Swing Params: " << swing.x << ", " << swing.y << ", " << swing.z << std::endl;
+//  std::cout << "Kick Swing Params: " << swing.x << ", " << swing.y << ", " << swing.z << std::endl;
 
   swing.y *= dir;
   com.y *= dir;

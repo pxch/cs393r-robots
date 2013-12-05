@@ -4,6 +4,7 @@ import time
 import state, percepts
 from math import atan2, pi, fabs
 import head
+import kicks
 
 class TestMachine(StateMachine):
   def setup(self):
@@ -11,89 +12,56 @@ class TestMachine(StateMachine):
     finish = Node()
     sit = SitNode()
     stand = StandNode()
-    searchball = SearchBallNode()
-    walktoball = WalktoBallNode()
-    searchgoal = SearchGoalNode()
-    kickball = KickBallNode()
-    
-#    self._adt(start, N, stand)
-#    self._adt(stand, C, searchball)
-#    self._adt(searchball, S(SearchBallNode.MY_SUCCESS), walktoball)
-#    self._adt(searchball, S(SearchBallNode.MY_NOGOAL), searchgoal)
-#    self._adt(searchball, S(SearchBallNode.MY_NOBALL), sit)
-#    self._adt(searchgoal, S(SearchGoalNode.MY_SUCCESS), walktoball)
-#    self._adt(searchgoal, S(SearchGoalNode.MY_LOSTBALL), searchball)
-#    self._adt(walktoball, S(WalktoBallNode.MY_SUCCESS), kickball)
-#    self._adt(walktoball, S(WalktoBallNode.MY_LOSTBALL), searchball)
-#    self._adt(walktoball, S(WalktoBallNode.MY_LOSTGOAL), searchgoal)
-#    self._adt(kickball, S(KickBallNode.MY_SUCCESS), searchball)
-#    self._adt(kickball, S(KickBallNode.MY_FAIL), kick)
-#    self._adt(sit, C, finish)
+    kick = KickNode()
 
-class SearchBallNode(Node):
-  MY_SUCCESS = 1
-  MY_NOGOAL = 2
-  MY_NOBALL = 3
+    self._adt(start, N, stand)
+    self._adt(stand, T(15.0), kick)
+    self._adt(kick, C, stand)
 
+class KickNode(Node):
   def __init__(self):
-    super(SearchBallNode, self).__init__()
-    
+    super(KickNode, self).__init__()
+    self.task = kicks.Kick()
+#    self.ball_seen = False
+#    self.beacon_p_y_seen = False
+#    self.beacon_y_p_seen = False
+
   def reset(self):
-    super(SearchBallNode, self).reset()
-
+    super(KickNode, self).reset()
+    self.task = kicks.Kick()
+  
   def run(self):
-    ball = core.world_objects.getObjPtr(core.WO_BALL)
-    goal = core.world_objects.getObjPrt(core.WO_BEACON_YELLOW_PINK)
-    if ball.seen and goal.seen:
-      self.postSignal(SearchBallNode.MY_SUCCESS)
-      return
-    elif ball.seen and not goal.seen:
-      self.postSignal(SearchBallNode.MY_NOGOAL)
-      return
-    else:
-      commands.setWalkVelocity(0, 0, - pi / 18)
-      if self.getTime() > 5.0:
-        commands.stand()
+    self.task.processFrame()
+    if self.task.finished():
+      self.postCompleted()
 
-class SearchGoalNode(Node):
-  MY_SUCCESS = 1
-  MY_LOSTBALL = 2
+#    ball = core.world_objects.getObjPtr(core.WO_BALL)
+#    beacon_p_y = core.world_objects.getObjPtr(core.WO_BEACON_PINK_YELLOW)
+#    beacon_y_p = core.world_objects.getObjPtr(core.WO_BEACON_YELLOW_PINK)
 
-  def __init__(self):
-    super(SearchGoalNode, self).__init__()
-    
-  def reset(self):
-    super(SearchGoalNode, self).reset()
+#    print "Ball Seen? ", self.ball_seen, ", ", ball.seen
 
-  def run(self):
-    commands.stand();
-
-class WalktoBallNode(Node):
-  MY_SUCCESS = 1
-  MY_LOSTBALL = 2
-  MY_LOSTGOAL = 3
-
-  def __init__(self):
-    super(WalktoBallNode, self).__init__()
-    
-  def reset(self):
-    super(WalktoBallNode, self).reset()
-
-  def run(self):
-    commands.stand();
-
-class KickBallNode(Node):
-  MY_SUCCESS = 1
-  MY_FAIL = 2
-
-  def __init__(self):
-    super(KickBallNode, self).__init__()
-    
-  def reset(self):
-    super(KickBallNode, self).reset()
-
-  def run(self):
-    commands.stand();
+#    if self.ball_seen and self.beacon_p_y_seen and self.beacon_y_p_seen:
+#      core.speech.say("Kick")
+#      self.task.processFrame()
+#    else:
+#      if not self.ball_seen:
+#        if ball.seen:
+#          self.ball_seen = True
+#        else:
+#          core.speech.say("No ball")
+#      if not self.beacon_p_y_seen:
+#        if beacon_p_y.seen:
+#          self.beacon_p_y_seen = True
+#        else:
+#          core.speech.say("No pink yellow beacon")
+#      if not self.beacon_y_p_seen:
+#        if beacon_y_p.seen:
+#          self.beacon_y_p_seen = True
+#        else:
+#          core.speech.say("No yellow pink beacon")
+#    if self.task.finished():
+#      self.postCompleted()
 
 def rand():
   t = int(time.time() * 1000) % 1000
@@ -164,6 +132,8 @@ class StandNode(Node):
     self.task = pose.Stand()
 
   def run(self):
+    commands.setHeadTilt(-21.0)
     self.task.processFrame()
     if self.task.finished() and self.getTime() > 5.0:
       self.postCompleted()
+

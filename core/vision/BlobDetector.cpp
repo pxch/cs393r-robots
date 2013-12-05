@@ -128,9 +128,9 @@ void BlobDetector::formBlobs(int color) {
 	for (unsigned int i = 0; i < currentBlobs.size(); ++i) {
 		if ((currentBlobs[i].dx < 10 && currentBlobs[i].dy < 10)
 				|| currentBlobs[i].correctPixelRatio < 0.4
-				|| float(currentBlobs[i].dx) / float(currentBlobs[i].dy) < 0.8
+				|| float(currentBlobs[i].dx) / float(currentBlobs[i].dy) < 0.6
 				|| float(currentBlobs[i].dy) / float(currentBlobs[i].dx)
-						< 0.6) {
+						< 0.4) {
 			currentBlobs[i].invalid = true;
 		} else if (currentBlobs[i].invalid == false) {
 			++blobSize;
