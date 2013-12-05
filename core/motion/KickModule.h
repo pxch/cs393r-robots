@@ -104,6 +104,7 @@ private:
   Vector2<float> ball_image_center_pos;
   Vector2<float> ball_rel_pos;
  
+  bool both_beacon_seen;
   bool goal_seen;
   Vector2<float> goal_image_center_pos;
   Vector2<float> goal_rel_pos;

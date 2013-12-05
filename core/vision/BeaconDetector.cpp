@@ -100,7 +100,7 @@ void BeaconDetector::detectBeacon() {
 	WorldObject* beacon_b_p =
 			&vblocks_.world_object->objects_[WO_BEACON_BLUE_PINK];
 
-//	detectBeacon(beacon_p_y, c_PINK, c_YELLOW, "PINK", "YELLOW");
+	detectBeacon(beacon_p_y, c_PINK, c_YELLOW, "PINK", "YELLOW");
 	detectBeacon(beacon_y_p, c_YELLOW, c_PINK, "YELLOW", "PINK");
 //	detectBeacon(beacon_b_y, c_BLUE, c_YELLOW, "BLUE", "YELLOW");
 //	detectBeacon(beacon_y_b, c_YELLOW, c_BLUE, "YELLOW", "BLUE");

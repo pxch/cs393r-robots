@@ -15,10 +15,13 @@
 #include <memory/WorldObjectBlock.h>
 #include <common/Field.h>
 
-#define DIST_KICK_INCREMENTAL 20
-#define DIST_ALIGN_INCREMENTAL -120
+#define DIST_KICK_INCREMENTAL 80
+#define DIST_ALIGN_INCREMENTAL -80
 
-#define FOOT_RADIUS 40
+#define FOOT_RADIUS_OUTER 45
+#define FOOT_RADIUS_INNER 25
+#define FOOT_CENTER_DIST 13
+#define FOOT_RADIUS_CENTER 50
 
 KickModule::KickModule() {
 }
@@ -77,7 +80,8 @@ void KickModule::processFrame() {
   processKickRequest();
 
   WorldObject* ball = &world_objects_->objects_[WO_BALL];
-  WorldObject* goal = &world_objects_->objects_[WO_BEACON_YELLOW_PINK];
+  WorldObject* beacon_y_p = &world_objects_->objects_[WO_BEACON_YELLOW_PINK];
+  WorldObject* beacon_p_y = &world_objects_->objects_[WO_BEACON_PINK_YELLOW];
 
   if (kick_module_->state_ == KickState::STAND) {
     kick_request_->kick_running_ = true;
@@ -86,8 +90,8 @@ void KickModule::processFrame() {
     if ((walk_info_->instability_ < walk_info_->stabilizer_off_threshold_) && (!walk_info_->walk_is_active_)) {
 
       if (getFramesInState() >= state_params_->state_time / 20) {
-        if (ball->seen == true && ball_seen == false) {
-          std::cout << "BALL SEEN? " << ball->seen << ", " << ball_seen << std::endl;
+        if (ball->seen && !ball_seen) {
+          std::cout << "BALL SEEN? " << ball->seen << std::endl;
           std::cout << "Set ball position..." << std::endl;
           ball_seen = ball->seen;
           ball_image_center_pos.x = ball->imageCenterX;
@@ -95,14 +99,38 @@ void KickModule::processFrame() {
           ball_rel_pos.x = ball->relPos.x;
           ball_rel_pos.y = ball->relPos.y;
         }
-        if (goal->seen == true && goal_seen == false) {
-          std::cout << "GOAL SEEN? " << goal->seen << ", " << goal_seen << std::endl;
+        if (beacon_y_p->seen && beacon_p_y->seen && !both_beacon_seen) {
+          std::cout << "BEACON_YELLOW_PINK SEEN? " << beacon_y_p->seen << std::endl;
+          std::cout << "BEACON_PINK_YELLOW SEEN? " << beacon_p_y->seen << std::endl;
           std::cout << "Set goal position..." << std::endl;
-          goal_seen = goal->seen;
-          goal_image_center_pos.x = goal->imageCenterX;
-          goal_image_center_pos.y = goal->imageCenterY;
-          goal_rel_pos.x = goal->relPos.x;
-          goal_rel_pos.y = goal->relPos.y;
+          goal_seen = true;
+          both_beacon_seen = true;
+          goal_image_center_pos.x = (beacon_y_p->imageCenterX + beacon_p_y->imageCenterX) / 2;
+          goal_image_center_pos.y = (beacon_y_p->imageCenterY + beacon_p_y->imageCenterY) / 2;
+          goal_rel_pos.x = (beacon_y_p->relPos.x + beacon_p_y->relPos.x) / 2;
+          goal_rel_pos.y = (beacon_y_p->relPos.y + beacon_p_y->relPos.y) / 2;
+        }
+        if (beacon_y_p->seen && !beacon_p_y->seen && !goal_seen) {
+          std::cout << "BEACON_YELLOW_PINK SEEN? " << beacon_y_p->seen << std::endl;
+          std::cout << "BEACON_PINK_YELLOW SEEN? " << beacon_p_y->seen << std::endl;
+          std::cout << "Set goal position..." << std::endl;
+          goal_seen = true;
+          both_beacon_seen = false;
+          goal_image_center_pos.x = beacon_y_p->imageCenterX;
+          goal_image_center_pos.y = beacon_y_p->imageCenterY;
+          goal_rel_pos.x = beacon_y_p->relPos.x;
+          goal_rel_pos.y = beacon_y_p->relPos.y;
+        }
+        if (!beacon_y_p->seen && beacon_p_y->seen && !goal_seen) {
+          std::cout << "BEACON_YELLOW_PINK SEEN? " << beacon_y_p->seen << std::endl;
+          std::cout << "BEACON_PINK_YELLOW SEEN? " << beacon_p_y->seen << std::endl;
+          std::cout << "Set goal position..." << std::endl;
+          goal_seen = true;
+          both_beacon_seen = false;
+          goal_image_center_pos.x = beacon_p_y->imageCenterX;
+          goal_image_center_pos.y = beacon_p_y->imageCenterY;
+          goal_rel_pos.x = beacon_p_y->relPos.x;
+          goal_rel_pos.y = beacon_p_y->relPos.y;
         }
       }
 
@@ -242,6 +270,7 @@ void KickModule::resetWorldObject() {
   std::cout << "Reset ball and goal information..." << std::endl;
   ball_seen = false;
   goal_seen = false;
+  both_beacon_seen = false;
   ball_image_center_pos.x = 0;
   ball_image_center_pos.y = 0;
   ball_rel_pos.x = 0;
@@ -367,67 +396,140 @@ void KickModule::calcSwingSplinePts() {
   if (!is_left_swing)
     dir = -1;
 
+  int foot_dir = 0;
+
+//  foot_dir = 1: outer
+//  foot_dir = -1: inner
+
 //Calculate kick swing params due to ball rel pos and align pos
-  if (ball_seen) {
+  if (ball_seen && goal_seen) {
     ball_pos.x = ball_rel_pos.x;
     ball_pos.y = ball_rel_pos.y;
   
-    if (goal_seen) {
-      goal_pos.x = goal_rel_pos.x;
-      goal_pos.y = goal_rel_pos.y;
 
+    goal_pos.x = goal_rel_pos.x;
+    goal_pos.y = goal_rel_pos.y;
 
-      kick_start_pos.x = DIST_ALIGN_INCREMENTAL;
-//    align_pos.y = goal_pos.y - (goal_pos.x - ball_pos.x) / (goal_pos.x - DIST_ALIGN_INCREMENTAL) * (goal_pos.y - ball_pos.y);
-      kick_start_pos.y = ball_pos.y + (ball_pos.y - goal_pos.y) * (ball_pos.x - DIST_ALIGN_INCREMENTAL) / (goal_pos.x - ball_pos.x);
-  
-      align.x = kick_start_pos.x + FOOT_RADIUS; ////??????????????????????  kick_start_pos.x + FOOT_RADIUS;
-      align.y = kick_start_pos.y;
-    
-      align.y *= dir;
-      align.y = max(align.y, 40);
-    ////////
-    
-//    if ( align.y > 80 )
-//      align.y += 20;
-
-    ////////
-
-      params_->states[KickState::ALIGN].swing = align;
+    if (ball_pos.y < 0) {
+      if (goal_pos.y - ball_pos.y < -10) {
+        foot_dir = 1;
+      }
+      else if (goal_pos.y - ball_pos.y > 10) {
+        foot_dir = -1;
+      }
+      else
+        foot_dir = 0;
     }
     else {
-      kick_start_pos.x = align.x;
-      kick_start_pos.y = align.y;
-
-      kick_start_pos.y *= dir;
+      if (goal_pos.y - ball_pos.y < -10) {
+        foot_dir = -1;
+      }
+      else if (goal_pos.y - ball_pos.y > 10) {
+        foot_dir = 1;
+      }
+      else
+        foot_dir = 0;
     }
+
+    if (foot_dir == 1)
+      kick_start_pos.x = DIST_ALIGN_INCREMENTAL - FOOT_RADIUS_OUTER;
+    else if (foot_dir == -1)
+      kick_start_pos.x = DIST_ALIGN_INCREMENTAL - FOOT_RADIUS_INNER;
+    else
+      kick_start_pos.x = DIST_ALIGN_INCREMENTAL;
+
+    if (foot_dir != 0)
+      kick_start_pos.y = ball_pos.y + (ball_pos.y - goal_pos.y) * (ball_pos.x - kick_start_pos.x) / (goal_pos.x - ball_pos.x);
+    else
+      kick_start_pos.y = ball_pos.y;
+
+    if (foot_dir == 1)
+      align.x = kick_start_pos.x + FOOT_RADIUS_OUTER;
+    else if (foot_dir == -1)
+      align.x = kick_start_pos.x + FOOT_RADIUS_OUTER;
+    else
+      align.x = kick_start_pos.x;
+
+    align.y = kick_start_pos.y;
+    align.y *= dir;
+      
+    if (foot_dir == 1)
+      align.y = align.y + FOOT_RADIUS_OUTER;
+    else if (foot_dir == -1)
+      align.y = align.y + FOOT_RADIUS_OUTER + FOOT_CENTER_DIST;
+    else
+      align.y = align.y + FOOT_RADIUS_CENTER;
+
+    align.y = min(align.y, 80);
+
+    params_->states[KickState::ALIGN].swing = align;
+
+//      kick_start_pos.x = align.x;
+//      kick_start_pos.y = align.y;
+
+//      kick_start_pos.y *= dir;
+
 
     float dist_align_ball = sqrt((ball_pos.x - kick_start_pos.x) * (ball_pos.x - kick_start_pos.x) + (ball_pos.y - kick_start_pos.y) * (ball_pos.y - kick_start_pos.y));
-  
-    float delta_kick_x = (ball_pos.x - kick_start_pos.x) / dist_align_ball * DIST_KICK_INCREMENTAL;
-    float delta_kick_y = (ball_pos.y - kick_start_pos.y) / dist_align_ball * DIST_KICK_INCREMENTAL;
+    
+    if (foot_dir == 1) {
+      float delta_kick_x = (ball_pos.x - kick_start_pos.x) / dist_align_ball * (DIST_KICK_INCREMENTAL - FOOT_RADIUS_OUTER);
+      float delta_kick_y = (ball_pos.y - kick_start_pos.y) / dist_align_ball * (DIST_KICK_INCREMENTAL - FOOT_RADIUS_OUTER);
 
-    kick_end_pos.x = ball_pos.x + delta_kick_x;
-    kick_end_pos.y = ball_pos.y + delta_kick_y;
+      kick_end_pos.x = ball_pos.x + delta_kick_x;
+      kick_end_pos.y = ball_pos.y + delta_kick_y;
 
-    float delta_touch_x = (ball_pos.x - kick_start_pos.x) / dist_align_ball * (BALL_RADIUS + FOOT_RADIUS);
-    float delta_touch_y = (ball_pos.y - kick_start_pos.y) / dist_align_ball * (BALL_RADIUS + FOOT_RADIUS);
+      float delta_touch_x = (ball_pos.x - kick_start_pos.x) / dist_align_ball * (BALL_RADIUS + FOOT_RADIUS_OUTER);
+      float delta_touch_y = (ball_pos.y - kick_start_pos.y) / dist_align_ball * (BALL_RADIUS + FOOT_RADIUS_OUTER);
 
-    kick_touch_pos.x = ball_pos.x - delta_touch_x;
-    kick_touch_pos.y = ball_pos.y - delta_touch_y;
+      kick_touch_pos.x = ball_pos.x - delta_touch_x;
+      kick_touch_pos.y = ball_pos.y - delta_touch_y;
 
-    kick.x = kick_end_pos.x + FOOT_RADIUS;
-    kick.y = kick_end_pos.y;
+      kick.x = kick_end_pos.x + FOOT_RADIUS_OUTER;
 
-    touch.x = kick_touch_pos.x + FOOT_RADIUS;
-    touch.y = kick_touch_pos.y;
+      touch.x = kick_touch_pos.x + FOOT_RADIUS_OUTER;
 
-    kick.y *= dir;
-    touch.y *= dir;
+      touch.y = kick_touch_pos.y * dir + FOOT_RADIUS_OUTER;
 
-    if (touch.y < 50) {
-      touch.y += 10;
+      kick.y = kick_end_pos.y * dir+ FOOT_RADIUS_OUTER;
     }
+
+    else if (foot_dir == -1) {
+      float delta_kick_x = (ball_pos.x - kick_start_pos.x) / dist_align_ball * (DIST_KICK_INCREMENTAL - FOOT_RADIUS_INNER);
+      float delta_kick_y = (ball_pos.y - kick_start_pos.y) / dist_align_ball * (DIST_KICK_INCREMENTAL - FOOT_RADIUS_INNER);
+
+      kick_end_pos.x = ball_pos.x + delta_kick_x;
+      kick_end_pos.y = ball_pos.y + delta_kick_y;
+
+      float delta_touch_x = (ball_pos.x - kick_start_pos.x) / dist_align_ball * (BALL_RADIUS + FOOT_RADIUS_INNER);
+      float delta_touch_y = (ball_pos.y - kick_start_pos.y) / dist_align_ball * (BALL_RADIUS + FOOT_RADIUS_INNER);
+
+      kick_touch_pos.x = ball_pos.x - delta_touch_x;
+      kick_touch_pos.y = ball_pos.y - delta_touch_y;
+
+      kick.x = kick_end_pos.x + FOOT_RADIUS_INNER;
+      touch.x = kick_touch_pos.x + FOOT_RADIUS_INNER;
+
+      kick.y = kick_end_pos.y * dir + FOOT_RADIUS_OUTER + FOOT_CENTER_DIST;
+
+      touch.y = kick_touch_pos.y * dir + FOOT_RADIUS_OUTER + FOOT_CENTER_DIST;
+    }
+
+    else {
+      kick_end_pos.y = ball_pos.y;
+      kick_end_pos.x = ball_pos.x + DIST_KICK_INCREMENTAL;
+      kick_touch_pos.y = ball_pos.y;
+      kick_touch_pos.x = ball_pos.x;
+      
+      kick.x = kick_end_pos.x;
+      kick.y = kick_end_pos.y * dir + FOOT_RADIUS_CENTER;
+      touch.x = kick_touch_pos.x - BALL_RADIUS;
+      touch.y = kick_touch_pos.y * dir + FOOT_RADIUS_CENTER;
+    }
+
+//      if (touch.y < 50) {
+//        touch.y += 10;
+//      }
 
     touch.z = BALL_RADIUS;
 
@@ -452,8 +554,10 @@ void KickModule::calcSwingSplinePts() {
   
   double time = 0;  //default
   if (kick_module_->swing_leg_ == Kick::RIGHT) {
+    kick_module_->desired_kick_distance_ = 4000;
     time = -0.0698*kick_module_->desired_kick_distance_ + 399.4; // tuned on Alison
   } else {
+    kick_module_->desired_kick_distance_ = 3000;
     time = -0.0685*kick_module_->desired_kick_distance_ + 382.5;
   }
   printf("desired: %2.f\n", kick_module_->desired_kick_distance_);
@@ -464,7 +568,7 @@ void KickModule::calcSwingSplinePts() {
 //  params_->states[KickState::SPLINE].state_time = time;
   params_->states[KickState::SPLINE].state_time = max(params_->states[KickState::SPLINE].state_time, time);
   params_->states[KickState::SPLINE].joint_time = time;
-
+/*
   if (time_ratio > 0.0) {
     std::cout << "Spline with touch point. Time ratio: " << time_ratio << std::endl;
     double touch_time = (time - 30) * time_ratio + 20;
@@ -476,7 +580,7 @@ void KickModule::calcSwingSplinePts() {
     double zs[] = {align.z,align.z,align.z,touch.z,kick.z,kick.z};
     setSwingSpline(num_pts,timesInMs,xs,ys,zs);
   }
-  else {
+  else {*/
     std::cout << "Spline without touch point..." << std::endl;
     int num_pts = 5;
     double timesInMs[] = {0,10,20,time-10,time};
@@ -484,7 +588,7 @@ void KickModule::calcSwingSplinePts() {
     double ys[] = {align.y,align.y,align.y,kick.y,kick.y};
     double zs[] = {align.z,align.z,align.z,kick.z,kick.z};
     setSwingSpline(num_pts,timesInMs,xs,ys,zs);
-  }
+//  }
 }
 
 void KickModule::setSwingSpline(int num_pts,double timesInMs[], double xs[], double ys[], double zs[]) {
@@ -509,7 +613,7 @@ void KickModule::sendSplineCOMCommands(const Vector3<float> &com_in) {
     swing_spline_.calc(time,swing);
   }
 
-//  std::cout << "Kick Swing Params: " << swing.x << ", " << swing.y << ", " << swing.z << std::endl;
+  std::cout << "Kick Swing Params: " << swing.x << ", " << swing.y << ", " << swing.z << std::endl;
 
   swing.y *= dir;
   com.y *= dir;
